@@ -15,3 +15,22 @@ Other:
 * added shaders matrix array access
 * added clipboard support and TextInput copy/paste
 * optimize PAK data management
+* added HLVideo support
+* ... and many many other improvements
+
+## 1.9.1 (March 5, 2021)
+
+HL:
+* Another Haxe 4.2.1 fix
+
+## 1.9.0 (February 28, 2021)
+
+HL:
+* Fixes compatibility with Haxe 4.2 (requires 4.2.1)
+
+2D:
+* More DomKit APIs
+* Flow overflow: Hidden and Scroll support
+* Text.letterSpacing is now 0 by default
+* New Camera implementation (@Yanrishatum)
+* Allow different textures for Graphics/TileGroup/SpriteBatch using BatchDrawState (@Yanrishatum
