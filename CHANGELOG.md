@@ -43,4 +43,18 @@ HL:
 * Added Texture.lodBias support for mipmaps
 * More detailed skin collider support based on joint bounding boxes
 * Added HMD large index (models with >64K vertexes)
-* PBR Forward support (@ShiroSm
+* PBR Forward support (@ShiroSmith)
+* new MetchBatch implementation (unlimited instances)
+
+HxSL:
+* Added Mat2 type
+* Added Array of textures support
+* Added texture.size() / textureSize(tex) (@Yanrishatum)
+* Added @borrow to import another shader var (@Yanrishatum)
+* Added @sampler(groupName) to bypass 16 samplers DX limit
+
+Other:
+* Added DDS support for compressed/mipmaped/float textures
+* Added HDR texture support
+* More APIs/support for float/hdr/16 bit textures
+*
