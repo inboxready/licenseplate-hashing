@@ -72,4 +72,19 @@ Other:
 * fixed interactive handling wrt not uniform scaling + rotation
 
 3D:
-* allow inhe
+* allow inheritance of culling collider
+* added h3d.prim.Disc (@tong)
+* fixes for single channel textures
+
+Other:
+* JS : new WebAudio Driver (@Yanrishatum)
+* added _FragCoord in HxSL
+* alloc position now capture full stack (-D track-alloc)
+* added hxd.Pad.axisDeadZone
+* ... and many many other fixes
+
+## 1.7.0 (September 9, 2019)
+
+2D:
+* DomKit v2 support (direct h2d.Object.dom property with -lib domkit)
+* added h2d.Scene.scaleMode (Pavel Alexandrov)
