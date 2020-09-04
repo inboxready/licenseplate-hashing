@@ -88,3 +88,19 @@ Other:
 2D:
 * DomKit v2 support (direct h2d.Object.dom property with -lib domkit)
 * added h2d.Scene.scaleMode (Pavel Alexandrov)
+* added hxd.App.setCurrent to switch current App
+* fixed JS fullscreen support
+
+3D:
+* HMDv3 - more compact animation data
+* reference counting on h3d.prim.Primitive (Pavel Alexandrov)
+* PCF shadows
+* completed support for DXT textures
+* changed pass sorting API
+
+Other:
+* compatibility with Haxe 4.0-RC4+
+* fixed GL with unused inputs (was causing some issue with recent Chrome)
+* faster serializer for hxsl data
+* added HXSL texelFetch (Pavel Alexandrov)
+* improv
