@@ -103,4 +103,18 @@ Other:
 * fixed GL with unused inputs (was causing some issue with recent Chrome)
 * faster serializer for hxsl data
 * added HXSL texelFetch (Pavel Alexandrov)
-* improv
+* improved shader cache file, support mesh batch
+* move prefabs handling from Heaps to Hide
+* added resource baking capabilities
+* ... and many many other fixes
+
+## 1.6.0 (March 9, 2019)
+
+2D:
+* added DomKit support
+* added h2d.Camera
+* review h2d filters wrt alpha handling
+* added h2d.Flow.layout
+* support for SDF fonts
+* support for sub pixel Tiles (various coordinates/sizes are now Float instead of Int)
+* added h2d.Interactive.on
