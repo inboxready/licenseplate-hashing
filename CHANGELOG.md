@@ -117,4 +117,15 @@ Other:
 * added h2d.Flow.layout
 * support for SDF fonts
 * support for sub pixel Tiles (various coordinates/sizes are now Float instead of Int)
-* added h2d.Interactive.on
+* added h2d.Interactive.onReleaseOutside and .shape for custom shape handling
+* h2d.Object.onParentChanged is now onHierarchyMoved
+* handle multiple Interactive onOver
+
+3D:
+* added h3d.col.Capsule
+* added h3d.col.Collider.inSphere + changed inFrustum
+* added Driver.capturePixels sub region
+* added h3d.scene.MeshBatch
+* optimized shadows maps culling
+* optimized internal pass lists handling
+* moved h3d.scene.DirLight/PointLight/LightSystem/Renderer to h3d.scene.fwd pa
