@@ -142,4 +142,16 @@ Other:
 ## 1.5.0 (October 25, 2018)
 
 * haxe 4 preview5+ support
-* h2d.Sprite becomes h2d.Object, and some other r
+* h2d.Sprite becomes h2d.Object, and some other renaming
+* hxd.Stage becomes hxd.Window
+* improved JS audio (Pavel Alexandrov)
+* added wireframe support to h3d Material (Pavel Alexandrov)
+* changes in hxd.Timer : hxd.App.update dt is now in seconds
+* h2d.Video JS support (Pavel Alexandrov)
+* h2d.Particles "isRelative" support (Pavel Alexandrov)
+* hxd.BitmapData drawLine implementation (TheTrueCalgari)
+* and many other fixes
+
+## 1.4.0 (October 1, 2018)
+
+* haxe 4 preview5+ su
