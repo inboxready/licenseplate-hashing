@@ -128,4 +128,18 @@ Other:
 * added h3d.scene.MeshBatch
 * optimized shadows maps culling
 * optimized internal pass lists handling
-* moved h3d.scene.DirLight/PointLight/LightSystem/Renderer to h3d.scene.fwd pa
+* moved h3d.scene.DirLight/PointLight/LightSystem/Renderer to h3d.scene.fwd package
+* more work on pbr renderer and terrain system
+* various optimizations (less allocations)
+
+Other:
+* [js] heaps now defaults to canvas instead of window for events
+* review hxd.prefab.Prefab API
+* added mp3 sound support
+* added S3TC dds texture support
+* new samples : Camera2D, Domkit, Flows, FXView, Interactive2D, MeshBatch, Lights
+
+## 1.5.0 (October 25, 2018)
+
+* haxe 4 preview5+ support
+* h2d.Sprite becomes h2d.Object, and some other r
