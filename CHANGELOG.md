@@ -163,4 +163,21 @@ Other:
 * added HtmlText textAlign support (Pascal Peridont)
 * added spot lights and shadows (pbr only)
 * added point lights shadows
-* added 32 bit
+* added 32 bit indexes support
+* added binary FBX support (Pavel Alexandrov)
+* added instanced drawing support
+* and many other fixes
+## 1.3.0 (July 31, 2018)
+
+* WebGL 2 support
+* Added full PBR support
+* Per Light shadows
+* Faster Blur
+* Added Prefabs for HIDE
+* Added TGA support
+* Maya FBX fixes
+* ... and much more !
+
+## previous versions
+
+* everything else
