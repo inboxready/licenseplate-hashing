@@ -491,3 +491,25 @@ class Camera {
 		checkScene();
 		posChanged = true;
 		this.viewW = Math.ceil(v) / scene.width;
+		return v;
+	}
+
+	inline function get_viewportHeight() { checkScene(); return viewH * scene.height; }
+	inline function set_viewportHeight( v ) {
+		checkScene();
+		posChanged = true;
+		this.viewH = Math.ceil(v) / scene.height;
+		return v;
+	}
+
+	inline function set_anchorX( v ) {
+		posChanged = true;
+		return anchorX = v;
+	}
+
+	inline function set_anchorY( v ) {
+		posChanged = true;
+		return anchorY = v;
+	}
+
+}
