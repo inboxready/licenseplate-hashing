@@ -22,4 +22,28 @@ private class State {
 		ctx.pass.depth(depthWrite, depthTest);
 		ctx.front2back  = front2back;
 		ctx.killAlpha   = killAlpha;
-		c
+		ctx.onBeginDraw = onBeginDraw;
+	}
+}
+
+private class DepthEntry {
+	public var spr   : Object;
+	public var depth : Float;
+	public var keep  : Bool;
+	public var next  : DepthEntry;
+	public function new() { }
+}
+
+@:dox(hide)
+class DepthMap {
+	var map      : Map<Object, DepthEntry>;
+	var curIndex : Int;
+	var free     : DepthEntry;
+	var first    : DepthEntry;
+
+	public function new() {
+		map = new Map();
+	}
+
+	function push(spr : Object) {
+		var e = map.get(sp
