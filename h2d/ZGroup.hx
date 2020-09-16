@@ -46,4 +46,35 @@ class DepthMap {
 	}
 
 	function push(spr : Object) {
-		var e = map.get(sp
+		var e = map.get(spr);
+		if (e == null) {
+			if (free != null) {
+				e = free;
+				free = e.next;
+			} else {
+				e = new DepthEntry();
+			}
+			e.next = first;
+			first = e;
+			map.set(spr, e);
+		}
+
+		e.spr   = spr;
+		e.keep  = true;
+		e.depth = curIndex++;
+	}
+
+	function populate(spr : Object) {
+		for (c in spr) {
+			if (!c.visible) continue;
+			push(c);
+			populate(c);
+		}
+	}
+
+	public function build(spr : Object) {
+		curIndex = 0;
+
+		var e = first;
+		while (e != null) {
+			e.keep
