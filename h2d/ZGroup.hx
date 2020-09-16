@@ -77,4 +77,33 @@ class DepthMap {
 
 		var e = first;
 		while (e != null) {
-			e.keep
+			e.keep = false;
+			e = e.next;
+		}
+
+		push(spr);
+		populate(spr);
+
+		var p = null;
+		var e = first;
+		while (e != null) {
+			if (e.keep) {
+				e.depth = 1 - e.depth / curIndex;
+				p = e;
+				e = e.next;
+			} else {
+				var next = e.next;
+				map.remove(e.spr);
+				e.spr = null;
+				e.next = free;
+				free = e;
+
+				if (p == null) first = next;
+				else p.next = next;
+				e = next;
+			}
+		}
+	}
+
+	inline public function getDepth(spr : Object) {
+		return map.get
