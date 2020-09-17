@@ -106,4 +106,20 @@ class DepthMap {
 	}
 
 	inline public function getDepth(spr : Object) {
-		return map.get
+		return map.get(spr).depth;
+	}
+
+	public function clear(){
+		map = new Map();
+		free = null;
+		first = null;
+	}
+}
+
+/**
+	An advanced double-pass rendering class that utilizes a z-culling on an opaque objects.
+
+	For optimization to work properly, all opaque objects should have `Object.blendMode` set to `None`.
+
+	Rendering is done in two passes:
+	* An opaque pass only renders objects with `blendeMode = None`, with `RenderContext.front2back
