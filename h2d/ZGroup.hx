@@ -152,4 +152,18 @@ class ZGroup extends Layers
 
 		opaqueState = new State();
 		opaqueState.depthWrite  = true;
-		
+		opaqueState.depthTest   = LessEqual;
+		opaqueState.front2back  = true;
+		opaqueState.killAlpha   = true;
+		opaqueState.onBeginDraw = onBeginOpaqueDraw;
+
+		transpState = new State();
+		transpState.depthWrite  = true;
+		transpState.depthTest   = LessEqual;
+		transpState.front2back  = false;
+		transpState.killAlpha   = false;
+		transpState.onBeginDraw = onBeginTranspDraw;
+
+		normalState = new State();
+		onEnterFilterCached = onEnterFilter;
+		o
