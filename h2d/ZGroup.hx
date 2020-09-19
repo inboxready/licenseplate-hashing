@@ -133,4 +133,23 @@ class DepthMap {
 class ZGroup extends Layers
 {
 	var depthMap : DepthMap;
-	var ctx : RenderCont
+	var ctx : RenderContext;
+
+	var normalState : State;
+	var transpState : State;
+	var opaqueState : State;
+	var onEnterFilterCached : Object -> Bool;
+	var onLeaveFilterCached : Object -> Void;
+
+	/**
+		Create a new ZGroup instance/
+		@param parent An optional parent `h2d.Object` instance to which ZGroup adds itself if set.
+	**/
+	public function new(?parent) {
+		super(parent);
+
+		depthMap = new DepthMap();
+
+		opaqueState = new State();
+		opaqueState.depthWrite  = true;
+		
