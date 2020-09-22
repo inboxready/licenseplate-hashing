@@ -166,4 +166,25 @@ class ZGroup extends Layers
 
 		normalState = new State();
 		onEnterFilterCached = onEnterFilter;
-		o
+		onLeaveFilterCached = onLeaveFilter;
+	}
+
+	override function drawRec(ctx:RenderContext) {
+		if( !visible ) return;
+
+		this.ctx = ctx;
+
+		depthMap.build(this);
+		ctx.engine.clear(null, 1);
+
+		var oldOnEnterFilter = ctx.onEnterFilter;
+		var oldOnLeaveFilter = ctx.onLeaveFilter;
+		normalState.loadFrom(ctx);
+
+		ctx.onEnterFilter = onEnterFilterCached;
+		ctx.onLeaveFilter = onLeaveFilterCached;
+
+		opaqueState.applyTo(ctx);
+		super.drawRec(ctx);
+
+		transpState.a
