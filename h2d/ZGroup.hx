@@ -203,4 +203,17 @@ class ZGroup extends Layers
 
 	function onBeginTranspDraw(obj : h2d.Drawable) : Bool {
 		if (obj.blendMode == None) return false;
-		ctx.baseShader.zValue = depth
+		ctx.baseShader.zValue = depthMap.getDepth(obj);
+		return true;
+	}
+
+	function onEnterFilter(spr : Object) {
+		if (ctx.front2back) return false; // opaque pass : do not render the filter
+		normalState.applyTo(ctx);
+		return true;
+	}
+
+	function onLeaveFilter(spr : Object) {
+		transpState.applyTo(ctx);
+	}
+}
