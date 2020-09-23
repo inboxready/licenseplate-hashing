@@ -187,4 +187,20 @@ class ZGroup extends Layers
 		opaqueState.applyTo(ctx);
 		super.drawRec(ctx);
 
-		transpState.a
+		transpState.applyTo(ctx);
+		super.drawRec(ctx);
+
+		normalState.applyTo(ctx);
+		ctx.onEnterFilter = oldOnEnterFilter;
+		ctx.onLeaveFilter = oldOnLeaveFilter;
+	}
+
+	function onBeginOpaqueDraw(obj : h2d.Drawable) : Bool {
+		if (obj.blendMode != None) return false;
+		ctx.baseShader.zValue = depthMap.getDepth(obj);
+		return true;
+	}
+
+	function onBeginTranspDraw(obj : h2d.Drawable) : Bool {
+		if (obj.blendMode == None) return false;
+		ctx.baseShader.zValue = depth
