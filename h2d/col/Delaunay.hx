@@ -34,4 +34,14 @@ private class DelaunayEdge  {
 /**
 	A Delaunay triangulation utility. See `Delaunay.triangulate`.
 **/
-class De
+class Delaunay {
+	/**
+		Performs a Delaunay triangulation on a given set of Points and returns a list of calculated triangles.
+		See here for more information: https://en.wikipedia.org/wiki/Delaunay_triangulation
+	**/
+	public static function triangulate( points:Array<Point> ) : Array<DelaunayTriangle> {
+
+		//those will be used quite everywhere so I am storing them here not to declare them x times
+		var i;
+		var j;
+		var nv = points.lengt
