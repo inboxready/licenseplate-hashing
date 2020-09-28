@@ -67,4 +67,19 @@ class Delaunay {
 
 		var dx = xmax - xmin;
 		var dy = ymax - ymin;
-	
+		var dmax = (dx > dy) ? dx : dy;
+
+		var xmid = (xmax + xmin) * 0.5;
+		var ymid = (ymax + ymin) * 0.5;
+
+
+		// Set up the supertriangle
+		// This is a triangle which encompasses all the sample points.
+		// The supertriangle coordinates are added to the end of the
+		// vertex list. The supertriangle is the first triangle in
+		// the triangle list.
+
+
+		var p0 = new Point( xmid - 2 * dmax, ymid - dmax );
+		var p1 = new Point( xmid, ymid + 2 * dmax );
+		var p2 = new Point(xmid + 2 * dmax, ymid - dmax);
