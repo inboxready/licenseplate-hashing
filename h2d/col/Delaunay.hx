@@ -44,4 +44,27 @@ class Delaunay {
 		//those will be used quite everywhere so I am storing them here not to declare them x times
 		var i;
 		var j;
-		var nv = points.lengt
+		var nv = points.length;
+
+		if( nv < 3 ) return null;
+
+		var trimax = 4 * nv;
+
+		// Find the maximum and minimum vertex bounds.
+		// This is to allow calculation of the bounding supertriangle
+
+		var xmin = points[0].x;
+		var ymin = points[0].y;
+		var xmax = xmin;
+		var ymax = ymin;
+
+		for( pt in points ) {
+			if (pt.x < xmin) xmin = pt.x;
+			if (pt.x > xmax) xmax = pt.x;
+			if (pt.y < ymin) ymin = pt.y;
+			if (pt.y > ymax) ymax = pt.y;
+		}
+
+		var dx = xmax - xmin;
+		var dy = ymax - ymin;
+	
