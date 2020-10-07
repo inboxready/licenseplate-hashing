@@ -96,4 +96,10 @@ class Delaunay {
 			var DelaunayEdges = [];
 
 			// Set up the DelaunayEdge buffer.
-			// If the point (vertex(i).x,vertex(i).y) lies inside the circumcircle 
+			// If the point (vertex(i).x,vertex(i).y) lies inside the circumcircle then the
+			// three DelaunayEdges of that triangle are added to the DelaunayEdge buffer and the triangle is removed from list.
+			var j = -1;
+			while( ++j < triangles.length ) {
+				if ( InCircle( points[i], triangles[j].p1, triangles[j].p2, triangles[j].p3 ) ) {
+					DelaunayEdges.push(new DelaunayEdge(triangles[j].p1, triangles[j].p2) );
+					DelaunayEdges.push(new DelaunayEdge(triangles[j].p2, triangles[j].p3) );
