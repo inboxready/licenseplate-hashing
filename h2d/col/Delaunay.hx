@@ -83,3 +83,17 @@ class Delaunay {
 		var p0 = new Point( xmid - 2 * dmax, ymid - dmax );
 		var p1 = new Point( xmid, ymid + 2 * dmax );
 		var p2 = new Point(xmid + 2 * dmax, ymid - dmax);
+		points.push(p0);
+		points.push(p1);
+		points.push(p2);
+
+		var triangles = [];
+		triangles.push( new DelaunayTriangle( points[ nv ], points[ nv + 1 ], points[ nv + 2 ] ) ); //SuperTriangle placed at index 0
+
+		// Include each point one at a time into the existing mesh
+		for( i in 0...nv ) {
+
+			var DelaunayEdges = [];
+
+			// Set up the DelaunayEdge buffer.
+			// If the point (vertex(i).x,vertex(i).y) lies inside the circumcircle 
