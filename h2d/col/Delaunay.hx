@@ -103,3 +103,19 @@ class Delaunay {
 				if ( InCircle( points[i], triangles[j].p1, triangles[j].p2, triangles[j].p3 ) ) {
 					DelaunayEdges.push(new DelaunayEdge(triangles[j].p1, triangles[j].p2) );
 					DelaunayEdges.push(new DelaunayEdge(triangles[j].p2, triangles[j].p3) );
+					DelaunayEdges.push(new DelaunayEdge(triangles[j].p3, triangles[j].p1) );
+					triangles.splice( j,1 );
+					j--;
+				}
+			}
+
+			if( i >= nv ) continue; //In case we the last duplicate point we removed was the last in the array
+
+
+
+			// Remove duplicate DelaunayEdges
+			// Note: if all triangles are specified anticlockwise then all
+			// interior DelaunayEdges are opposite pointing in direction.
+
+			var j = DelaunayEdges.length - 2;
+			while( j >= 0 ) 
