@@ -118,4 +118,22 @@ class Delaunay {
 			// interior DelaunayEdges are opposite pointing in direction.
 
 			var j = DelaunayEdges.length - 2;
-			while( j >= 0 ) 
+			while( j >= 0 ) {
+				var k = DelaunayEdges.length;
+				while( --k >= j + 1 ) {
+					if ( DelaunayEdges[ j ].equals( DelaunayEdges[ k ] ) )
+					{
+						DelaunayEdges.splice( k, 1 );
+						DelaunayEdges.splice( j, 1 );
+						k--;
+					}
+				}
+				j--;
+			}
+
+			// Form new triangles for the current point
+			// Skipping over any tagged DelaunayEdges.
+			// All DelaunayEdges are arranged in clockwise order.
+			j = -1;
+			while( ++j < DelaunayEdges.length ) {
+				if (trian
