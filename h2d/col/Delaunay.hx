@@ -136,4 +136,21 @@ class Delaunay {
 			// All DelaunayEdges are arranged in clockwise order.
 			j = -1;
 			while( ++j < DelaunayEdges.length ) {
-				if (trian
+				if (triangles.length >= trimax )
+					return null;
+				triangles.push( new DelaunayTriangle( DelaunayEdges[ j ].p1, DelaunayEdges[ j ].p2, points[ i ] ));
+			}
+
+			DelaunayEdges = null;
+
+		}
+
+		// Remove triangles with supertriangle vertices
+		// These are triangles which have a vertex number greater than nv
+
+		i = triangles.length - 1;
+		inline function isOut(p) {
+			return p == p0 || p == p1 || p == p2;
+		}
+		while( i >= 0 ) {
+			if ( isOut(trian
