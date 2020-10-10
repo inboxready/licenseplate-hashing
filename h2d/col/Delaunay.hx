@@ -153,4 +153,25 @@ class Delaunay {
 			return p == p0 || p == p1 || p == p2;
 		}
 		while( i >= 0 ) {
-			if ( isOut(trian
+			if ( isOut(triangles[ i ].p1) || isOut(triangles[ i ].p2) || isOut(triangles[ i ].p3) )
+			{
+				triangles.splice(i, 1);
+			}
+			i--;
+		}
+
+		//Remove SuperTriangle vertices
+		points.pop();
+		points.pop();
+		points.pop();
+		return triangles;
+	}
+
+
+	static inline var Epsilon = 1e-10;
+
+	static inline function fabs(a:Float) {
+		return a < 0 ? -a : a;
+	}
+
+	static inline function InCircle( p:Point, p1:Point, p2:Point, p3:Point
