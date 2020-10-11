@@ -174,4 +174,26 @@ class Delaunay {
 		return a < 0 ? -a : a;
 	}
 
-	static inline function InCircle( p:Point, p1:Point, p2:Point, p3:Point
+	static inline function InCircle( p:Point, p1:Point, p2:Point, p3:Point ){
+		if( fabs( p1.y - p2.y ) < Epsilon && fabs( p2.y - p3.y) < Epsilon )
+			return false;
+		else {
+			var m1;
+			var m2;
+
+			var mx1;
+			var mx2;
+
+			var my1;
+			var my2;
+
+			var xc;
+			var yc;
+
+			if ( fabs(p2.y - p1.y) < Epsilon) {
+				m2 = -(p3.x - p2.x) / (p3.y - p2.y);
+				mx2 = (p2.x + p3.x) * 0.5;
+				my2 = (p2.y + p3.y) * 0.5;
+				//Calculate CircumCircle center (xc,yc)
+				xc = (p2.x + p1.x) * 0.5;
+				yc = m2 * (x
