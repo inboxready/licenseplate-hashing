@@ -196,4 +196,17 @@ class Delaunay {
 				my2 = (p2.y + p3.y) * 0.5;
 				//Calculate CircumCircle center (xc,yc)
 				xc = (p2.x + p1.x) * 0.5;
-				yc = m2 * (x
+				yc = m2 * (xc - mx2) + my2;
+			} else if ( fabs(p3.y - p2.y) < Epsilon ) {
+				m1 = -(p2.x - p1.x) / (p2.y - p1.y);
+				mx1 = (p1.x + p2.x) * 0.5;
+				my1 = (p1.y + p2.y) * 0.5;
+				//Calculate CircumCircle center (xc,yc)
+				xc = (p3.x + p2.x) * 0.5;
+				yc = m1 * (xc - mx1) + my1;
+			} else {
+				m1 = -(p2.x - p1.x) / (p2.y - p1.y);
+				m2 = -(p3.x - p2.x) / (p3.y - p2.y);
+				mx1 = (p1.x + p2.x) * 0.5;
+				mx2 = (p2.x + p3.x) * 0.5;
+				my1 = (p1.y + p2.
