@@ -209,4 +209,21 @@ class Delaunay {
 				m2 = -(p3.x - p2.x) / (p3.y - p2.y);
 				mx1 = (p1.x + p2.x) * 0.5;
 				mx2 = (p2.x + p3.x) * 0.5;
-				my1 = (p1.y + p2.
+				my1 = (p1.y + p2.y) * 0.5;
+				my2 = (p2.y + p3.y) * 0.5;
+				//Calculate CircumCircle center (xc,yc)
+				xc = (m1 * mx1 - m2 * mx2 + my2 - my1) / (m1 - m2);
+				yc = m1 * (xc - mx1) + my1;
+			}
+			var dx = p2.x - xc;
+			var dy = p2.y - yc;
+			var rsqr = dx * dx + dy * dy;
+			dx = p.x - xc;
+			dy = p.y - yc;
+			var drsqr = dx * dx + dy * dy;
+			return drsqr <= rsqr;
+		}
+	}
+
+}
+
