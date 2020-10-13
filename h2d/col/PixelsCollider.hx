@@ -16,4 +16,28 @@ class PixelsCollider implements Collider {
 		The red channel cutoff value in range of -1...255
 
 		Set to 255 to always fail the test.
-		@d
+		@default 255
+	**/
+	public var redCutoff : Int;
+	/**
+		The green channel cutoff value in range of -1...255
+
+		Set to 255 to always fail the test.
+		@default 255
+	**/
+	public var greenCutoff : Int;
+	/**
+		The blue channel cutoff value in range of -1...255
+
+		Set to 255 to always fail the test.
+		@default 255
+	**/
+	public var blueCutoff : Int;
+
+	/**
+		The alpha channel cutoff value in range of -1...255
+
+		Set to 255 to always fail the test.
+		@default 127
+	**/
+	public var alphaCutoff
