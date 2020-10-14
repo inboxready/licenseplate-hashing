@@ -40,4 +40,22 @@ class PixelsCollider implements Collider {
 		Set to 255 to always fail the test.
 		@default 127
 	**/
-	public var alphaCutoff
+	public var alphaCutoff : Int;
+
+	/**
+		If true, will collide if any channel is above cutoff. Otherwise will collide only if all channels above their cutoff values.
+		@default true
+	**/
+	public var collideOnAny : Bool;
+
+	/**
+		Horizontal stretch of pixels to check for collision.
+	**/
+	public var scaleX : Float = 1;
+	/**
+		Vertical stretch of pixels to check for collision.
+	**/
+	public var scaleY : Float = 1;
+
+	/**
+		Create new BitmapCollider with specified b
