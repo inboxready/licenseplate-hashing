@@ -58,4 +58,12 @@ class PixelsCollider implements Collider {
 	public var scaleY : Float = 1;
 
 	/**
-		Create new BitmapCollider with specified b
+		Create new BitmapCollider with specified bitmap, channel cutoff values and check mode.
+		@param pixels The source pixel data which is tested against.
+		@param alphaCutoff The alpha channel cutoff value.
+		@param redCutoff The red channel cutoff value.
+		@param greenCutoff The green channel cutoff value.
+		@param blueCutoff The blue channel cutoff value.
+		@param collideOnAny Whether to pass the collision check if any channel is above the threshold or if all channels should pass the test.
+	**/
+	publi
