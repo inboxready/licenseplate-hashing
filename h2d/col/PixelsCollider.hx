@@ -66,4 +66,17 @@ class PixelsCollider implements Collider {
 		@param blueCutoff The blue channel cutoff value.
 		@param collideOnAny Whether to pass the collision check if any channel is above the threshold or if all channels should pass the test.
 	**/
-	publi
+	public function new(pixels: hxd.Pixels, alphaCutoff:Int = 127, redCutoff:Int = 255, greenCutoff = 255, blueCutoff = 255, collideOnAny = true) {
+		this.pixels = pixels;
+		this.alphaCutoff = alphaCutoff;
+		this.redCutoff = redCutoff;
+		this.greenCutoff = greenCutoff;
+		this.blueCutoff = blueCutoff;
+		this.collideOnAny = collideOnAny;
+	}
+
+	/**
+		Checks if the pixel under given Point `p` passes the threshold test.
+	**/
+	public function contains( p : Point ) {
+		va
