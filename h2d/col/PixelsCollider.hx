@@ -79,4 +79,12 @@ class PixelsCollider implements Collider {
 		Checks if the pixel under given Point `p` passes the threshold test.
 	**/
 	public function contains( p : Point ) {
-		va
+		var ix : Int = Math.floor(p.x / scaleX);
+		var iy : Int = Math.floor(p.y / scaleY);
+		if ( pixels == null || ix < 0 || iy < 0 || ix >= pixels.width || iy >= pixels.height ) return false;
+		var pixel = pixels.getPixel(ix, iy);
+		if ( collideOnAny ) {
+			return (pixel >>> 24       ) > alphaCutoff ||
+			       (pixel >>> 16 & 0xff) > blueCutoff ||
+			       (pixel >>> 8  & 0xff) > greenCutoff ||
+			       (pixel        & 0xff) > re
