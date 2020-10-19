@@ -87,4 +87,13 @@ class PixelsCollider implements Collider {
 			return (pixel >>> 24       ) > alphaCutoff ||
 			       (pixel >>> 16 & 0xff) > blueCutoff ||
 			       (pixel >>> 8  & 0xff) > greenCutoff ||
-			       (pixel        & 0xff) > re
+			       (pixel        & 0xff) > redCutoff;
+		} else {
+			return (pixel >>> 24       ) > alphaCutoff &&
+			       (pixel >>> 16 & 0xff) > blueCutoff &&
+			       (pixel >>> 8  & 0xff) > greenCutoff &&
+			       (pixel        & 0xff) > redCutoff;
+		}
+	}
+
+}
