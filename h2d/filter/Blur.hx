@@ -42,4 +42,15 @@ class Blur extends Filter {
 
 	inline function get_quality() return pass.quality;
 	inline function set_quality(v) return pass.quality = v;
-	
+	inline function get_radius() return pass.radius;
+	inline function set_radius(v) return pass.radius = v;
+	inline function get_gain() return pass.gain;
+	inline function set_gain(v) return pass.gain = v;
+	inline function get_linear() return pass.linear;
+	inline function set_linear(v) return pass.linear = v;
+
+	override function sync( ctx : RenderContext, s : Object ) {
+		boundsExtend = radius * 2;
+	}
+
+	override function draw( ctx : RenderContext, t : h
