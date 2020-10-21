@@ -53,4 +53,13 @@ class Blur extends Filter {
 		boundsExtend = radius * 2;
 	}
 
-	override function draw( ctx : RenderContext, t : h
+	override function draw( ctx : RenderContext, t : h2d.Tile ) {
+		var out = t.getTexture();
+		var old = out.filter;
+		out.filter = Linear;
+		pass.apply(ctx, out);
+		out.filter = old;
+		return t;
+	}
+
+}
