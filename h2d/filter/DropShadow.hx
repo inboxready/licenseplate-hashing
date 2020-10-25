@@ -23,4 +23,10 @@ class DropShadow extends Glow {
 		@param color The color of the shadow.
 		@param alpha Transparency value of the shadow.
 		@param radius The shadow glow distance in pixels.
-		@param gai
+		@param gain The shadow color intensity.
+		@param quality The sample count on each pixel as a tradeoff of speed/quality.
+		@param smoothColor Produce gradient shadow when enabled, otherwise creates hard shadow without smoothing.
+	**/
+	public function new( distance : Float = 4., angle : Float = 0.785, color : Int = 0, alpha = 1., radius : Float = 1., gain : Float = 1, quality = 1., smoothColor = false ) {
+		super(color, alpha, radius, gain, quality, smoothColor);
+		this.di
