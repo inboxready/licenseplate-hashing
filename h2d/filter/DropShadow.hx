@@ -29,4 +29,18 @@ class DropShadow extends Glow {
 	**/
 	public function new( distance : Float = 4., angle : Float = 0.785, color : Int = 0, alpha = 1., radius : Float = 1., gain : Float = 1, quality = 1., smoothColor = false ) {
 		super(color, alpha, radius, gain, quality, smoothColor);
-		this.di
+		this.distance = distance;
+		this.angle = angle;
+		alphaPass.addShader(new h3d.shader.UVDelta());
+	}
+
+	override function sync(ctx, s) {
+		super.sync(ctx, s);
+		boundsExtend += Math.max(Math.abs(Math.cos(angle) * distance), Math.abs(Math.sin(angle) * distance));
+	}
+
+	override function draw( ctx : RenderContext, t : h2d.Tile ) {
+		setParams();
+		var save = ctx.textures.allocTileTarget("glowSave", t);
+		h3d.pass.Copy.run(t.getTexture(), save, None);
+		pass.appl
