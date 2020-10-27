@@ -43,4 +43,15 @@ class DropShadow extends Glow {
 		setParams();
 		var save = ctx.textures.allocTileTarget("glowSave", t);
 		h3d.pass.Copy.run(t.getTexture(), save, None);
-		pass.appl
+		pass.apply(ctx, save);
+		var dx = Math.round(Math.cos(angle) * distance);
+		var dy = Math.round(Math.sin(angle) * distance);
+		alphaPass.getShader(h3d.shader.UVDelta).uvDelta.set(dx / t.width, dy / t.height);
+		h3d.pass.Copy.run(t.getTexture(), save, Alpha, alphaPass);
+		var ret = h2d.Tile.fromTexture(save);
+		ret.dx = dx;
+		ret.dy = dy;
+		return ret;
+	}
+
+}
