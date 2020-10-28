@@ -65,3 +65,53 @@ class Filter {
 
 	function set_resolutionScale(v) return resolutionScale = v;
 	function set_useScreenResolution(v) return useScreenResolution = v;
+
+	/**
+		Used to sync data for rendering.
+	**/
+	public function sync( ctx : RenderContext, s : Object ) {
+	}
+
+	/**
+		Sent when filter is bound to an Object `s`.
+		If Object was not yet allocated, method will be called when it's added to allocated Scene.
+	**/
+	public function bind( s : Object ) {
+	}
+
+	/**
+		Sent when filter was unbound from an Object `s`.
+		Method won't be called if Object was not yet allocated.
+	**/
+	public function unbind( s : Object ) {
+	}
+
+	/**
+		Method should populate `bounds` with rendering boundaries of the Filter for Object `s`.
+		Initial `bounds` contents are undefined and it's recommended to either clear them or call `s.getBounds(s, bounds)`.
+		Only used when `Filter.autoBounds` is `false`.
+
+		By default uses given Object bounds and extends them with `Filter.boundsExtend`.
+		Compared to `autoBounds = true`, negative `boundsExtend` are still applied, causing rendering area to shrink.
+
+		@param s The Object instance to which the filter is applied.
+		@param bounds The Bounds instance which should be populated by the filter boundaries.
+		@param scale Contains the desired rendering resolution scaling which should be accounted when constructing the bounds.
+		Can be edited to override provided scale values.
+	**/
+	public function getBounds( s : Object, bounds : h2d.col.Bounds, scale : h2d.col.Point ) {
+		s.getBounds(s, bounds);
+		bounds.xMin = bounds.xMin * scale.x - boundsExtend;
+		bounds.xMax = bounds.xMax * scale.x + boundsExtend;
+		bounds.yMin = bounds.yMin * scale.y - boundsExtend;
+		bounds.yMax = bounds.yMax * scale.y + boundsExtend;
+	}
+
+	/**
+		Renders the filter onto Texture in `input` Tile.
+	**/
+	public function draw( ctx : RenderContext, input : h2d.Tile ) {
+		return input;
+	}
+
+}
