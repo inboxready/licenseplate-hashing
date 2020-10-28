@@ -18,4 +18,15 @@ class Glow extends Blur {
 	**/
 	public var knockout : Bool;
 	/**
-		Produce gradient glow when enabled, otherwise creates hard gl
+		Produce gradient glow when enabled, otherwise creates hard glow without smoothing.
+	**/
+	public var smoothColor : Bool;
+
+	/**
+		Create new Glow filter.
+		@param color The color of the glow.
+		@param alpha Transparency value of the glow.
+		@param radius The glow distance in pixels.
+		@param gain The glow color intensity.
+		@param quality The sample count on each pixel as a tradeoff of speed/quality.
+		@param smoothColor Produce gradient glow when enabled, otherwise creates hard glow without sm
