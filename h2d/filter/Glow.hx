@@ -42,4 +42,23 @@ class Glow extends Blur {
 	function setParams() {
 		pass.shader.fixedColor.setColor(color);
 		pass.shader.fixedColor.w = smoothColor ? alpha * 1.5 /* more accurate ramp */ : alpha;
-		pass.shader.smoothFixedColor = smooth
+		pass.shader.smoothFixedColor = smoothColor;
+	}
+
+	override function draw( ctx : RenderContext, t : h2d.Tile ) {
+		setParams();
+		var tex = t.getTexture();
+		var old = tex.filter;
+		var save = ctx.textures.allocTileTarget("glowSave", t);
+		h3d.pass.Copy.run(tex, save, None);
+		tex.filter = Linear;
+		pass.apply(ctx, tex);
+		tex.filter = old;
+		if( knockout )
+			h3d.pass.Copy.run(save, tex, Erase);
+		else
+			h3d.pass.Copy.run(save, tex, Alpha);
+		return t;
+	}
+
+}
