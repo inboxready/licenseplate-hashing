@@ -29,4 +29,17 @@ class Glow extends Blur {
 		@param radius The glow distance in pixels.
 		@param gain The glow color intensity.
 		@param quality The sample count on each pixel as a tradeoff of speed/quality.
-		@param smoothColor Produce gradient glow when enabled, otherwise creates hard glow without sm
+		@param smoothColor Produce gradient glow when enabled, otherwise creates hard glow without smoothing.
+	**/
+	public function new( color : Int = 0xFFFFFF, alpha = 1., radius = 1., gain = 1., quality = 1., smoothColor = false ) {
+		super(radius, gain, quality);
+		this.color = color;
+		this.alpha = alpha;
+		this.smoothColor = smoothColor;
+		pass.shader.hasFixedColor = true;
+	}
+
+	function setParams() {
+		pass.shader.fixedColor.setColor(color);
+		pass.shader.fixedColor.w = smoothColor ? alpha * 1.5 /* more accurate ramp */ : alpha;
+		pass.shader.smoothFixedColor = smooth
