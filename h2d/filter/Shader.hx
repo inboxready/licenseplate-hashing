@@ -16,4 +16,14 @@ package h2d.filter;
 			function fragment() {
 				var pixel : Vec4 = texture.get(calculatedUV);
 				// Premultiply alpha to ensure correct transparency.
-				pixelColor = vec4(
+				pixelColor = vec4((1. - pixel.rgb) * pixel.a, pixel.a);
+				// Some other filters directly assign `output.color` and fetch from `input.uv`.
+				// While it will work, it does not work well when multiple shaders in one filter are involved.
+				// In this case use `calculatedUV` and `pixelColor`.
+			}
+		}
+	}
+
+	// When initializing
+	// Second argument should point at Sampler2D that will take in the texture with contents filter should modify.
+	myObj.filter = new h2d.fil
