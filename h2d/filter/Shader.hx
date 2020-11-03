@@ -26,4 +26,19 @@ package h2d.filter;
 
 	// When initializing
 	// Second argument should point at Sampler2D that will take in the texture with contents filter should modify.
-	myObj.filter = new h2d.fil
+	myObj.filter = new h2d.filter.Shader<InvertColorShader>(new InvertColorShader(), "texture");
+	```
+**/
+class Shader< T:h3d.shader.ScreenShader > extends Filter {
+
+	/**
+		The assigned shader instance.
+		Can be accessed to modify shader uniforms.
+	**/
+	public var shader(get, never) : T;
+	/**
+		ScreenFX pass that will render the filter.
+	**/
+	public var pass : h3d.pass.ScreenFx<T>;
+	/**
+		When enabled, sampling on the input texture will use nearest neighbor
