@@ -41,4 +41,17 @@ class Shader< T:h3d.shader.ScreenShader > extends Filter {
 	**/
 	public var pass : h3d.pass.ScreenFx<T>;
 	/**
-		When enabled, sampling on the input texture will use nearest neighbor
+		When enabled, sampling on the input texture will use nearest neighbor algorithm.
+	**/
+	public var nearest : Bool;
+	var textureParam : String;
+
+	/**
+		Create new shader filter.
+		@param shader The shader instance that will be used for rendering.
+		@param textureParam The name of `Sampler2D` in the shader to which input texture will be assigned. Should be present in the shader.
+	**/
+	public function new( shader : T, textureParam = "texture" ) {
+		super();
+		var found = false;
+		
