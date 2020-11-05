@@ -54,4 +54,18 @@ class Shader< T:h3d.shader.ScreenShader > extends Filter {
 	public function new( shader : T, textureParam = "texture" ) {
 		super();
 		var found = false;
-		
+		for( v in @:privateAccess shader.shader.data.vars ) {
+			if( v.name == textureParam ) {
+				found = true;
+				break;
+			}
+		}
+		if( !found ) throw "Shader does not have '" + textureParam + "' variable";
+		this.textureParam = textureParam;
+		this.pass = new h3d.pass.ScreenFx(shader);
+	}
+
+	function get_shader() return pass.shader;
+
+	override function draw( ctx : RenderContext, t : h2d.Tile ) {
+		var out = ctx.textures.allocTileTarget("shaderTm
