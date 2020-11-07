@@ -26,4 +26,14 @@ class ToneMapping extends Filter {
 	}
 
 	inline function get_gamma() return shader.gamma;
-	inline function set_gamma(v) return shad
+	inline function set_gamma(v) return shader.gamma = v;
+
+	override function draw( ctx : RenderContext, t : h2d.Tile ) {
+		var tout = ctx.textures.allocTileTarget("toneMappingOut", t);
+		ctx.engine.pushTarget(tout);
+		shader.hdrTexture = t.getTexture();
+		pass.render();
+		ctx.engine.popTarget();
+		return h2d.Tile.fromTexture(tout);
+	}
+}
