@@ -165,3 +165,43 @@ class BatchDrawState {
 					var stateLen = length > stateLen ? stateLen : length;
 					ctx.swapTexture(state.texture);
 					engine.renderIndexed(buffer, indices, stateMin, stateLen);
+					length -= stateLen;
+					if ( length == 0 ) break;
+				}
+				caret += stateLen;
+				state = state.next;
+			} while ( state != last );
+		}
+	}
+
+
+	inline function get_currentTexture() return tail.texture;
+
+}
+
+private class StateEntry {
+
+	/**
+		Texture associated with draw state instance.
+	**/
+	public var texture : h3d.mat.Texture;
+	/**
+		A size of batch state.
+	**/
+	public var count : Int;
+
+
+	public var next:StateEntry;
+
+	public function new( texture : h3d.mat.Texture ) {
+		this.texture = texture;
+		this.count = 0;
+	}
+
+	public function set( texture : h3d.mat.Texture ) : StateEntry {
+		this.texture = texture;
+		this.count = 0;
+		return this;
+	}
+
+}
