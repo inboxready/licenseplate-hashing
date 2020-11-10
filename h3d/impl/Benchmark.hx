@@ -37,4 +37,21 @@ private class StatsObject {
 	public var next : StatsObject;
 	public var xPos : Int;
 	public var xSize : Int;
-	public 
+	public function new() {
+	}
+}
+
+class Benchmark extends h2d.Graphics {
+
+	var cachedStats : StatsObject;
+	var currentStats : StatsObject;
+	var cachedQueries : QueryObject;
+	var currentFrame : QueryObject;
+	var waitFrames : Array<QueryObject>;
+	var engine : h3d.Engine;
+	var stats : StatsObject;
+	var labels : Array<h2d.Text>;
+	var interact : h2d.Interactive;
+
+	public var estimateWait = false;
+	public var enable(default,set) : B
