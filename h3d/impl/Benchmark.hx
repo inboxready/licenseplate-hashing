@@ -54,4 +54,26 @@ class Benchmark extends h2d.Graphics {
 	var interact : h2d.Interactive;
 
 	public var estimateWait = false;
-	public var enable(default,set) : B
+	public var enable(default,set) : Bool;
+
+	public var width : Null<Int>;
+	public var height = 16;
+	public var textColor = 0;
+	public var colors = new Array<Int>();
+	public var font : h2d.Font;
+
+	public var recalTime = 1e9;
+	public var smoothTime = 0.95;
+
+	public var measureCpu = false;
+
+	var tip : h2d.Text;
+	var tipCurrent : StatsObject;
+	var tipCurName : String;
+	var curWidth : Int;
+	var prevFrame : Float;
+	var frameTime : Float;
+
+	public function new(?parent) {
+		super(parent);
+	
