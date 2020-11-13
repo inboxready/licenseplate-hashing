@@ -76,4 +76,25 @@ class Benchmark extends h2d.Graphics {
 
 	public function new(?parent) {
 		super(parent);
-	
+		waitFrames = [];
+		labels = [];
+		engine = h3d.Engine.getCurrent();
+		interact = new h2d.Interactive(0,0,this);
+		interact.onMove = onMove;
+		interact.cursor = Default;
+		interact.onOut = function(_) {
+			if( tip == null ) return;
+			tip.parent.remove();
+			tip = null;
+			tipCurrent = null;
+		}
+		enable = engine.driver.hasFeature(Queries);
+	}
+
+	function set_enable(e) {
+		if( !e )
+			cleanup();
+		return enable = e;
+	}
+
+	fun
