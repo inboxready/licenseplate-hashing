@@ -118,4 +118,25 @@ class Benchmark extends h2d.Graphics {
 	override function clear() {
 		super.clear();
 		if( labels != null ) {
-			for( t in labels
+			for( t in labels ) t.remove();
+			labels = [];
+		}
+		if( interact != null ) interact.width = interact.height = 0;
+	}
+
+	override function onRemove() {
+		super.onRemove();
+		cleanup();
+	}
+
+	function onMove(e:hxd.Event) {
+		var s = currentStats;
+		while( s != null ) {
+			if( e.relX >= s.xPos && e.relX <= s.xPos + s.xSize )
+				break;
+			s = s.next;
+		}
+		if( tip == null ) {
+			var fl = new h2d.Flow(this);
+			fl.y = -23;
+			fl.backgroundTi
