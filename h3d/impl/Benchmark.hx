@@ -97,4 +97,25 @@ class Benchmark extends h2d.Graphics {
 		return enable = e;
 	}
 
-	fun
+	function cleanup() {
+		while( waitFrames.length > 0 ) {
+			var w = waitFrames.pop();
+			while( w != null ) {
+				w.dispose();
+				w = w.next;
+			}
+		}
+		while( cachedQueries != null ) {
+			cachedQueries.dispose();
+			cachedQueries = cachedQueries.next;
+		}
+		while( currentFrame != null ) {
+			currentFrame.dispose();
+			currentFrame = currentFrame.next;
+		}
+	}
+
+	override function clear() {
+		super.clear();
+		if( labels != null ) {
+			for( t in labels
