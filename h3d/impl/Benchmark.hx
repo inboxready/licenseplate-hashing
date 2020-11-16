@@ -153,4 +153,18 @@ class Benchmark extends h2d.Graphics {
 		if( s == null )
 			tip.text = "total "+engine.drawCalls+" draws "+hxd.Math.fmt(engine.drawTriangles/1000000)+" Mtri";
 		else
-			tip.text = s.name+"( " + Std.int(s
+			tip.text = s.name+"( " + Std.int(s.time / 1e6) + "." + StringTools.lpad(""+(Std.int(s.time/1e4)%100),"0",2) + " ms " + s.drawCalls + " draws )";
+		var tw = tip.textWidth + 10;
+		var tx = s == null ? curWidth : s.xPos + ((s.xSize - tw) * .5);
+		if( tx + tw > curWidth ) tx = curWidth - tw;
+		if( tx < 0 ) tx = 0;
+		if( hxd.Math.abs(tip.parent.x - tx) > 5 ) tip.parent.x = Std.int(tx);
+	}
+
+	public function begin() {
+
+		if( !enable ) return;
+
+		var t0 = haxe.Timer.stamp();
+		var ft = (t0 - prevFrame) * 1e9;
+		if( hx
