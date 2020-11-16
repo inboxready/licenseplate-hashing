@@ -139,4 +139,18 @@ class Benchmark extends h2d.Graphics {
 		if( tip == null ) {
 			var fl = new h2d.Flow(this);
 			fl.y = -23;
-			fl.backgroundTi
+			fl.backgroundTile = h2d.Tile.fromColor(0,1,1,0.8);
+			fl.padding = 5;
+			tip = new h2d.Text(font, fl);
+			tip.dropShadow = { dx : 0, dy : 1, color : 0, alpha : 1 };
+		}
+		tipCurrent = s;
+		tipCurName = s == null ? null : s.name;
+		syncTip(s);
+	}
+
+	function syncTip(s:StatsObject) {
+		if( s == null )
+			tip.text = "total "+engine.drawCalls+" draws "+hxd.Math.fmt(engine.drawTriangles/1000000)+" Mtri";
+		else
+			tip.text = s.name+"( " + Std.int(s
