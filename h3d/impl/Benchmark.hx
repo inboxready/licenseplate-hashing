@@ -167,4 +167,23 @@ class Benchmark extends h2d.Graphics {
 
 		var t0 = haxe.Timer.stamp();
 		var ft = (t0 - prevFrame) * 1e9;
-		if( hx
+		if( hxd.Math.abs(ft - frameTime) > recalTime )
+			frameTime = ft;
+		else
+			frameTime = frameTime * smoothTime + ft * (1 - smoothTime);
+		prevFrame = t0;
+
+		// end was not called...
+		if( currentFrame != null )
+			end();
+
+		// sync with available frame
+		var changed = false;
+		while( waitFrames.length > 0 ) {
+			var q = waitFrames[0];
+			if( !q.isAvailable() )
+				break;
+			waitFrames.shift();
+
+			// recycle previous stats
+			
