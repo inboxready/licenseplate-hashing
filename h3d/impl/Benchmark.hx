@@ -186,4 +186,22 @@ class Benchmark extends h2d.Graphics {
 			waitFrames.shift();
 
 			// recycle previous stats
-			
+			var st = currentStats;
+			while( st != null ) {
+				var n = st.next;
+				st.next = cachedStats;
+				cachedStats = st;
+				st = n;
+			}
+			currentStats = null;
+
+			var prev : QueryObject = null;
+			var totalTime = 0.;
+			while( q != null ) {
+				if( !measureCpu ) q.sync();
+				if( prev != null ) {
+					var dt = prev.value - q.value;
+					var s = allocStat(q.name, dt);
+					totalTime += dt;
+					s.drawCalls = prev.drawCalls - q.drawCalls;
+					if( s.drawCalls < 0 ) s.drawCalls = 0;
