@@ -205,3 +205,21 @@ class Benchmark extends h2d.Graphics {
 					totalTime += dt;
 					s.drawCalls = prev.drawCalls - q.drawCalls;
 					if( s.drawCalls < 0 ) s.drawCalls = 0;
+				}
+				// recycle
+				var n = q.next;
+				q.next = cachedQueries;
+				cachedQueries = q;
+				prev = q;
+				q = n;
+			}
+
+			if( estimateWait ) {
+				var waitT = frameTime - totalTime;
+				if( waitT > 0 ) {
+					if( hxd.Window.getInstance().vsync ) {
+						var vst = 1e9 / hxd.System.getDefaultFrameRate() - totalTime;
+						if( vst > waitT ) vst = waitT;
+						if( vst > 0 ) {
+							var s = allocStat("vsync", vst);
+							s.drawCalls = 0;
