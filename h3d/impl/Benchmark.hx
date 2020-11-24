@@ -250,4 +250,27 @@ class Benchmark extends h2d.Graphics {
 		clear();
 		labels = old;
 
-		
+		var width = width == null ? s2d.width : width;
+		curWidth = width;
+		beginFill(0, 0.5);
+		drawRect(0, 0, width, height);
+
+		interact.width = width;
+		interact.height = height;
+
+		var totalTime = 0.;
+		var s = currentStats;
+		while( s != null ) {
+			totalTime += s.time;
+			s = s.next;
+		}
+
+		var space = 52;
+		width -= space;
+
+		var count = 0;
+		var xPos = 0;
+		var curTime = 0.;
+		var s = currentStats;
+		while( s != null ) {
+			if( colors.length <= count ) {
