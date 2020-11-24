@@ -223,3 +223,31 @@ class Benchmark extends h2d.Graphics {
 						if( vst > 0 ) {
 							var s = allocStat("vsync", vst);
 							s.drawCalls = 0;
+							waitT -= vst;
+						}
+					}
+					if( waitT > 0.5e6 /* 0.5 ms */ ) {
+						var s = allocStat(measureCpu ? "gpuwait" : "cpuwait", waitT);
+						s.drawCalls = 0;
+					}
+				}
+			}
+
+			// stats updated
+			changed = true;
+		}
+
+		if( allocated && visible )
+			syncVisual();
+
+		measure("begin");
+	}
+
+	function syncVisual() {
+		var s2d = getScene();
+		var old = labels;
+		labels = null;
+		clear();
+		labels = old;
+
+		
