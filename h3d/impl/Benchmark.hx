@@ -274,3 +274,21 @@ class Benchmark extends h2d.Graphics {
 		var s = currentStats;
 		while( s != null ) {
 			if( colors.length <= count ) {
+				var color = new h3d.Vector();
+				var m = new h3d.Matrix();
+				m.identity();
+				m.colorHue(count);
+				color.setColor(0x3399FF);
+				color.transform(m);
+				colors.push(color.toColor());
+			}
+
+			curTime += s.time;
+			var xEnd = Math.ceil(width * (curTime / totalTime));
+			var xSize = xEnd - xPos;
+			beginFill(colors[count]);
+			drawRect(xPos, 0, xSize, height);
+
+			var l = allocLabel(count);
+			if( xSize < s.name.length * 6 )
+				l.visible = fals
