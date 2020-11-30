@@ -291,4 +291,28 @@ class Benchmark extends h2d.Graphics {
 
 			var l = allocLabel(count);
 			if( xSize < s.name.length * 6 )
-				l.visible = fals
+				l.visible = false;
+			else {
+				l.visible = true;
+				l.textColor = textColor;
+				l.text = s.name;
+				l.x = xPos + Std.int((xSize - l.textWidth) * .5);
+			}
+
+			s.xPos = xPos;
+			s.xSize = xSize;
+
+			if( tipCurrent == s && tipCurName == s.name )
+				syncTip(s);
+
+			xPos = xEnd;
+			count++;
+			s = s.next;
+		}
+
+		if( tip != null && tipCurrent == null )
+			syncTip(null);
+
+		var time = allocLabel(count++);
+		time.x = xPos + 3;
+		ti
