@@ -315,4 +315,20 @@ class Benchmark extends h2d.Graphics {
 
 		var time = allocLabel(count++);
 		time.x = xPos + 3;
-		ti
+		time.y = -1;
+		time.visible = true;
+		time.textColor = 0xFFFFFF;
+		var timeMs = totalTime / 1e6;
+		time.text = Std.int(timeMs) + "." + Std.int((timeMs * 10) % 10) + (measureCpu?" cpu" : " gpu");
+
+		while( labels.length > count )
+			labels.pop().remove();
+	}
+
+	function allocLabel(index) {
+		var l = labels[index];
+		if( l != null )
+			return l;
+		if( font == null ) font = hxd.res.DefaultFont.get();
+		l = new h2d.Text(font, this);
+		labels[index] = l
