@@ -331,4 +331,27 @@ class Benchmark extends h2d.Graphics {
 			return l;
 		if( font == null ) font = hxd.res.DefaultFont.get();
 		l = new h2d.Text(font, this);
-		labels[index] = l
+		labels[index] = l;
+		return l;
+	}
+
+	public function end() {
+		if( !enable ) return;
+		measure("end");
+		waitFrames.push(currentFrame);
+		currentFrame = null;
+	}
+
+	function allocStat( name, time : Float ) {
+		var s = cachedStats;
+		if( s != null )
+			cachedStats = s.next;
+		else
+			s = new StatsObject();
+		if( name == s.name ) {
+			// smooth
+			var et = hxd.Math.abs(time - s.time);
+			if( et > recalTime )
+				s.time = time;
+			else
+			
