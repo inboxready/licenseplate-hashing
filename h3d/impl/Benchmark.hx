@@ -354,4 +354,26 @@ class Benchmark extends h2d.Graphics {
 			if( et > recalTime )
 				s.time = time;
 			else
-			
+				s.time = s.time * smoothTime + time * (1 - smoothTime);
+		} else {
+			s.name = name;
+			s.time = time;
+		}
+		s.next = currentStats;
+		currentStats = s;
+		return s;
+	}
+
+	function allocQuery() {
+		var q = cachedQueries;
+		if( q != null )
+			cachedQueries = q.next;
+		else
+			q = new QueryObject();
+		return q;
+	}
+
+	public function measure( name : String ) {
+		if( !enable ) return;
+		if( currentFrame != null && currentFrame.name == name )
+			ret
