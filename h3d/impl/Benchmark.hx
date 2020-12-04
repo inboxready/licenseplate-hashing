@@ -391,4 +391,15 @@ class Benchmark extends h2d.Graphics {
 		var cur = hxd.System.getCurrentLoop();
 		var prevInt = s3d.interactives;
 		var prevScenes = app.sevents.scenes;
-		app.s
+		app.sevents.scenes = [s3d];
+		s3d.interactives = [];
+		var camCtrl = new h3d.scene.CameraController(s3d);
+		var prevStates = new Map();
+		var frustum = s3d.camera.frustum;
+		function getRec( obj : h3d.scene.Object ) {
+			if( obj.cullingCollider != null ) {
+				prevStates.set(obj,{ cul : obj.cullingCollider, culled : obj.culled });
+				obj.culled = obj.culled || !obj.cullingCollider.inFrustum(frustum);
+				obj.cullingCollider = null;
+			}
+			for( o i
