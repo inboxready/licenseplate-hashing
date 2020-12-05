@@ -402,4 +402,18 @@ class Benchmark extends h2d.Graphics {
 				obj.culled = obj.culled || !obj.cullingCollider.inFrustum(frustum);
 				obj.cullingCollider = null;
 			}
-			for( o i
+			for( o in obj )
+				getRec(o);
+		}
+		getRec(s3d);
+		s3d.ctx.debugCulling = true;
+		camCtrl.loadFromCamera();
+		if( app.s2d != null ) app.s2d.setElapsedTime(0);
+		if( app.s3d != null ) app.s3d.setElapsedTime(0);
+		hxd.System.setLoop(function() {
+			app.sevents.checkEvents();
+			app.engine.render(app);
+		});
+	}
+
+}
