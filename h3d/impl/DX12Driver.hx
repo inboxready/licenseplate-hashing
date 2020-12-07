@@ -555,3 +555,457 @@ class DX12Driver extends h3d.impl.Driver {
 		if( details ) desc += " "+Driver.getDeviceName();
 		return desc;
 	}
+
+	public function forceDeviceError() {
+		hasDeviceError = true;
+	}
+
+	function transition( res : ResourceData, to : ResourceState ) {
+		if( res.state == to )
+			return;
+		var b = tmp.barrier;
+		b.resource = res.res;
+		b.stateBefore = res.state;
+		b.stateAfter = to;
+		frame.commandList.resourceBarrier(b);
+		res.state = to;
+	}
+
+
+	function getRTBits( tex : h3d.mat.Texture ) {
+		inline function mk(channels,format) {
+			return ((channels - 1) << 2) | (format + 1);
+		}
+		return switch( tex.format ) {
+		case RGBA: mk(4,0);
+		case R8: mk(1, 0);
+		case RG8: mk(2, 0);
+		case RGB8: mk(3, 0);
+		case R16F: mk(1,1);
+		case RG16F: mk(2,1);
+		case RGB16F: mk(3,1);
+		case RGBA16F: mk(4,1);
+		case R32F: mk(1,2);
+		case RG32F: mk(2,2);
+		case RGB32F: mk(3,2);
+		case RGBA32F: mk(4,2);
+		default: throw "Unsupported RT format "+tex.format;
+		}
+	}
+
+	function getDepthView( tex : h3d.mat.Texture ) {
+		if( tex != null && tex.depthBuffer == null ) {
+			depthEnabled = false;
+			return null;
+		}
+		if( tex != null ) {
+			var w = tex.depthBuffer.width;
+			var h = tex.depthBuffer.height;
+			if( w != tex.width || h != tex.height )
+				throw "Depth size mismatch";
+		}
+		var depthView = depthStenciViews.alloc(1);
+		Driver.createDepthStencilView(tex == null || tex.depthBuffer == defaultDepth ? frame.depthBuffer : @:privateAccess tex.depthBuffer.b.res, null, depthView);
+		var depths = tmp.depthStencils;
+		depths[0] = depthView;
+		depthEnabled = true;
+		return depths;
+	}
+
+	override function getDefaultDepthBuffer():h3d.mat.DepthBuffer {
+		return defaultDepth;
+	}
+
+	function initViewport(w,h) {
+		rtWidth = w;
+		rtHeight = h;
+		tmp.viewport.width = w;
+		tmp.viewport.height = h;
+		tmp.viewport.maxDepth = 1;
+		tmp.rect.top = 0;
+		tmp.rect.left = 0;
+		tmp.rect.right = w;
+		tmp.rect.bottom = h;
+		frame.commandList.rsSetScissorRects(1, tmp.rect);
+		frame.commandList.rsSetViewports(1, tmp.viewport);
+	}
+
+	override function setRenderTarget(tex:Null<h3d.mat.Texture>, layer:Int = 0, mipLevel:Int = 0) {
+
+		if( tex != null ) {
+			if( tex.t == null ) tex.alloc();
+			transition(tex.t, RENDER_TARGET);
+		}
+
+		var texView = renderTargetViews.alloc(1);
+		var isArr = tex != null && (tex.flags.has(IsArray) || tex.flags.has(Cube));
+		var desc = null;
+		if( layer != 0 || mipLevel != 0 || isArr ) {
+			desc = tmp.rtvDesc;
+			desc.format = tex.t.format;
+			if( isArr ) {
+				desc.viewDimension = TEXTURE2DARRAY;
+				desc.mipSlice = mipLevel;
+				desc.firstArraySlice = layer;
+				desc.arraySize = 1;
+				desc.planeSlice = 0;
+			} else {
+				desc.viewDimension = TEXTURE2D;
+				desc.mipSlice = mipLevel;
+				desc.planeSlice = 0;
+			}
+		}
+		Driver.createRenderTargetView(tex == null ? frame.backBuffer.res : tex.t.res, desc, texView);
+		tmp.renderTargets[0] = texView;
+		frame.commandList.omSetRenderTargets(1, tmp.renderTargets, true, getDepthView(tex));
+
+		while( currentRenderTargets.length > 0 ) currentRenderTargets.pop();
+		if( tex != null ) currentRenderTargets.push(tex);
+
+		var w = tex == null ? currentWidth : tex.width >> mipLevel;
+		var h = tex == null ? currentHeight : tex.height >> mipLevel;
+		if( w == 0 ) w = 1;
+		if( h == 0 ) h = 1;
+		initViewport(w, h);
+		pipelineSignature.setI32(PSIGN_RENDER_TARGETS, tex == null ? 0 : getRTBits(tex) | (depthEnabled ? 0x80000000 : 0));
+		needPipelineFlush = true;
+	}
+
+	override function setRenderTargets(textures:Array<h3d.mat.Texture>) {
+		while( currentRenderTargets.length > textures.length )
+			currentRenderTargets.pop();
+
+		var t0 = textures[0];
+		var texViews = renderTargetViews.alloc(textures.length);
+		var bits = 0;
+		for( i => t in textures ) {
+			var view = texViews.offset(renderTargetViews.stride * i);
+			Driver.createRenderTargetView(t.t.res, null, view);
+			tmp.renderTargets[i] = view;
+			currentRenderTargets[i] = t;
+			bits |= getRTBits(t) << (i << 2);
+			transition(t.t, RENDER_TARGET);
+		}
+
+		frame.commandList.omSetRenderTargets(textures.length, tmp.renderTargets, true, getDepthView(textures[0]));
+		initViewport(t0.width, t0.height);
+
+		pipelineSignature.setI32(PSIGN_RENDER_TARGETS, bits | (depthEnabled ? 0x80000000 : 0));
+		needPipelineFlush = true;
+	}
+
+	override function setRenderZone(x:Int, y:Int, width:Int, height:Int) {
+		if( width < 0 && height < 0 && x == 0 && y == 0 ) {
+			tmp.rect.left = 0;
+			tmp.rect.top = 0;
+			tmp.rect.right = rtWidth;
+			tmp.rect.bottom = rtHeight;
+			frame.commandList.rsSetScissorRects(1, tmp.rect);
+		} else {
+			tmp.rect.left = x;
+			tmp.rect.top = y;
+			tmp.rect.right = x + width;
+			tmp.rect.bottom = y + height;
+			frame.commandList.rsSetScissorRects(1, tmp.rect);
+		}
+	}
+
+	override function captureRenderBuffer( pixels : hxd.Pixels ) {
+		var rt = currentRenderTargets[0];
+		if( rt == null )
+			throw "Can't capture main render buffer in DirectX";
+		captureTexPixels(pixels, rt, 0, 0);
+	}
+
+	override function capturePixels(tex:h3d.mat.Texture, layer:Int, mipLevel:Int, ?region:h2d.col.IBounds):hxd.Pixels {
+		var pixels : hxd.Pixels;
+		if (region != null) {
+			if (region.xMax > tex.width) region.xMax = tex.width;
+			if (region.yMax > tex.height) region.yMax = tex.height;
+			if (region.xMin < 0) region.xMin = 0;
+			if (region.yMin < 0) region.yMin = 0;
+			var w = region.width >> mipLevel;
+			var h = region.height >> mipLevel;
+			if( w == 0 ) w = 1;
+			if( h == 0 ) h = 1;
+			pixels = hxd.Pixels.alloc(w, h, tex.format);
+			captureTexPixels(pixels, tex, layer, mipLevel, region.xMin, region.yMin);
+		} else {
+			var w = tex.width >> mipLevel;
+			var h = tex.height >> mipLevel;
+			if( w == 0 ) w = 1;
+			if( h == 0 ) h = 1;
+			pixels = hxd.Pixels.alloc(w, h, tex.format);
+			captureTexPixels(pixels, tex, layer, mipLevel);
+		}
+		return pixels;
+	}
+
+	function captureTexPixels( pixels: hxd.Pixels, tex:h3d.mat.Texture, layer:Int, mipLevel:Int, x : Int = 0, y : Int = 0)  {
+
+		if( pixels.width == 0 || pixels.height == 0 )
+			return;
+
+		var totalSize : hl.BytesAccess<Int64> = new hl.Bytes(8);
+		var src = new TextureCopyLocation();
+		src.res = tex.t.res;
+		src.subResourceIndex = mipLevel + layer * tex.mipLevels;
+		var srcDesc = makeTextureDesc(tex);
+
+		var dst = new TextureCopyLocation();
+		dst.type = PLACED_FOOTPRINT;
+		Driver.getCopyableFootprints(srcDesc, src.subResourceIndex, 1, 0, dst.placedFootprint, null, null, totalSize);
+
+		var desc = new ResourceDesc();
+		var flags = new haxe.EnumFlags();
+		desc.dimension = BUFFER;
+		desc.width = totalSize[0];
+		desc.height = 1;
+		desc.depthOrArraySize = 1;
+		desc.mipLevels = 1;
+		desc.sampleDesc.count = 1;
+		desc.layout = ROW_MAJOR;
+		tmp.heap.type = READBACK;
+		var tmpBuf = Driver.createCommittedResource(tmp.heap, flags, desc, COPY_DEST, null);
+
+		var box = new Box();
+		box.left = x;
+		box.right = pixels.width;
+		box.top = y;
+		box.bottom = pixels.height;
+		box.back = 1;
+
+		transition(tex.t, COPY_SOURCE);
+		dst.res = tmpBuf;
+		frame.commandList.copyTextureRegion(dst, 0, 0, 0, src, box);
+
+		flushFrame();
+		waitGpu();
+
+		var output = tmpBuf.map(0, null);
+		var stride = hxd.Pixels.calcStride(pixels.width, tex.format);
+		var rowStride = dst.placedFootprint.footprint.rowPitch;
+		if( rowStride == stride )
+			(pixels.bytes:hl.Bytes).blit(pixels.offset, output, 0, stride * pixels.height);
+		else {
+			for( i in 0...pixels.height )
+				(pixels.bytes:hl.Bytes).blit(pixels.offset + i * stride, output, i * rowStride, stride);
+		}
+
+		tmpBuf.unmap(0,null);
+		tmpBuf.release();
+
+		beginFrame();
+	}
+
+	// ---- SHADERS -----
+
+	static var VERTEX_FORMATS = [null,null,R32G32_FLOAT,R32G32B32_FLOAT,R32G32B32A32_FLOAT];
+
+	function compileSource( sh : hxsl.RuntimeShader.RuntimeShaderData, profile, baseRegister ) {
+		var args = [];
+		var out = new hxsl.HlslOut();
+		out.baseRegister = baseRegister;
+		var source = out.run(sh.data);
+		return compiler.compile(source, profile, args);
+	}
+
+	override function getNativeShaderCode( shader : hxsl.RuntimeShader ) {
+		var out = new hxsl.HlslOut();
+		var vsSource = out.run(shader.vertex.data);
+		var out = new hxsl.HlslOut();
+		var psSource = out.run(shader.fragment.data);
+		return vsSource+"\n\n\n\n"+psSource;
+	}
+
+	function compileShader( shader : hxsl.RuntimeShader ) : CompiledShader {
+
+		var params = hl.CArray.alloc(RootParameterConstants,8);
+		var paramsCount = 0, regCount = 0;
+		var texDescs = [];
+		var vertexParamsCBV = false;
+		var fragmentParamsCBV = false;
+		var c = new CompiledShader();
+
+		inline function unsafeCastTo<T,R>( v : T, c : Class<R> ) : R {
+			var arr = new hl.NativeArray<T>(1);
+			arr[0] = v;
+			return (cast arr : hl.NativeArray<R>)[0];
+		}
+
+		function allocDescTable(vis) {
+			var p = unsafeCastTo(params[paramsCount++], RootParameterDescriptorTable);
+			p.parameterType = DESCRIPTOR_TABLE;
+			p.numDescriptorRanges = 1;
+			var range = new DescriptorRange();
+			texDescs.push(range);
+			p.descriptorRanges = range;
+			p.shaderVisibility = vis;
+			return range;
+		}
+
+		function allocConsts(size,vis,useCBV) {
+			var reg = regCount++;
+			if( size == 0 ) return -1;
+
+			if( useCBV ) {
+				var pid = paramsCount;
+				var r = allocDescTable(vis);
+				r.rangeType = CBV;
+				r.numDescriptors = 1;
+				r.baseShaderRegister = reg;
+				r.registerSpace = 0;
+				return pid | 0x100;
+			}
+
+			var pid = paramsCount++;
+			var p = params[pid];
+			p.parameterType = CONSTANTS;
+			p.shaderRegister = reg;
+			p.shaderVisibility = vis;
+			p.num32BitValues = size << 2;
+			return pid;
+		}
+
+
+		function allocParams( sh : hxsl.RuntimeShader.RuntimeShaderData ) {
+			var vis = sh.vertex ? VERTEX : PIXEL;
+			var regs = new ShaderRegisters();
+			regs.globals = allocConsts(sh.globalsSize, vis, false);
+			regs.params = allocConsts(sh.paramsSize, vis, sh.vertex ? vertexParamsCBV : fragmentParamsCBV);
+			if( sh.bufferCount > 0 ) {
+				regs.buffers = paramsCount;
+				for( i in 0...sh.bufferCount )
+					allocConsts(1, vis, true);
+			}
+			if( sh.texturesCount > 0 ) {
+				regs.texturesCount = sh.texturesCount;
+				regs.textures = paramsCount;
+
+				var p = sh.textures;
+				while( p != null ) {
+					switch( p.type ) {
+					case TArray( TSampler2D , SConst(n) ): regs.textures2DCount = n;
+					default:
+					}
+					p = p.next;
+				}
+
+				var r = allocDescTable(vis);
+				r.rangeType = SRV;
+				r.baseShaderRegister = 0;
+				r.registerSpace = 0;
+				r.numDescriptors = sh.texturesCount;
+
+				regs.samplers = paramsCount;
+				var r = allocDescTable(vis);
+				r.rangeType = SAMPLER;
+				r.baseShaderRegister = 0;
+				r.registerSpace = 0;
+				r.numDescriptors = sh.texturesCount;
+			}
+			return regs;
+		}
+
+		function calcSize( sh : hxsl.RuntimeShader.RuntimeShaderData ) {
+			var s = (sh.globalsSize + sh.paramsSize) << 2;
+			if( sh.texturesCount > 0 ) s += 2;
+			return s;
+		}
+
+		var totalVertex = calcSize(shader.vertex);
+		var totalFragment = calcSize(shader.fragment);
+		var total = totalVertex + totalFragment;
+
+		if( total > 64 ) {
+			var withoutVP = total - (shader.vertex.paramsSize << 2);
+			var withoutFP = total - (shader.fragment.paramsSize << 2);
+			if( total > 64 && (withoutVP < 64 || withoutFP > 64) ) {
+				vertexParamsCBV = true;
+				total -= (shader.vertex.paramsSize << 2);
+			}
+			if( total > 64 ) {
+				fragmentParamsCBV = true;
+				total -= (shader.fragment.paramsSize << 2);
+			}
+			if( total > 64 )
+				throw "Too many globals";
+		}
+
+		c.vertexRegisters = allocParams(shader.vertex);
+		var fragmentRegStart = regCount;
+		c.fragmentRegisters = allocParams(shader.fragment);
+
+		if( paramsCount > params.length )
+			throw "ASSERT : Too many parameters";
+
+		var vs = compileSource(shader.vertex, "vs_6_0", 0);
+		var ps = compileSource(shader.fragment, "ps_6_0", fragmentRegStart);
+
+		var inputs = [];
+		for( v in shader.vertex.data.vars )
+			switch( v.kind ) {
+			case Input: inputs.push(v);
+			default:
+			}
+
+
+		var sign = new RootSignatureDesc();
+		sign.flags.set(ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+		sign.flags.set(DENY_HULL_SHADER_ROOT_ACCESS);
+		sign.flags.set(DENY_DOMAIN_SHADER_ROOT_ACCESS);
+		sign.flags.set(DENY_GEOMETRY_SHADER_ROOT_ACCESS);
+		sign.numParameters = paramsCount;
+		sign.parameters = params[0];
+
+		var signSize = 0;
+		var signBytes = Driver.serializeRootSignature(sign, 1, signSize);
+		var sign = new RootSignature(signBytes,signSize);
+
+		var inputLayout = hl.CArray.alloc(InputElementDesc, inputs.length);
+		var inputOffsets = [];
+		var offset = 0;
+		for( i => v in inputs ) {
+			var d = inputLayout[i];
+			var perInst = 0;
+			inputOffsets.push(offset);
+			if( v.qualifiers != null )
+				for( q in v.qualifiers )
+					switch( q ) {
+					case PerInstance(k): perInst = k;
+					default:
+					}
+			d.semanticName = @:privateAccess hxsl.HlslOut.semanticName(v.name).toUtf8();
+			d.format = switch( v.type ) {
+				case TFloat: offset++; R32_FLOAT;
+				case TVec(2, VFloat): offset += 2; R32G32_FLOAT;
+				case TVec(3, VFloat): offset += 3;R32G32B32_FLOAT;
+				case TVec(4, VFloat): offset += 4;R32G32B32A32_FLOAT;
+				case TBytes(4): offset++; R8G8B8A8_UINT;
+				default:
+					throw "Unsupported input type " + hxsl.Ast.Tools.toString(v.type);
+			};
+			d.inputSlot = i;
+			if( perInst > 0 ) {
+				d.inputSlotClass = PER_INSTANCE_DATA;
+				d.instanceDataStepRate = perInst;
+			} else
+				d.inputSlotClass = PER_VERTEX_DATA;
+		}
+
+		var p = new GraphicsPipelineStateDesc();
+		p.rootSignature = sign;
+		p.vs.bytecodeLength = vs.length;
+		p.vs.shaderBytecode = vs;
+		p.ps.bytecodeLength = ps.length;
+		p.ps.shaderBytecode = ps;
+		p.rasterizerState.fillMode = SOLID;
+		p.rasterizerState.cullMode = NONE;
+		p.primitiveTopologyType = TRIANGLE;
+		p.numRenderTargets = 1;
+		p.rtvFormats[0] = R8G8B8A8_UNORM;
+		p.dsvFormat = UNKNOWN;
+		p.sampleDesc.count = 1;
+		p.sampleMask = -1;
+		p.inputLayout.inputElementDescs = inputLayout[0];
+		p.inputLayout.numElements = inputLayout.length;
