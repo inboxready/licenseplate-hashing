@@ -1009,3 +1009,476 @@ class DX12Driver extends h3d.impl.Driver {
 		p.sampleMask = -1;
 		p.inputLayout.inputElementDescs = inputLayout[0];
 		p.inputLayout.numElements = inputLayout.length;
+
+		//Driver.createGraphicsPipelineState(p);
+
+		c.inputNames = InputNames.get([for( v in inputs ) v.name]);
+		c.pipeline = p;
+		c.rootSignature = sign;
+		c.inputLayout = inputLayout;
+		c.inputCount = inputs.length;
+		c.inputOffsets = inputOffsets;
+		c.shader = shader;
+
+		for( i in 0...inputs.length )
+			inputLayout[i].alignedByteOffset = 1; // will trigger error if not set in makePipeline()
+	   return c;
+	}
+
+	override function getShaderInputNames() : InputNames {
+		return currentShader.inputNames;
+	}
+
+	function disposeResource( r : ResourceData ) {
+		frame.toRelease.push(r.res);
+		r.res = null;
+		r.state = PRESENT;
+	}
+
+	// ----- BUFFERS
+
+	function allocBuffer( size : Int, heapType, state ) {
+		var desc = new ResourceDesc();
+		var flags = new haxe.EnumFlags();
+		desc.dimension = BUFFER;
+		desc.width = size;
+		desc.height = 1;
+		desc.depthOrArraySize = 1;
+		desc.mipLevels = 1;
+		desc.sampleDesc.count = 1;
+		desc.layout = ROW_MAJOR;
+		tmp.heap.type = heapType;
+		return Driver.createCommittedResource(tmp.heap, flags, desc, state, null);
+	}
+
+	override function allocVertexes( m : ManagedBuffer ) : VertexBuffer {
+		var buf = new VertexBufferData();
+		var size = (m.size * m.stride) << 2;
+		var bufSize = m.flags.has(UniformBuffer) ? calcCBVSize(size) : size;
+		buf.state = COPY_DEST;
+		buf.res = allocBuffer(bufSize, DEFAULT, COPY_DEST);
+		if( !m.flags.has(UniformBuffer) ) {
+			var view = new VertexBufferView();
+			view.bufferLocation = buf.res.getGpuVirtualAddress();
+			view.sizeInBytes = size;
+			view.strideInBytes = m.stride << 2;
+			buf.view = view;
+		}
+		buf.stride = m.stride;
+		buf.size = bufSize;
+		buf.uploaded = m.flags.has(Dynamic);
+		return buf;
+	}
+
+	override function allocIndexes( count : Int, is32 : Bool ) : IndexBuffer {
+		var buf = new IndexBufferData();
+		buf.state = COPY_DEST;
+		buf.count = count;
+		buf.bits = is32?2:1;
+		var size = count << buf.bits;
+		buf.res = allocBuffer(size, DEFAULT, COPY_DEST);
+		var view = new IndexBufferView();
+		view.bufferLocation = buf.res.getGpuVirtualAddress();
+		view.format = is32 ? R32_UINT : R16_UINT;
+		view.sizeInBytes = size;
+		buf.view = view;
+		return buf;
+	}
+
+	override function allocInstanceBuffer(b:InstanceBuffer, bytes:haxe.io.Bytes) {
+		var dataSize = b.commandCount * 5 * 4;
+		var buf = allocBuffer(dataSize, DEFAULT, COPY_DEST);
+		var tmpBuf = allocDynamicBuffer(bytes, dataSize);
+		frame.commandList.copyBufferRegion(buf, 0, tmpBuf, 0, dataSize);
+		b.data = buf;
+
+		var b = tmp.barrier;
+		b.resource = buf;
+		b.stateBefore = COPY_DEST;
+		b.stateAfter = NON_PIXEL_SHADER_RESOURCE;
+		frame.commandList.resourceBarrier(b);
+	}
+
+	override function disposeVertexes(v:VertexBuffer) {
+		disposeResource(v);
+	}
+
+	override function disposeIndexes(v:IndexBuffer) {
+		disposeResource(v);
+	}
+
+	override function disposeInstanceBuffer(b:InstanceBuffer) {
+		disposeResource(b.data);
+		b.data = null;
+	}
+
+	function updateBuffer( b : BufferData, bytes : hl.Bytes, startByte : Int, bytesCount : Int ) {
+		var tmpBuf;
+		if( b.uploaded )
+			tmpBuf = allocDynamicBuffer(bytes.offset(startByte), bytesCount);
+		else {
+			var size = calcCBVSize(bytesCount);
+			tmpBuf = allocBuffer(size, UPLOAD, GENERIC_READ);
+			var ptr = tmpBuf.map(0, null);
+			ptr.blit(0, bytes, 0, bytesCount);
+			tmpBuf.unmap(0,null);
+		}
+		frame.commandList.copyBufferRegion(b.res, startByte, tmpBuf, 0, bytesCount);
+		if( !b.uploaded ) {
+			frame.toRelease.push(tmpBuf);
+			b.uploaded = true;
+		}
+	}
+
+	override function uploadIndexBuffer(i:IndexBuffer, startIndice:Int, indiceCount:Int, buf:hxd.IndexBuffer, bufPos:Int) {
+		transition(i, COPY_DEST);
+		updateBuffer(i, hl.Bytes.getArray(buf.getNative()).offset(bufPos << i.bits), startIndice << i.bits, indiceCount << i.bits);
+		transition(i, INDEX_BUFFER);
+	}
+
+	override function uploadIndexBytes(i:IndexBuffer, startIndice:Int, indiceCount:Int, buf:haxe.io.Bytes, bufPos:Int) {
+		transition(i, COPY_DEST);
+		updateBuffer(i, @:privateAccess buf.b.offset(bufPos << i.bits), startIndice << i.bits, indiceCount << i.bits);
+		transition(i, INDEX_BUFFER);
+	}
+
+	override function uploadVertexBuffer(v:VertexBuffer, startVertex:Int, vertexCount:Int, buf:hxd.FloatBuffer, bufPos:Int) {
+		var data = hl.Bytes.getArray(buf.getNative()).offset(bufPos<<2);
+		transition(v, COPY_DEST);
+		updateBuffer(v, data, startVertex * v.stride << 2, vertexCount * v.stride << 2);
+		transition(v, VERTEX_AND_CONSTANT_BUFFER);
+	}
+
+	override function uploadVertexBytes(v:VertexBuffer, startVertex:Int, vertexCount:Int, buf:haxe.io.Bytes, bufPos:Int) {
+		transition(v, COPY_DEST);
+		updateBuffer(v, @:privateAccess buf.b.offset(bufPos << 2), startVertex * v.stride << 2, vertexCount * v.stride << 2);
+		transition(v, VERTEX_AND_CONSTANT_BUFFER);
+	}
+
+	// ------------ TEXTURES -------
+
+	function getTextureFormat( t : h3d.mat.Texture ) : DxgiFormat {
+		return switch( t.format ) {
+		case RGBA: R8G8B8A8_UNORM;
+		case RGBA16F: R16G16B16A16_FLOAT;
+		case RGBA32F: R32G32B32A32_FLOAT;
+		case R32F: R32_FLOAT;
+		case R16F: R16_FLOAT;
+		case R8: R8_UNORM;
+		case RG8: R8G8_UNORM;
+		case RG16F: R16G16_FLOAT;
+		case RG32F: R32G32_FLOAT;
+		case RGB32F: R32G32B32_FLOAT;
+		case RGB10A2: R10G10B10A2_UNORM;
+		case RG11B10UF: R11G11B10_FLOAT;
+		case SRGB_ALPHA: R8G8B8A8_UNORM_SRGB;
+		case S3TC(n):
+			switch( n ) {
+			case 1: BC1_UNORM;
+			case 2: BC2_UNORM;
+			case 3: BC3_UNORM;
+			case 4: BC4_UNORM;
+			case 5: BC5_UNORM;
+			case 6: BC6H_UF16;
+			case 7: BC7_UNORM;
+			default: throw "assert";
+			}
+		default: throw "Unsupported texture format " + t.format;
+		}
+	}
+
+	function makeTextureDesc(t:h3d.mat.Texture) {
+		var desc = new ResourceDesc();
+		desc.dimension = TEXTURE2D;
+		desc.width = t.width;
+		desc.height = t.height;
+		desc.depthOrArraySize = t.layerCount;
+		desc.mipLevels = t.mipLevels;
+		desc.sampleDesc.count = 1;
+		desc.format = getTextureFormat(t);
+		return desc;
+	}
+
+	override function allocTexture(t:h3d.mat.Texture):Texture {
+
+		if( t.format.match(S3TC(_)) && (t.width & 3 != 0 || t.height & 3 != 0) )
+			throw t+" is compressed "+t.width+"x"+t.height+" but should be a 4x4 multiple";
+
+		var isRT = t.flags.has(Target);
+
+		var flags = new haxe.EnumFlags();
+		var desc = makeTextureDesc(t);
+		var td = new TextureData();
+		td.format = desc.format;
+		tmp.heap.type = DEFAULT;
+
+		var clear = null;
+		if( isRT ) {
+			var color = t.t == null || t.t.color == null ? new h3d.Vector(0,0,0,0) : t.t.color; // reuse prev color
+			desc.flags.set(ALLOW_RENDER_TARGET);
+			clear = tmp.clearValue;
+			clear.format = desc.format;
+			clear.color.r = color.r;
+			clear.color.g = color.g;
+			clear.color.b = color.b;
+			clear.color.a = color.a;
+			td.color = color;
+		}
+
+		td.state = isRT ? RENDER_TARGET : COPY_DEST;
+		td.res = Driver.createCommittedResource(tmp.heap, flags, desc, isRT ? RENDER_TARGET : COPY_DEST, clear);
+		td.res.setName(t.name == null ? "Texture#"+t.id : t.name);
+		t.lastFrame = frameCount;
+		t.flags.unset(WasCleared);
+
+		return td;
+	}
+
+	override function allocDepthBuffer(b:h3d.mat.DepthBuffer):DepthBuffer {
+		var td = new DepthBufferData();
+		var desc = new ResourceDesc();
+		var flags = new haxe.EnumFlags();
+		desc.dimension = TEXTURE2D;
+		desc.width = b.width;
+		desc.height = b.height;
+		desc.depthOrArraySize = 1;
+		desc.mipLevels = 1;
+		desc.sampleDesc.count = 1;
+		desc.format = D24_UNORM_S8_UINT;
+		desc.flags.set(ALLOW_DEPTH_STENCIL);
+		tmp.heap.type = DEFAULT;
+
+		tmp.clearValue.format = desc.format;
+		tmp.clearValue.depth = 1;
+		tmp.clearValue.stencil= 0;
+		td.state = DEPTH_WRITE;
+		td.res = Driver.createCommittedResource(tmp.heap, flags, desc, DEPTH_WRITE, tmp.clearValue);
+		return td;
+	}
+
+	override function disposeTexture(t:h3d.mat.Texture) {
+		disposeResource(t.t);
+		t.t = null;
+	}
+
+	override function disposeDepthBuffer(b:h3d.mat.DepthBuffer) {
+		disposeResource(@:privateAccess b.b);
+	}
+
+	override function uploadTextureBitmap(t:h3d.mat.Texture, bmp:hxd.BitmapData, mipLevel:Int, side:Int) {
+		var pixels = bmp.getPixels();
+		uploadTexturePixels(t, pixels, mipLevel, side);
+		pixels.dispose();
+	}
+
+	override function uploadTexturePixels(t:h3d.mat.Texture, pixels:hxd.Pixels, mipLevel:Int, side:Int) {
+		pixels.convert(t.format);
+		pixels.setFlip(false);
+		if( mipLevel >= t.mipLevels ) throw "Mip level outside texture range : " + mipLevel + " (max = " + (t.mipLevels - 1) + ")";
+
+		var desc = new ResourceDesc();
+		var flags = new haxe.EnumFlags();
+		desc.dimension = BUFFER;
+		desc.width = pixels.width;
+		desc.height = pixels.height;
+		desc.depthOrArraySize = 1;
+		desc.mipLevels = 1;
+		desc.sampleDesc.count = 1;
+		desc.format = t.t.format;
+
+		tmp.heap.type = UPLOAD;
+		var subRes = mipLevel + side * t.mipLevels;
+		var tmpSize = t.t.res.getRequiredIntermediateSize(subRes, 1).low;
+		var tmpBuf = allocBuffer(tmpSize, UPLOAD, GENERIC_READ);
+
+		var upd = new SubResourceData();
+		var stride = @:privateAccess pixels.stride;
+		switch( t.format ) {
+		case S3TC(n): stride = pixels.width * ((n == 1 || n == 4) ? 2 : 4); // "uncompressed" stride ?
+		default:
+		}
+		upd.data = (pixels.bytes:hl.Bytes).offset(pixels.offset);
+		upd.rowPitch = stride;
+		upd.slicePitch = pixels.dataSize;
+
+		transition(t.t, COPY_DEST);
+		if( !Driver.updateSubResource(frame.commandList, t.t.res, tmpBuf, 0, subRes, 1, upd) )
+			throw "Failed to update sub resource";
+		transition(t.t, PIXEL_SHADER_RESOURCE);
+
+		frame.toRelease.push(tmpBuf);
+		t.flags.set(WasCleared);
+	}
+
+	override function copyTexture(from:h3d.mat.Texture, to:h3d.mat.Texture):Bool {
+		if( from.t == null || from.format != to.format || from.width != to.width || from.height != to.height || from.layerCount != to.layerCount )
+			return false;
+		if( to.t == null ) {
+			var prev = from.lastFrame;
+			from.preventAutoDispose();
+			to.alloc();
+			from.lastFrame = prev;
+			if( from.t == null ) throw "assert";
+			if( to.t == null ) return false;
+		}
+		transition(from.t, COPY_SOURCE);
+		transition(to.t, COPY_DEST);
+		var dst = new TextureCopyLocation();
+		var src = new TextureCopyLocation();
+		dst.res = to.t.res;
+		src.res = from.t.res;
+		frame.commandList.copyTextureRegion(dst, 0, 0, 0, src, null);
+		to.flags.set(WasCleared);
+		for( t in currentRenderTargets )
+			if( t == to || t == from ) {
+				transition(t.t, RENDER_TARGET);
+				break;
+			}
+		return true;
+	}
+
+	// ----- PIPELINE UPDATE
+
+	override function uploadShaderBuffers(buffers:h3d.shader.Buffers, which:h3d.shader.Buffers.BufferKind) {
+		uploadBuffers(buffers, buffers.vertex, which, currentShader.shader.vertex, currentShader.vertexRegisters);
+		uploadBuffers(buffers, buffers.fragment, which, currentShader.shader.fragment, currentShader.fragmentRegisters);
+	}
+
+	function calcCBVSize( dataSize : Int ) {
+		// the view must be a mult of 256
+		var sz = dataSize & ~0xFF;
+		if( sz != dataSize ) sz += 0x100;
+		return sz;
+ 	}
+
+	function allocDynamicBuffer( data : hl.Bytes, dataSize : Int ) {
+		var b = frame.availableBuffers, prev = null;
+		var tmpBuf = null;
+		var size = calcCBVSize(dataSize);
+		while( b != null ) {
+			if( b.size >= size && b.size < size << 1 ) {
+				tmpBuf = b.buffer;
+				if( prev == null )
+					frame.availableBuffers = b.next;
+				else
+					prev.next = b.next;
+				b.lastUse = frameCount;
+				b.next = frame.usedBuffers;
+				frame.usedBuffers = b;
+				break;
+			}
+			prev = b;
+			b = b.next;
+		}
+		if( tmpBuf == null ) {
+			tmpBuf = allocBuffer(size, UPLOAD, GENERIC_READ);
+			var b = new TempBuffer();
+			b.buffer = tmpBuf;
+			b.size = size;
+			b.lastUse = frameCount;
+			b.next = frame.usedBuffers;
+			frame.usedBuffers = b;
+		}
+		var ptr = tmpBuf.map(0, null);
+		ptr.blit(0, data, 0, dataSize);
+		tmpBuf.unmap(0,null);
+		return tmpBuf;
+	}
+
+	function uploadBuffers( buffers : h3d.shader.Buffers, buf : h3d.shader.Buffers.ShaderBuffers, which:h3d.shader.Buffers.BufferKind, shader : hxsl.RuntimeShader.RuntimeShaderData, regs : ShaderRegisters ) {
+		switch( which ) {
+		case Params:
+			if( shader.paramsSize > 0 ) {
+				var data = hl.Bytes.getArray(buf.params.toData());
+				var dataSize = shader.paramsSize << 4;
+				if( regs.params & 0x100 != 0 ) {
+					// update CBV
+					var srv = frame.shaderResourceViews.alloc(1);
+					var cbv = allocDynamicBuffer(data,dataSize);
+					var desc = tmp.cbvDesc;
+					desc.bufferLocation = cbv.getGpuVirtualAddress();
+					desc.sizeInBytes = calcCBVSize(dataSize);
+					Driver.createConstantBufferView(desc, srv);
+					frame.commandList.setGraphicsRootDescriptorTable(regs.params & 0xFF, frame.shaderResourceViews.toGPU(srv));
+				} else
+					frame.commandList.setGraphicsRoot32BitConstants(regs.params, dataSize >> 2, data, 0);
+			}
+		case Globals:
+			if( shader.globalsSize > 0 )
+				frame.commandList.setGraphicsRoot32BitConstants(regs.globals, shader.globalsSize << 2, hl.Bytes.getArray(buf.globals.toData()), 0);
+		case Textures:
+			if( regs.texturesCount > 0 ) {
+				var srv = frame.shaderResourceViews.alloc(regs.texturesCount);
+				var sampler = frame.samplerViews.alloc(regs.texturesCount);
+				for( i in 0...regs.texturesCount ) {
+					var t = buf.tex[i];
+
+					if( t == null || t.isDisposed() ) {
+						if( i < regs.textures2DCount ) {
+							var color = h3d.mat.Defaults.loadingTextureColor;
+							t = h3d.mat.Texture.fromColor(color, (color >>> 24) / 255);
+						} else {
+							t = h3d.mat.Texture.defaultCubeTexture();
+						}
+					}
+					if( t != null && t.t == null && t.realloc != null ) {
+						var s = currentShader;
+						t.alloc();
+						t.realloc();
+						if( hasDeviceError ) return;
+						if( s != currentShader ) {
+							// realloc triggered a shader change !
+							// we need to reset the original shader and reupload everything
+							currentShader = null;
+							selectShader(s.shader);
+							uploadShaderBuffers(buffers,Globals);
+							uploadShaderBuffers(buffers,Params);
+							uploadShaderBuffers(buffers,Textures);
+							return;
+						}
+					}
+
+					var tdesc : ShaderResourceViewDesc;
+					if( t.flags.has(Cube) ) {
+						var desc = tmp.texCubeSRV;
+						desc.format = t.t.format;
+						tdesc = desc;
+					} else if( t.flags.has(IsArray) ) {
+						var desc = tmp.tex2DArraySRV;
+						desc.format = t.t.format;
+						desc.arraySize = t.layerCount;
+						tdesc = desc;
+					} else {
+						var desc = tmp.tex2DSRV;
+						desc.format = t.t.format;
+						tdesc = desc;
+					}
+					t.lastFrame = frameCount;
+					transition(t.t, shader.vertex ? NON_PIXEL_SHADER_RESOURCE : PIXEL_SHADER_RESOURCE);
+					Driver.createShaderResourceView(t.t.res, tdesc, srv.offset(i * frame.shaderResourceViews.stride));
+
+					var desc = tmp.samplerDesc;
+					desc.filter = switch( [t.filter, t.mipMap] ) {
+					case [Nearest, None|Nearest]: MIN_MAG_MIP_POINT;
+					case [Nearest, Linear]: MIN_MAG_POINT_MIP_LINEAR;
+					case [Linear, None|Nearest]: MIN_MAG_LINEAR_MIP_POINT;
+					case [Linear, Linear]: MIN_MAG_MIP_LINEAR;
+					}
+					desc.addressU = desc.addressV = desc.addressW = switch( t.wrap ) {
+					case Clamp: CLAMP;
+					case Repeat: WRAP;
+					}
+					desc.mipLODBias = t.lodBias;
+					Driver.createSampler(desc, sampler.offset(i * frame.samplerViews.stride));
+				}
+
+				frame.commandList.setGraphicsRootDescriptorTable(regs.textures, frame.shaderResourceViews.toGPU(srv));
+				frame.commandList.setGraphicsRootDescriptorTable(regs.samplers, frame.samplerViews.toGPU(sampler));
+			}
+		case Buffers:
+			if( shader.bufferCount > 0 ) {
+				for( i in 0...shader.bufferCount ) {
+					var srv = frame.shaderResourceViews.alloc(1);
+					var b = buf.buffers[i];
+					var cbv = @:privateAccess b.buffer.vbuf;
+					if( cbv.view != null )
