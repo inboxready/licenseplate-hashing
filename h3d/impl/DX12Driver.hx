@@ -1482,3 +1482,364 @@ class DX12Driver extends h3d.impl.Driver {
 					var b = buf.buffers[i];
 					var cbv = @:privateAccess b.buffer.vbuf;
 					if( cbv.view != null )
+						throw "Buffer was allocated without UniformBuffer flag";
+					transition(cbv, VERTEX_AND_CONSTANT_BUFFER);
+					var desc = tmp.cbvDesc;
+					desc.bufferLocation = cbv.res.getGpuVirtualAddress();
+					desc.sizeInBytes = cbv.size;
+					Driver.createConstantBufferView(desc, srv);
+					frame.commandList.setGraphicsRootDescriptorTable(regs.buffers + i, frame.shaderResourceViews.toGPU(srv));
+				}
+			}
+		}
+	}
+
+	override function selectShader( shader : hxsl.RuntimeShader ) {
+		var sh = compiledShaders.get(shader.id);
+		if( sh == null ) {
+			sh = compileShader(shader);
+			compiledShaders.set(shader.id, sh);
+		}
+		if( currentShader == sh )
+			return false;
+		currentShader = sh;
+		needPipelineFlush = true;
+		frame.commandList.setGraphicsRootSignature(currentShader.rootSignature);
+		return true;
+	}
+
+	override function selectMaterial( pass : h3d.mat.Pass ) @:privateAccess {
+		needPipelineFlush = true;
+		pipelineSignature.setI32(PSIGN_MATID, pass.bits);
+		pipelineSignature.setUI8(PSIGN_COLOR_MASK, pass.colorMask);
+		var st = pass.stencil;
+		if( st != null ) {
+			pipelineSignature.setUI16(PSIGN_STENCIL_MASK, st.maskBits & 0xFFFF);
+			pipelineSignature.setI32(PSIGN_STENCIL_OPS, st.opBits);
+			if( curStencilRef != st.reference ) {
+				curStencilRef = st.reference;
+				frame.commandList.omSetStencilRef(st.reference);
+			}
+		} else {
+			pipelineSignature.setUI16(PSIGN_STENCIL_MASK, 0);
+			pipelineSignature.setI32(PSIGN_STENCIL_OPS, 0);
+		}
+	}
+
+	override function selectBuffer(buffer:Buffer) {
+		var views = tmp.vertexViews;
+		var bview = @:privateAccess buffer.buffer.vbuf.view;
+		for( i in 0...currentShader.inputCount ) {
+			var v = views[i];
+			v.bufferLocation = bview.bufferLocation;
+			v.sizeInBytes = bview.sizeInBytes;
+			v.strideInBytes = bview.strideInBytes;
+			pipelineSignature.setUI8(PSIGN_BUF_OFFSETS + i, currentShader.inputOffsets[i]);
+		}
+		needPipelineFlush = true;
+		frame.commandList.iaSetVertexBuffers(0, currentShader.inputCount, views[0]);
+	}
+
+	override function selectMultiBuffers(buffers:h3d.Buffer.BufferOffset) {
+		var views = tmp.vertexViews;
+		var bufferCount = 0;
+		while( buffers != null ) {
+			var v = views[bufferCount];
+			var bview = @:privateAccess buffers.buffer.buffer.vbuf.view;
+			v.bufferLocation = bview.bufferLocation;
+			v.sizeInBytes = bview.sizeInBytes;
+			v.strideInBytes = bview.strideInBytes;
+			pipelineSignature.setUI8(PSIGN_BUF_OFFSETS + bufferCount, buffers.offset);
+			buffers = buffers.next;
+			bufferCount++;
+		}
+		needPipelineFlush = true;
+		frame.commandList.iaSetVertexBuffers(0, bufferCount, views[0]);
+	}
+
+
+	static var CULL : Array<CullMode> = [NONE,BACK,FRONT,NONE];
+	static var BLEND_OP : Array<BlendOp> = [ADD,SUBTRACT,REV_SUBTRACT,MIN,MAX];
+	static var COMP : Array<ComparisonFunc> = [ALWAYS, NEVER, EQUAL, NOT_EQUAL, GREATER, GREATER_EQUAL, LESS, LESS_EQUAL];
+	static var BLEND : Array<Blend> = [
+		ONE,ZERO,SRC_ALPHA,SRC_COLOR,DEST_ALPHA,DEST_COLOR,INV_SRC_ALPHA,INV_SRC_COLOR,INV_DEST_ALPHA,INV_DEST_COLOR,
+		SRC1_COLOR,SRC1_ALPHA,INV_SRC1_COLOR,INV_SRC1_ALPHA,SRC_ALPHA_SAT
+	];
+	static var BLEND_ALPHA : Array<Blend> = [
+		ONE,ZERO,SRC_ALPHA,SRC_ALPHA,DEST_ALPHA,DEST_ALPHA,INV_SRC_ALPHA,INV_SRC_ALPHA,INV_DEST_ALPHA,INV_DEST_ALPHA,
+		SRC1_ALPHA,SRC1_ALPHA,INV_SRC1_ALPHA,INV_SRC1_ALPHA,SRC_ALPHA_SAT,
+	];
+	static var STENCIL_OP : Array<StencilOp> = [KEEP, ZERO, REPLACE, INCR_SAT, INCR, DECR_SAT, DECR, INVERT];
+
+	function makePipeline( shader : CompiledShader ) {
+		var p = shader.pipeline;
+		var passBits = pipelineSignature.getI32(PSIGN_MATID);
+		var colorMask = pipelineSignature.getUI8(PSIGN_COLOR_MASK);
+		var stencilMask = pipelineSignature.getUI16(PSIGN_STENCIL_MASK);
+		var stencilOp = pipelineSignature.getI32(PSIGN_STENCIL_OPS);
+
+		var csrc = Pass.getBlendSrc(passBits);
+		var cdst = Pass.getBlendDst(passBits);
+		var asrc = Pass.getBlendAlphaSrc(passBits);
+		var adst = Pass.getBlendAlphaDst(passBits);
+		var cop = Pass.getBlendOp(passBits);
+		var aop = Pass.getBlendAlphaOp(passBits);
+		var dw = Pass.getDepthWrite(passBits);
+		var cmp = Pass.getDepthTest(passBits);
+		var cull = Pass.getCulling(passBits);
+		var wire = Pass.getWireframe(passBits);
+		if( wire != 0 ) cull = 0;
+
+		var rtCount = currentRenderTargets.length;
+		if( rtCount == 0 ) rtCount = 1;
+
+		p.numRenderTargets = rtCount;
+		p.rasterizerState.cullMode = CULL[cull];
+		p.rasterizerState.fillMode = wire == 0 ? SOLID : WIREFRAME;
+		p.depthStencilDesc.depthEnable = cmp != 0;
+		p.depthStencilDesc.depthWriteMask = dw == 0 || !depthEnabled ? ZERO : ALL;
+		p.depthStencilDesc.depthFunc = COMP[cmp];
+
+		var bl = p.blendState;
+		for( i in 0...rtCount ) {
+			var t = bl.renderTargets[i];
+			t.blendEnable = csrc != 0 || cdst != 1;
+			t.srcBlend = BLEND[csrc];
+			t.dstBlend = BLEND[cdst];
+			t.srcBlendAlpha = BLEND_ALPHA[asrc];
+			t.dstBlendAlpha = BLEND_ALPHA[adst];
+			t.blendOp = BLEND_OP[cop];
+			t.blendOpAlpha = BLEND_OP[aop];
+			t.renderTargetWriteMask = colorMask;
+
+			var t = currentRenderTargets[i];
+			p.rtvFormats[i] = t == null ? R8G8B8A8_UNORM : t.t.format;
+		}
+		p.dsvFormat = depthEnabled ? D24_UNORM_S8_UINT : UNKNOWN;
+
+		for( i in 0...shader.inputCount ) {
+			var d = shader.inputLayout[i];
+			d.alignedByteOffset = pipelineSignature.getUI8(PSIGN_BUF_OFFSETS + i) << 2;
+		}
+
+		var stencil = stencilMask != 0 || stencilOp != 0;
+		var st = p.depthStencilDesc;
+		st.stencilEnable = stencil;
+		if( stencil ) {
+			var front = st.frontFace;
+			var back = st.backFace;
+			st.stencilReadMask = stencilMask & 0xFF;
+			st.stencilWriteMask = stencilMask >> 8;
+			front.stencilFunc = COMP[Stencil.getFrontTest(stencilOp)];
+			front.stencilPassOp = STENCIL_OP[Stencil.getFrontPass(stencilOp)];
+			front.stencilFailOp = STENCIL_OP[Stencil.getFrontSTfail(stencilOp)];
+			front.stencilDepthFailOp = STENCIL_OP[Stencil.getFrontDPfail(stencilOp)];
+			back.stencilFunc = COMP[Stencil.getBackTest(stencilOp)];
+			back.stencilPassOp = STENCIL_OP[Stencil.getBackPass(stencilOp)];
+			back.stencilFailOp = STENCIL_OP[Stencil.getBackSTfail(stencilOp)];
+			back.stencilDepthFailOp = STENCIL_OP[Stencil.getBackDPfail(stencilOp)];
+		}
+
+		return Driver.createGraphicsPipelineState(p);
+	}
+
+	function flushPipeline() {
+		if( !needPipelineFlush ) return;
+		needPipelineFlush = false;
+		var signature = pipelineSignature;
+		var signatureSize = PSIGN_BUF_OFFSETS + currentShader.inputCount;
+		adlerOut.setI32(0, 0);
+		hl.Format.digest(adlerOut, signature, signatureSize, 3);
+		var hash = adlerOut.getI32(0);
+		var pipes = currentShader.pipelines.get(hash);
+		if( pipes == null ) {
+			pipes = new hl.NativeArray(1);
+			currentShader.pipelines.set(hash, pipes);
+		}
+		var insert = -1;
+		for( i in 0...pipes.length ) {
+			var p = pipes[i];
+			if( p == null ) {
+				insert = i;
+				break;
+			}
+			if( p.size == signatureSize && p.bytes.compare(0, signature, 0, signatureSize) == 0 ) {
+				frame.commandList.setPipelineState(p.pipeline);
+				return;
+			}
+		}
+		var signatureBytes = @:privateAccess new haxe.io.Bytes(pipelineSignature, signatureSize);
+		if( insert < 0 ) {
+			var pipes2 = new hl.NativeArray(pipes.length + 1);
+			pipes2.blit(0, pipes, 0, insert);
+			currentShader.pipelines.set(hash, pipes2);
+			pipes = pipes2;
+		}
+		var cp = new CachedPipeline();
+		cp.bytes = signature.sub(0, signatureSize);
+		cp.size = signatureSize;
+		cp.pipeline = makePipeline(currentShader);
+		pipes[insert] = cp;
+		frame.commandList.setPipelineState(cp.pipeline);
+	}
+
+	// QUERIES
+
+	static inline var QUERY_COUNT = 128;
+
+	override function allocQuery( queryKind : QueryKind ) : Query {
+		if( queryKind != TimeStamp )
+			throw "Not implemented";
+		return new Query();
+	}
+
+	override function deleteQuery( q : Query ) {
+		// nothing to do
+	}
+
+	override function beginQuery( q : Query ) {
+		// nothing
+	}
+
+	override function endQuery( q : Query ) {
+		var heap = frame.queryHeaps[frame.queryCurrentHeap];
+		if( heap == null ) {
+			var desc = new QueryHeapDesc();
+			desc.type = TIMESTAMP;
+			desc.count = QUERY_COUNT;
+			heap = Driver.createQueryHeap(desc);
+			frame.queryHeaps[frame.queryCurrentHeap] = heap;
+			if( frame.queryBuffer != null ) {
+				frame.queryBuffer.release();
+				frame.queryBuffer = null;
+			}
+		}
+		q.offset = frame.queryHeapOffset++;
+		q.heap = frame.queryCurrentHeap;
+		frame.commandList.endQuery(heap, TIMESTAMP, q.offset);
+		frame.queriesPending.push(q);
+		if( frame.queryHeapOffset == QUERY_COUNT ) {
+			frame.queryHeapOffset = 0;
+			frame.queryCurrentHeap++;
+		}
+	}
+
+	override function queryResultAvailable( q : Query ) {
+		return q.heap < 0;
+	}
+
+	override function queryResult( q : Query ) {
+		return q.result;
+	}
+
+	function beginQueries() {
+		if( frame.queryBuffer == null || frame.queriesPending.length == 0 )
+			return;
+		var ptr : hl.BytesAccess<Int64> = frame.queryBuffer.map(0, null);
+		while( true ) {
+			var q = frame.queriesPending.pop();
+			if( q == null ) break;
+			if( q.heap >= 0 ) {
+				var position = q.heap * QUERY_COUNT + q.offset;
+				var v = ptr[position];
+				q.result = ((v / tsFreq).low + (v % tsFreq).low / tsFreq.low) * 1e9;
+				q.heap = -1;
+			}
+		}
+		frame.queryBuffer.unmap(0, null);
+	}
+
+	function flushQueries() {
+		if( frame.queryHeapOffset > 0 )
+			frame.queryCurrentHeap++;
+		if( frame.queryCurrentHeap == 0 )
+			return;
+		if( frame.queryBuffer == null )
+			frame.queryBuffer = allocBuffer(frame.queryHeaps.length * QUERY_COUNT * 8, READBACK, COPY_DEST);
+		var position = 0;
+		for( i in 0...frame.queryCurrentHeap ) {
+			var count = i < frame.queryCurrentHeap - 1 ? QUERY_COUNT : frame.queryHeapOffset;
+			frame.commandList.resolveQueryData(frame.queryHeaps[i], TIMESTAMP, 0, count, frame.queryBuffer, position);
+			position += count * 8;
+		}
+		frame.queryCurrentHeap = 0;
+		frame.queryHeapOffset = 0;
+	}
+
+	// --- DRAW etc.
+
+	override function draw( ibuf : IndexBuffer, startIndex : Int, ntriangles : Int ) {
+		flushPipeline();
+		if( currentIndex != ibuf ) {
+			currentIndex = ibuf;
+			frame.commandList.iaSetIndexBuffer(ibuf.view);
+		}
+		frame.commandList.drawIndexedInstanced(ntriangles * 3,1,startIndex,0,0);
+		flushResources();
+	}
+
+	override function drawInstanced(ibuf:IndexBuffer, commands:InstanceBuffer) {
+		flushPipeline();
+		if( currentIndex != ibuf ) {
+			currentIndex = ibuf;
+			frame.commandList.iaSetIndexBuffer(ibuf.view);
+		}
+		if( commands.data != null ) {
+			frame.commandList.executeIndirect(indirectCommand, commands.commandCount, commands.data, 0, null, 0);
+		} else {
+			frame.commandList.drawIndexedInstanced(commands.indexCount, commands.commandCount, commands.startIndex, 0, 0);
+		}
+		flushResources();
+	}
+
+	function flushResources() {
+		if( frame.shaderResourceViews.available < 128 || frame.samplerViews.available < 64 ) {
+			frame.shaderResourceViews = frame.shaderResourceCache.next();
+			frame.samplerViews = frame.samplerCache.next();
+			var arr = tmp.descriptors2;
+			arr[0] = @:privateAccess frame.shaderResourceViews.heap;
+			arr[1] = @:privateAccess frame.samplerViews.heap;
+			frame.commandList.setDescriptorHeaps(arr);
+		}
+	}
+
+	function flushFrame( onResize : Bool = false ) {
+		flushQueries();
+		frame.commandList.close();
+		frame.commandList.execute();
+		currentShader = null;
+		Driver.flushMessages();
+		frame.fenceValue = fenceValue++;
+		Driver.signal(fence, frame.fenceValue);
+	}
+
+	override function present() {
+
+		transition(frame.backBuffer, PRESENT);
+		flushFrame();
+		Driver.present(window.vsync);
+
+		waitForFrame(Driver.getCurrentBackBufferIndex());
+		beginFrame();
+
+		if( hasDeviceError ) {
+			Sys.println("----------- OnContextLost ----------");
+			hasDeviceError = false;
+			dispose();
+			reset();
+			onContextLost();
+		}
+
+	}
+
+	function waitForFrame( index : Int ) {
+		var frame = frames[index];
+		if( fence.getValue() < frame.fenceValue ) {
+			fence.setEvent(frame.fenceValue, fenceEvent);
+			fenceEvent.wait(-1);
+		}
+	}
+
+}
+
+#end
