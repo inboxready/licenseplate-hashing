@@ -1024,3 +1024,460 @@ class DirectXDriver extends h3d.impl.Driver {
 		curTexture = textures[0];
 		if( tex.depthBuffer != null && (tex.depthBuffer.width != tex.width || tex.depthBuffer.height != tex.height) )
 			throw "Invalid depth buffer size : does not match render target size";
+		currentDepth = @:privateAccess (tex.depthBuffer == null ? null : tex.depthBuffer.b);
+		for( i in 0...textures.length ) {
+			var tex = textures[i];
+			if( tex.t == null ) {
+				tex.alloc();
+				if( hasDeviceError ) return;
+			}
+			if( tex.t.rt == null )
+				throw "Can't render to texture which is not allocated with Target flag";
+			var index = mipLevel * tex.layerCount + layer;
+			var rt = tex.t.rt[index];
+			if( rt == null ) {
+				var arr = tex.flags.has(Cube) || tex.flags.has(IsArray);
+				var v = new dx.Driver.RenderTargetDesc(getTextureFormat(tex), arr ? Texture2DArray : Texture2D);
+				v.mipMap = mipLevel;
+				v.firstSlice = layer;
+				v.sliceCount = 1;
+				rt = Driver.createRenderTargetView(tex.t.res, v);
+				tex.t.rt[index] = rt;
+			}
+			tex.lastFrame = frame;
+			currentTargets[i] = rt;
+			currentTargetResources[i] = tex.t.view;
+			unbind(tex.t.view);
+			// prevent garbage
+			if( !tex.flags.has(WasCleared) ) {
+				tex.flags.set(WasCleared);
+				Driver.clearColor(rt, 0, 0, 0, 0);
+			}
+		}
+		Driver.omSetRenderTargets(textures.length, currentTargets, currentDepth == null ? null : currentDepth.view);
+		targetsCount = textures.length;
+
+		var w = tex.width >> mipLevel; if( w == 0 ) w = 1;
+		var h = tex.height >> mipLevel; if( h == 0 ) h = 1;
+		viewport[2] = w;
+		viewport[3] = h;
+		viewport[5] = 1.;
+		Driver.rsSetViewports(1, viewport);
+	}
+
+	override function setRenderZone(x:Int, y:Int, width:Int, height:Int) {
+		if( x == 0 && y == 0 && width < 0 && height < 0 ) {
+			hasScissor = false;
+			return;
+		}
+		if( x < 0 ) {
+			width += x;
+			x = 0;
+		}
+		if( y < 0 ) {
+			height += y;
+			y = 0;
+		}
+		if( width < 0 ) width = 0;
+		if( height < 0 ) height = 0;
+		hasScissor = true;
+		rects[0] = x;
+		rects[1] = y;
+		rects[2] = x + width;
+		rects[3] = y + height;
+		Driver.rsSetScissorRects(1, rects);
+	}
+
+	override function selectShader(shader:hxsl.RuntimeShader) {
+		var s = shaders.get(shader.id);
+		if( s == null ) {
+			s = new CompiledShader();
+			var vertex = compileShader(shader.vertex);
+			var fragment = compileShader(shader.fragment);
+			var inputs = [];
+			if( hasDeviceError ) return false;
+			s.vertex = vertex.s;
+			s.fragment = fragment.s;
+			s.offsets = [];
+
+			var layout = [], offset = 0;
+			for( v in shader.vertex.data.vars )
+				if( v.kind == Input ) {
+					var e = new LayoutElement();
+					var name = hxsl.HlslOut.semanticName(v.name);
+					var perInst = 0;
+					if( v.qualifiers != null )
+						for( q in v.qualifiers )
+							switch( q ) {
+							case PerInstance(k): perInst = k;
+							default:
+							}
+					e.semanticName = @:privateAccess name.toUtf8();
+					e.inputSlot = layout.length;
+					e.format = switch( v.type ) {
+					case TFloat: R32_FLOAT;
+					case TVec(2, VFloat): R32G32_FLOAT;
+					case TVec(3, VFloat): R32G32B32_FLOAT;
+					case TVec(4, VFloat): R32G32B32A32_FLOAT;
+					case TBytes(4): R8G8B8A8_UINT;
+					default:
+						throw "Unsupported input type " + hxsl.Ast.Tools.toString(v.type);
+					};
+					if( perInst > 0 ) {
+						e.inputSlotClass = PerInstanceData;
+						e.instanceDataStepRate = perInst;
+					} else
+						e.inputSlotClass = PerVertexData;
+					layout.push(e);
+					s.offsets.push(offset);
+					inputs.push(v.name);
+
+					var size = switch( v.type ) {
+					case TVec(n, _): n;
+					case TBytes(n): n;
+					case TFloat: 1;
+					default: throw "assert " + v.type;
+					}
+
+					offset += size;
+				}
+
+			var n = new hl.NativeArray(layout.length);
+			for( i in 0...layout.length )
+				n[i] = layout[i];
+			s.inputs = InputNames.get(inputs);
+			s.layout = Driver.createInputLayout(n, vertex.bytes, vertex.bytes.length);
+			if( s.layout == null )
+				throw "Failed to create input layout";
+			shaders.set(shader.id, s);
+		}
+		if( s == currentShader )
+			return false;
+		setShader(s);
+		return true;
+	}
+
+	function setShader( s : CompiledShader ) {
+		currentShader = s;
+		dx.Driver.vsSetShader(s.vertex.shader);
+		dx.Driver.psSetShader(s.fragment.shader);
+		dx.Driver.iaSetInputLayout(s.layout);
+	}
+
+	override function getShaderInputNames() : InputNames {
+		return currentShader.inputs;
+	}
+
+	override function selectBuffer(buffer:Buffer) {
+		if( hasDeviceError ) return;
+		var vbuf = @:privateAccess buffer.buffer.vbuf;
+		var start = -1, max = -1, position = 0;
+		for( i in 0...currentShader.inputs.names.length ) {
+			if( currentVBuffers[i] != vbuf.res || offsets[i] != currentShader.offsets[i] << 2 ) {
+				currentVBuffers[i] = vbuf.res;
+				strides[i] = buffer.buffer.stride << 2;
+				offsets[i] = currentShader.offsets[i] << 2;
+				if( start < 0 ) start = i;
+				max = i;
+			}
+		}
+		if( max >= 0 )
+			Driver.iaSetVertexBuffers(start, max - start + 1, currentVBuffers.getRef().offset(start), hl.Bytes.getArray(strides).offset(start << 2), hl.Bytes.getArray(offsets).offset(start << 2));
+	}
+
+	override function selectMultiBuffers(bl:Buffer.BufferOffset) {
+		if( hasDeviceError ) return;
+		var index = 0;
+		var start = -1, max = -1;
+		while( bl != null ) {
+			var vbuf = @:privateAccess bl.buffer.buffer.vbuf;
+			if( currentVBuffers[index] != vbuf.res || offsets[index] != bl.offset << 2 ) {
+				currentVBuffers[index] = vbuf.res;
+				offsets[index] = bl.offset << 2;
+				strides[index] = bl.buffer.buffer.stride << 2;
+				if( start < 0 ) start = index;
+				max = index;
+			}
+			index++;
+			bl = bl.next;
+		}
+		if( max >= 0 )
+			Driver.iaSetVertexBuffers(start, max - start + 1, currentVBuffers.getRef().offset(start), hl.Bytes.getArray(strides).offset(start << 2), hl.Bytes.getArray(offsets).offset(start << 2));
+	}
+
+	override function uploadShaderBuffers(buffers:h3d.shader.Buffers, which:h3d.shader.Buffers.BufferKind) {
+		if( hasDeviceError ) return;
+		uploadBuffers(buffers, vertexShader, currentShader.vertex, buffers.vertex, which);
+		uploadBuffers(buffers, pixelShader, currentShader.fragment, buffers.fragment, which);
+	}
+
+	function uploadShaderBuffer( sbuffer : dx.Resource, buffer : haxe.ds.Vector<hxd.impl.Float32>, size : Int, prevContent : hl.Bytes ) {
+		if( size == 0 ) return;
+		var data = hl.Bytes.getArray(buffer.toData());
+		var bytes = size << 4;
+		if( prevContent != null ) {
+			if( prevContent.compare(0, data, 0, bytes) == 0 )
+				return;
+			prevContent.blit(0, data, 0, bytes);
+			mapCount++;
+		}
+		var ptr = sbuffer.map(0, WriteDiscard, true, null);
+		if( ptr == null ) throw "Can't map buffer " + sbuffer;
+		ptr.blit(0, data, 0, bytes);
+		sbuffer.unmap(0);
+	}
+
+	function uploadBuffers( buf : h3d.shader.Buffers, state : PipelineState, shader : ShaderContext, buffers : h3d.shader.Buffers.ShaderBuffers, which : h3d.shader.Buffers.BufferKind ) {
+		switch( which ) {
+		case Globals:
+			if( shader.globalsSize > 0 ) {
+				uploadShaderBuffer(shader.globals, buffers.globals, shader.globalsSize, null);
+				if( state.buffers[0] != shader.globals ) {
+					state.buffers[0] = shader.globals;
+					switch( state.kind ) {
+					case Vertex:
+						Driver.vsSetConstantBuffers(0, 1, state.buffers);
+					case Pixel:
+						Driver.psSetConstantBuffers(0, 1, state.buffers);
+					}
+				}
+			}
+		case Params:
+			if( shader.paramsSize > 0 ) {
+				uploadShaderBuffer(shader.params, buffers.params, shader.paramsSize, shader.paramsContent);
+				if( state.buffers[1] != shader.params ) {
+					state.buffers[1] = shader.params;
+					switch( state.kind ) {
+					case Vertex:
+						Driver.vsSetConstantBuffers(1, 1, state.buffers.getRef().offset(1));
+					case Pixel:
+						Driver.psSetConstantBuffers(1, 1, state.buffers.getRef().offset(1));
+					}
+				}
+			}
+		case Buffers:
+			var first = -1;
+			var max = -1;
+			for( i in 0...shader.bufferCount ) {
+				var buf = @:privateAccess buffers.buffers[i].buffer.vbuf.res;
+				var tid = i + 2;
+				if( buf != state.buffers[tid] ) {
+					state.buffers[tid] = buf;
+					if( first < 0 ) first = tid;
+					max = tid;
+				}
+			}
+			if( max >= 0 )
+				switch( state.kind ) {
+				case Vertex:
+					Driver.vsSetConstantBuffers(first,max-first+1,state.buffers.getRef().offset(first));
+				case Pixel:
+					Driver.psSetConstantBuffers(first,max-first+1,state.buffers.getRef().offset(first));
+				}
+		case Textures:
+			var start = -1, max = -1;
+			var sstart = -1, smax = -1;
+			for( i in 0...shader.texturesCount ) {
+				var t = buffers.tex[i];
+				if( t == null || t.isDisposed() ) {
+					if( i < shader.textures2DCount ) {
+						var color = h3d.mat.Defaults.loadingTextureColor;
+						t = h3d.mat.Texture.fromColor(color, (color >>> 24) / 255);
+					} else {
+						t = h3d.mat.Texture.defaultCubeTexture();
+					}
+				}
+				if( t != null && t.t == null && t.realloc != null ) {
+					var s = currentShader;
+					t.alloc();
+					t.realloc();
+					if( hasDeviceError ) return;
+					if( s != currentShader ) {
+						// realloc triggered a shader change !
+						// we need to reset the original shader and reupload everything
+						setShader(s);
+						uploadShaderBuffers(buf,Globals);
+						uploadShaderBuffers(buf,Params);
+						uploadShaderBuffers(buf,Textures);
+						return;
+					}
+				}
+				t.lastFrame = frame;
+
+				var view = t.t.view;
+				if( view != state.resources[i] ) {
+					state.resources[i] = view;
+					max = i;
+					if( start < 0 ) start = i;
+				}
+
+				var sidx = shader.samplersMap[i];
+				var bits = @:privateAccess t.bits;
+				if( t.lodBias != 0 )
+					bits |= Std.int((t.lodBias + 32)*32) << 10;
+				if( sidx < maxSamplers && bits != state.samplerBits[sidx] ) {
+					var ss = samplerStates.get(bits);
+					if( ss == null ) {
+						var desc = new SamplerDesc();
+						desc.filter = FILTER[t.mipMap.getIndex()][t.filter.getIndex()];
+						desc.addressU = desc.addressV = desc.addressW = WRAP[t.wrap.getIndex()];
+						// if mipMap = None && hasMipmaps : don't set per-sampler maxLod !
+						// only the first sampler maxLod seems to be taken into account :'(
+						desc.minLod = 0;
+						desc.maxLod = 1e30;
+						desc.mipLodBias = t.lodBias;
+						ss = Driver.createSamplerState(desc);
+						samplerStates.set(bits, ss);
+					}
+					state.samplerBits[sidx] = bits;
+					state.samplers[sidx] = ss;
+					if( sidx > smax ) smax = sidx;
+					if( sstart < 0 || sidx < sstart ) sstart = sidx;
+				}
+			}
+			switch( state.kind) {
+			case Vertex:
+				if( max >= 0 ) {
+					#if dxdebug
+					for( i in 0...max )
+						for( r in 0...targetsCount )
+							if( currentTargetResources[r] == state.resources[i] )
+								throw "Texture bound in output is set in shader";
+					#end
+					Driver.vsSetShaderResources(start, max - start + 1, state.resources.getRef().offset(start));
+				}
+				if( smax >= 0 ) Driver.vsSetSamplers(sstart, smax - sstart + 1, state.samplers.getRef().offset(sstart));
+			case Pixel:
+				if( max >= 0 ) {
+					#if dxdebug
+					for( i in 0...max )
+						for( r in 0...targetsCount )
+							if( currentTargetResources[r] == state.resources[i] )
+								throw "Texture bound in output is set in shader";
+					#end
+					Driver.psSetShaderResources(start, max - start + 1, state.resources.getRef().offset(start));
+				}
+				if( smax >= 0 ) Driver.psSetSamplers(sstart, smax - sstart + 1, state.samplers.getRef().offset(sstart));
+			}
+		}
+	}
+
+	override function draw(ibuf:IndexBuffer, startIndex:Int, ntriangles:Int) {
+		if( !allowDraw )
+			return;
+		if( currentIndex != ibuf ) {
+			currentIndex = ibuf;
+			dx.Driver.iaSetIndexBuffer(ibuf.res,ibuf.bits == 2,0);
+		}
+		dx.Driver.drawIndexed(ntriangles * 3, startIndex, 0);
+	}
+
+	override function allocInstanceBuffer(b:InstanceBuffer, buf : haxe.io.Bytes) {
+		b.data = dx.Driver.createBuffer(b.commandCount * 5 * 4, Default, UnorderedAccess, None, DrawIndirectArgs, 4, buf);
+	}
+
+	override function disposeInstanceBuffer(b:InstanceBuffer) {
+		(b.data : dx.Resource).release();
+		b.data = null;
+	}
+
+	override function drawInstanced(ibuf:IndexBuffer, commands:InstanceBuffer) {
+		if( !allowDraw )
+			return;
+		if( currentIndex != ibuf ) {
+			currentIndex = ibuf;
+			dx.Driver.iaSetIndexBuffer(ibuf.res,ibuf.bits == 2,0);
+		}
+		if( commands.data == null ) {
+			#if( (hldx == "1.8.0") || (hldx == "1.9.0") )
+			throw "Requires HLDX 1.10+";
+			#else
+			dx.Driver.drawIndexedInstanced(commands.indexCount, commands.commandCount, commands.startIndex, 0, 0);
+			#end
+		} else {
+			for( i in 0...commands.commandCount )
+				dx.Driver.drawIndexedInstancedIndirect(commands.data,i * 20);
+		}
+	}
+
+	static var COMPARE : Array<ComparisonFunc> = [
+		Always,
+		Never,
+		Equal,
+		NotEqual,
+		Greater,
+		GreaterEqual,
+		Less,
+		LessEqual
+	];
+
+	static var CULL : Array<CullMode> = [
+		None,
+		Back,
+		Front,
+		None,
+	];
+
+	static var STENCIL_OP : Array<StencilOp> = [
+		Keep,
+		Zero,
+		Replace,
+		IncrSat,
+		Incr,
+		DecrSat,
+		Decr,
+		Invert,
+	];
+
+	static var BLEND : Array<Blend> = [
+		One,
+		Zero,
+		SrcAlpha,
+		SrcColor,
+		DestAlpha,
+		DestColor,
+		InvSrcAlpha,
+		InvSrcColor,
+		InvDestAlpha,
+		InvDestColor,
+		Src1Color,
+		Src1Alpha,
+		InvSrc1Color,
+		InvSrc1Alpha,
+		SrcAlphaSat,
+		// BlendFactor/InvBlendFactor : not supported by Heaps for now
+	];
+
+	static var BLEND_ALPHA : Array<Blend> = [
+		One,
+		Zero,
+		SrcAlpha,
+		SrcAlpha,
+		DestAlpha,
+		DestAlpha,
+		InvSrcAlpha,
+		InvSrcAlpha,
+		InvDestAlpha,
+		InvDestAlpha,
+		Src1Alpha,
+		Src1Alpha,
+		InvSrc1Alpha,
+		InvSrc1Alpha,
+		SrcAlphaSat,
+		// BlendFactor/InvBlendFactor : not supported by Heaps for now
+	];
+
+
+	static var BLEND_OP : Array<BlendOp> = [
+		Add,
+		Subtract,
+		RevSubstract,
+		Min,
+		Max
+	];
+
+	static var FILTER : Array<Array<Filter>> = [
+		[MinMagMipPoint,MinMagMipLinear],
+		[MinMagMipPoint,MinMagLinearMipPoint],
+		[MinMagPointMipLinear, MinMagMipLinear],
+		// Anisotropic , Comparison, Minimum, Maximum
