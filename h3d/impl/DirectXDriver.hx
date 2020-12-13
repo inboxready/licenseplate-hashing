@@ -579,3 +579,448 @@ class DirectXDriver extends h3d.impl.Driver {
 			return pixels;
 
 		var desc = new Texture2dDesc();
+		desc.width = pixels.width;
+		desc.height = pixels.height;
+		desc.access = CpuRead | CpuWrite;
+		desc.usage = Staging;
+		desc.format = getTextureFormat(tex);
+
+		if( hasDeviceError ) throw "Can't capture if device disposed";
+
+		var tmp = dx.Driver.createTexture2d(desc);
+		if( tmp == null )
+			throw "Capture failed: can't create tmp texture";
+
+		if (x != 0 || y != 0) {
+			box.left = x;
+			box.right = x + desc.width;
+			box.top = y;
+			box.bottom = y + desc.height;
+			box.back = 1;
+			box.front = 0;
+			tmp.copySubresourceRegion(0,0,0,0,tex.t.res,tex.t.mips * layer + mipLevel, box);
+		} else {
+			tmp.copySubresourceRegion(0,0,0,0,tex.t.res,tex.t.mips * layer + mipLevel, null);
+		}
+
+		var pitch = 0;
+		var stride = hxd.Pixels.calcStride(desc.width, tex.format);
+		var ptr = tmp.map(0, Read, true, pitch);
+
+		if( hasDeviceError ) throw "Device was disposed during capturePixels";
+
+		if( pitch == stride )
+			@:privateAccess pixels.bytes.b.blit(0, ptr, 0, desc.height * stride);
+		else {
+			for( i in 0...desc.height )
+				@:privateAccess pixels.bytes.b.blit(i * stride, ptr, i * pitch, stride);
+		}
+		tmp.unmap(0);
+		tmp.release();
+		return pixels;
+	}
+
+	override function uploadTextureBitmap(t:h3d.mat.Texture, bmp:hxd.BitmapData, mipLevel:Int, side:Int) {
+		if( hasDeviceError ) return;
+		var pixels = bmp.getPixels();
+		uploadTexturePixels(t, pixels, mipLevel, side);
+		pixels.dispose();
+	}
+
+	override function uploadTexturePixels(t:h3d.mat.Texture, pixels:hxd.Pixels, mipLevel:Int, side:Int) {
+		pixels.convert(t.format);
+		pixels.setFlip(false);
+		if( hasDeviceError ) return;
+		if( mipLevel >= t.t.mips ) throw "Mip level outside texture range : " + mipLevel + " (max = " + (t.t.mips - 1) + ")";
+		var stride = @:privateAccess pixels.stride;
+		switch( t.format ) {
+		case S3TC(n): stride = pixels.width * ((n == 1 || n == 4) ? 2 : 4); // "uncompressed" stride ?
+		default:
+		}
+		t.t.res.updateSubresource(mipLevel + side * t.t.mips, null, (pixels.bytes:hl.Bytes).offset(pixels.offset), stride, 0);
+		updateResCount++;
+		t.flags.set(WasCleared);
+	}
+
+	static inline var SCISSOR_BIT = Pass.reserved_mask;
+
+	override public function selectMaterial(pass:h3d.mat.Pass) {
+		var bits = @:privateAccess pass.bits;
+		var mask = pass.colorMask;
+
+		if( hasScissor ) bits |= SCISSOR_BIT;
+
+		var stOpBits = pass.stencil != null ? @:privateAccess pass.stencil.opBits : -1;
+		var stMaskBits = pass.stencil != null ? @:privateAccess pass.stencil.maskBits : -1;
+
+		if( bits == currentMaterialBits && stOpBits == currentStencilOpBits && stMaskBits == currentStencilMaskBits && mask == currentColorMask )
+			return;
+
+		currentMaterialBits = bits;
+		currentStencilOpBits = stOpBits;
+		currentStencilMaskBits = stMaskBits;
+
+		var depthBits = bits & (Pass.depthWrite_mask | Pass.depthTest_mask);
+		var depths = depthStates.get(depthBits);
+		var depth = null;
+		var st = pass.stencil;
+		if( depths != null ) {
+			if( st == null )
+				depth = depths.def;
+			else {
+				for( s in depths.stencils )
+					@:privateAccess if( s.op == st.opBits && s.mask == (st.maskBits & ~h3d.mat.Stencil.reference_mask) ) {
+						depth = s.state;
+						break;
+					}
+			}
+		}
+		if( depth == null ) {
+			var cmp = Pass.getDepthTest(bits);
+			var desc = new DepthStencilDesc();
+			desc.depthEnable = cmp != 0;
+			desc.depthFunc = COMPARE[cmp];
+			desc.depthWrite = Pass.getDepthWrite(bits) != 0;
+			if( st != null ) {
+				desc.stencilEnable = true;
+				desc.stencilReadMask = st.readMask;
+				desc.stencilWriteMask = st.writeMask;
+				desc.frontFaceFunc = COMPARE[st.frontTest.getIndex()];
+				desc.frontFacePass = STENCIL_OP[st.frontPass.getIndex()];
+				desc.frontFaceFail = STENCIL_OP[st.frontSTfail.getIndex()];
+				desc.frontFaceDepthFail = STENCIL_OP[st.frontDPfail.getIndex()];
+				desc.backFaceFunc = COMPARE[st.backTest.getIndex()];
+				desc.backFacePass = STENCIL_OP[st.backPass.getIndex()];
+				desc.backFaceFail = STENCIL_OP[st.backSTfail.getIndex()];
+				desc.backFaceDepthFail = STENCIL_OP[st.backDPfail.getIndex()];
+			}
+			depth = Driver.createDepthStencilState(desc);
+			if( depths == null ) {
+				depths = { def : null, stencils : [] };
+				depthStates.set(depthBits, depths);
+			}
+			if( pass.stencil == null )
+				depths.def = depth;
+			else
+				depths.stencils.push(@:privateAccess { op : st.opBits, mask : st.maskBits & ~h3d.mat.Stencil.reference_mask, state : depth });
+		}
+		if( depth != currentDepthState || (st != null && st.reference != currentStencilRef) ) {
+			var ref = st == null ? 0 : st.reference;
+			currentDepthState = depth;
+			currentStencilRef = ref;
+			Driver.omSetDepthStencilState(depth, ref);
+		}
+
+		var rasterBits = bits & (Pass.culling_mask | SCISSOR_BIT | Pass.wireframe_mask);
+		var raster = rasterStates.get(rasterBits);
+		if( raster == null ) {
+			var desc = new RasterizerDesc();
+			if ( pass.wireframe ) {
+				desc.fillMode = WireFrame;
+				desc.cullMode = None;
+			} else {
+				desc.fillMode = Solid;
+				desc.cullMode = CULL[Pass.getCulling(bits)];
+			}
+			desc.depthClipEnable = true;
+			desc.scissorEnable = bits & SCISSOR_BIT != 0;
+			raster = Driver.createRasterizerState(desc);
+			rasterStates.set(rasterBits, raster);
+		}
+
+		allowDraw = pass.culling != Both;
+
+		if( raster != currentRasterState ) {
+			currentRasterState = raster;
+			Driver.rsSetState(raster);
+		}
+
+		var bitsMask = Pass.blendSrc_mask | Pass.blendDst_mask | Pass.blendAlphaSrc_mask | Pass.blendAlphaDst_mask | Pass.blendOp_mask | Pass.blendAlphaOp_mask;
+		if ( currentColorMask != mask ) {
+			currentColorMaskIndex = colorMaskIndexes.get(mask);
+			if ( currentColorMaskIndex == 0 ) {
+				if ( bitsMask & colorMaskIndex != 0 )
+					throw "Too many color mask configurations";
+				currentColorMaskIndex = colorMaskIndex++;
+				colorMaskIndexes.set(mask, currentColorMaskIndex);
+			}
+		}
+		currentColorMask = mask;
+
+		var blendBits = (bits & bitsMask) | currentColorMaskIndex;
+		var blend = blendStates.get(blendBits);
+		if( blend == null ) {
+			var desc = new RenderTargetBlendDesc();
+			desc.srcBlend = BLEND[Pass.getBlendSrc(bits)];
+			desc.destBlend = BLEND[Pass.getBlendDst(bits)];
+			desc.srcBlendAlpha = BLEND_ALPHA[Pass.getBlendAlphaSrc(bits)];
+			desc.destBlendAlpha = BLEND_ALPHA[Pass.getBlendAlphaDst(bits)];
+			desc.blendOp = BLEND_OP[Pass.getBlendOp(bits)];
+			desc.blendOpAlpha = BLEND_OP[Pass.getBlendAlphaOp(bits)];
+			desc.renderTargetWriteMask = mask & 15;
+			desc.blendEnable = !(desc.srcBlend == One && desc.srcBlendAlpha == One && desc.destBlend == Zero && desc.destBlendAlpha == Zero && desc.blendOp == Add && desc.blendOpAlpha == Add);
+			var maski = mask >> 4;
+			if ( maski > 0 ) {
+				var tmp = new hl.NativeArray(targetsCount);
+				tmp[0] = desc;
+				for ( i in 1...targetsCount ) {
+					if ( maski & 15 > 0 ) {
+						var desci = new RenderTargetBlendDesc();
+						desci.srcBlend = desc.srcBlend;
+						desci.destBlend = desc.destBlend;
+						desci.srcBlendAlpha = desc.srcBlendAlpha;
+						desci.destBlendAlpha = desc.destBlendAlpha;
+						desci.blendOp = desc.blendOp;
+						desci.blendOpAlpha = desc.blendOpAlpha;
+						desci.renderTargetWriteMask = maski & 15;
+						desci.blendEnable = desc.blendEnable;
+						tmp[i] = desci;
+					} else {
+						tmp[i] = desc;
+					}
+					maski = maski >> 4;
+				}
+				blend = Driver.createBlendState(false, true, tmp, targetsCount);
+			} else {
+				var tmp = new hl.NativeArray(1);
+				tmp[0] = desc;
+				blend = Driver.createBlendState(false, false, tmp, 1);
+			}
+			blendStates.set(blendBits, blend);
+		}
+		if( blend != currentBlendState ) {
+			currentBlendState = blend;
+			Driver.omSetBlendState(blend, blendFactors, -1);
+		}
+	}
+
+	function getBinaryPayload( vertex : Bool, code : String ) {
+		var bin = code.indexOf("//BIN=");
+		if( bin >= 0 ) {
+			var end = code.indexOf("#", bin);
+			if( end >= 0 )
+				return haxe.crypto.Base64.decode(code.substr(bin + 6, end - bin - 6));
+		}
+		if( CACHE_FILE != null ) {
+			if( cacheFileData == null ) {
+				cacheFileData = new Map();
+				function loadCacheData( file : String ) {
+					var cache = new haxe.io.BytesInput(sys.io.File.getBytes(file));
+					while( cache.position < cache.length ) {
+						var len = cache.readInt32();
+						if( len < 0 || len > 4<<20 ) break;
+						var key = cache.readString(len);
+						if( key == "" ) break;
+						var len = cache.readInt32();
+						if( len < 0 || len > 4<<20 ) break;
+						var str = cache.readString(len);
+						cacheFileData.set(key,haxe.crypto.Base64.decode(str));
+						#if debug_shader_cache
+						var peek = @:privateAccess cache.b[cache.position];
+						if(peek != '\n'.code) {
+							cache.readByte(); // skip null marker
+							var len = cache.readInt32();
+							if( len < 0 || len > 4<<20 ) break;
+							var code = cache.readString(len);
+							cacheFileDebugData.set(key, code);
+						}
+						#end
+						cache.readByte(); // newline
+					}
+				}
+				try loadCacheData(CACHE_FILE.input) catch( e : Dynamic ) {};
+				if( CACHE_FILE.output != CACHE_FILE.input ) try loadCacheData(CACHE_FILE.output) catch( e : Dynamic ) {};
+			}
+			var bytes = cacheFileData.get(shaderVersion + haxe.crypto.Md5.encode(code));
+			if( bytes != null ) {
+				var sh = vertex ? Driver.createVertexShader(bytes) : Driver.createPixelShader(bytes);
+				// shader can't be compiled !
+				if( sh == null )
+					return null;
+				return bytes;
+			}
+		}
+		return null;
+	}
+
+	function addBinaryPayload( bytes ) {
+		return "\n//BIN=" + haxe.crypto.Base64.encode(bytes) + "#\n";
+	}
+
+	function compileShader( shader : hxsl.RuntimeShader.RuntimeShaderData, compileOnly = false ) {
+		var h = new hxsl.HlslOut();
+		if( shader.code == null ){
+			shader.code = h.run(shader.data);
+			#if !heaps_compact_mem
+			shader.data.funs = null;
+			#end
+		}
+		var bytes = getBinaryPayload(shader.vertex, shader.code);
+		if( bytes == null ) {
+			bytes = try dx.Driver.compileShader(shader.code, "", "main", (shader.vertex?"vs_":"ps_") + shaderVersion, OptimizationLevel3) catch( err : String ) {
+				err = ~/^\(([0-9]+),([0-9]+)-([0-9]+)\)/gm.map(err, function(r) {
+					var line = Std.parseInt(r.matched(1));
+					var char = Std.parseInt(r.matched(2));
+					var end = Std.parseInt(r.matched(3));
+					return "\n<< " + shader.code.split("\n")[line - 1].substr(char-1,end - char + 1) +" >>";
+				});
+				throw "Shader compilation error " + err + "\n\nin\n\n" + shader.code;
+			}
+			if( cacheFileData == null )
+				shader.code += addBinaryPayload(bytes);
+		}
+		if( compileOnly )
+			return { s : null, bytes : bytes };
+		var s = shader.vertex ? Driver.createVertexShader(bytes) : Driver.createPixelShader(bytes);
+		if( s == null ) {
+			if( hasDeviceError ) return null;
+			throw "Failed to create shader\n" + shader.code;
+		}
+
+		if( cacheFileData != null ) {
+			var key = shaderVersion + haxe.crypto.Md5.encode(shader.code);
+			if( cacheFileData.get(key) != bytes ) {
+				cacheFileData.set(key, bytes);
+				#if debug_shader_cache
+				cacheFileDebugData.set(key, shader.code.split('\n').join('\\n'));
+				#end
+				if( CACHE_FILE != null ) {
+					var out = new haxe.io.BytesOutput();
+					var keys = Lambda.array({ iterator : cacheFileData.keys });
+					keys.sort(Reflect.compare);
+					for( key in keys ) {
+						out.writeInt32(key.length);
+						out.writeString(key);
+						var b64 = haxe.crypto.Base64.encode(cacheFileData.get(key));
+						out.writeInt32(b64.length);
+						out.writeString(b64);
+						#if debug_shader_cache
+						var s = cacheFileDebugData.get(key);
+						if(s != null) {
+							out.writeByte(0);
+							out.writeInt32(s.length);
+							out.writeString(s);
+						}
+						#end
+						out.writeByte('\n'.code);
+					}
+					try sys.io.File.saveBytes(CACHE_FILE.output, out.getBytes()) catch( e : Dynamic ) {};
+				}
+			}
+		}
+
+		var ctx = new ShaderContext(s);
+		ctx.globalsSize = shader.globalsSize;
+		ctx.paramsSize = shader.paramsSize;
+		ctx.paramsContent = new hl.Bytes(shader.paramsSize * 16);
+		ctx.paramsContent.fill(0, shader.paramsSize * 16, 0xDD);
+		ctx.texturesCount = shader.texturesCount;
+
+		var p = shader.textures;
+		while( p != null ) {
+			switch( p.type ) {
+			case TArray( TSampler2D , SConst(n) ): ctx.textures2DCount = n;
+			default:
+			}
+			p = p.next;
+		}
+		ctx.bufferCount = shader.bufferCount;
+		ctx.globals = dx.Driver.createBuffer(shader.globalsSize * 16, Dynamic, ConstantBuffer, CpuWrite, None, 0, null);
+		ctx.params = dx.Driver.createBuffer(shader.paramsSize * 16, Dynamic, ConstantBuffer, CpuWrite, None, 0, null);
+		ctx.samplersMap = [];
+
+		var samplers = new hxsl.HlslOut.Samplers();
+		for( v in shader.data.vars )
+			samplers.make(v, ctx.samplersMap);
+
+		#if debug
+		ctx.debugSource = shader.code;
+		#end
+		return { s : ctx, bytes : bytes };
+	}
+
+	override function getNativeShaderCode( shader : hxsl.RuntimeShader ) {
+		function dumpShader(s:hxsl.RuntimeShader.RuntimeShaderData) {
+			var code = new hxsl.HlslOut().run(s.data);
+			try {
+				var scomp = compileShader(s, true).bytes;
+				code += "\n// ASM=\n" + Driver.disassembleShader(scomp, None, null) + "\n\n";
+			} catch( e : Dynamic ) {
+			}
+			return code;
+		}
+		return dumpShader(shader.vertex)+"\n\n"+dumpShader(shader.fragment);
+	}
+
+	override function hasFeature(f:Feature) {
+		return switch(f) {
+		case Queries, BottomLeftCoords:
+			false;
+		default:
+			true;
+		};
+	}
+
+	override function copyTexture(from:h3d.mat.Texture, to:h3d.mat.Texture) {
+		if( from.t == null || from.format != to.format || from.width != to.width || from.height != to.height || from.layerCount != to.layerCount )
+			return false;
+		if( to.t == null ) {
+			var prev = from.lastFrame;
+			from.preventAutoDispose();
+			to.alloc();
+			from.lastFrame = prev;
+			if( from.t == null ) throw "assert";
+			if( to.t == null ) return false;
+		}
+		to.t.res.copyResource(from.t.res);
+		to.flags.set(WasCleared);
+		return true;
+	}
+
+	var tmpTextures = new Array<h3d.mat.Texture>();
+	override function setRenderTarget(tex:Null<h3d.mat.Texture>, layer = 0, mipLevel = 0) {
+		if( tex == null ) {
+			curTexture = null;
+			currentDepth = defaultDepth;
+			currentTargets[0] = defaultTarget;
+			currentTargetResources[0] = null;
+			targetsCount = 1;
+			Driver.omSetRenderTargets(1, currentTargets, currentDepth.view);
+			viewport[2] = outputWidth;
+			viewport[3] = outputHeight;
+			viewport[5] = 1.;
+			Driver.rsSetViewports(1, viewport);
+			return;
+		}
+		tmpTextures[0] = tex;
+		_setRenderTargets(tmpTextures, layer, mipLevel);
+	}
+
+	function unbind( res ) {
+		for( i in 0...64 ) {
+			if( vertexShader.resources[i] == res ) {
+				vertexShader.resources[i] = null;
+				Driver.vsSetShaderResources(i, 1, vertexShader.resources.getRef().offset(i));
+			}
+			if( pixelShader.resources[i] == res ) {
+				pixelShader.resources[i] = null;
+				Driver.psSetShaderResources(i, 1, pixelShader.resources.getRef().offset(i));
+			}
+		}
+	}
+
+	override function setRenderTargets(textures:Array<h3d.mat.Texture>) {
+		_setRenderTargets(textures, 0, 0);
+	}
+
+	function _setRenderTargets( textures:Array<h3d.mat.Texture>, layer : Int, mipLevel : Int ) {
+		if( textures.length == 0 ) {
+			setRenderTarget(null);
+			return;
+		}
+		if( hasDeviceError )
+			return;
+		var tex = textures[0];
+		curTexture = textures[0];
+		if( tex.depthBuffer != null && (tex.depthBuffer.width != tex.width || tex.depthBuffer.height != tex.height) )
+			throw "Invalid depth buffer size : does not match render target size";
