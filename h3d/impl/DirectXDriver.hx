@@ -1481,3 +1481,13 @@ class DirectXDriver extends h3d.impl.Driver {
 		[MinMagMipPoint,MinMagLinearMipPoint],
 		[MinMagPointMipLinear, MinMagMipLinear],
 		// Anisotropic , Comparison, Minimum, Maximum
+	];
+
+	static var WRAP : Array<AddressMode> = [
+		Clamp,
+		Wrap,
+		//Mirror , Border , MirrorOnce
+	];
+}
+
+#end
