@@ -20,4 +20,20 @@ class MacroHelper {
 		for( f in fields )
 			switch( f.kind ) {
 			case FFun(f):
-				if( f.exp
+				if( f.expr != null ) replaceGLLoop(f.expr);
+			case FVar(_,e):
+				if( e != null ) replaceGLLoop(e);
+			default:
+			}
+		return fields;
+	}
+
+#end
+
+	public static macro function getResourcesPath() {
+		var dir = haxe.macro.Context.definedValue("resourcesPath");
+		if( dir == null ) dir = "res";
+		return macro $v{try Context.resolvePath(dir) catch( e : Dynamic ) null};
+	}
+
+}
