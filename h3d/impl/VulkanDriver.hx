@@ -71,3 +71,17 @@ class VulkanDriver extends Driver {
 	}
 
 	override function allocTexture( t : h3d.mat.Texture ) : Texture {
+		return cast {};
+	}
+
+	override function allocIndexes( count : Int, is32 : Bool ) : IndexBuffer {
+		return cast {};
+	}
+
+	override function allocVertexes( m : ManagedBuffer ) : VertexBuffer {
+		return cast {};
+	}
+
+}
+
+#end
