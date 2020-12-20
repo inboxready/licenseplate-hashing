@@ -18,4 +18,21 @@ class DepthBuffer {
 	public var format(default, null) : DepthFormat;
 
 	/**
-		Creates a new d
+		Creates a new depth buffer, it can be attached to one or several render target Texture by setting their `depthBuffer` property.
+	**/
+	public function new( width : Int, height : Int, ?format : DepthFormat ) {
+		this.width = width;
+		this.height = height;
+		this.format = format;
+		if( width > 0 ) alloc();
+	}
+
+	public function hasStencil() {
+		return switch( format ) {
+		case Depth16, Depth24: false;
+		case Depth24Stencil8: true;
+		}
+	}
+
+	function alloc() {
+		h3d.Engine.g
