@@ -35,4 +35,25 @@ class DepthBuffer {
 	}
 
 	function alloc() {
-		h3d.Engine.g
+		h3d.Engine.getCurrent().mem.allocDepth(this);
+	}
+
+	public function dispose() {
+		if( b != null ) {
+			h3d.Engine.getCurrent().mem.deleteDepth(this);
+			b = null;
+		}
+	}
+
+	public function isDisposed() {
+		return b == null;
+	}
+
+	/**
+		This will return the default depth buffer, which is automatically resized to the screen size.
+	**/
+	public static function getDefault() {
+		return h3d.Engine.getCurrent().driver.getDefaultDepthBuffer();
+	}
+
+}
