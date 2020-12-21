@@ -42,3 +42,51 @@ class MaterialDatabase {
 	public function loadMatProps( material : Material, setup : MaterialSetup ) {
 		var p : Dynamic = getModelData(material.model);
 		if( p == null ) return p;
+		p = p.materials;
+		if( p == null ) return p;
+		p = Reflect.field(p, setup.name);
+		if( p == null ) return p;
+		return Reflect.field(p, material.name);
+	}
+
+	public function saveMatProps( material : Material, setup : MaterialSetup ) {
+		var path = ["materials", setup.name, material.name];
+		var root : Dynamic = getModelData(material.model);
+		if( root == null )
+			return;
+		var realRoot = root;
+		var prevs = [];
+		for( i in 0...path.length - 1 ) {
+			var next = Reflect.field(root, path[i]);
+			if( next == null ) {
+				next = {};
+				Reflect.setField(root, path[i], next);
+			}
+			prevs.push(root);
+			root = next;
+		}
+		var name = path.pop();
+		Reflect.deleteField(root, name);
+
+		var currentProps = material.props;
+		var defaultProps = material.getDefaultProps();
+		if( currentProps == null || Std.string(defaultProps) == Std.string(currentProps) ) {
+			// cleanup
+			while( path.length > 0 ) {
+				var name = path.pop();
+				var root = prevs.pop();
+				if( Reflect.fields(Reflect.field(root, name)).length != 0 )
+					break;
+				Reflect.deleteField(root, name);
+			}
+		} else {
+			Reflect.setField(root, name, currentProps);
+		}
+
+		var file = getFilePath(material.model);
+		if( Reflect.fields(realRoot).length == 0 )
+			realRoot = null;
+		saveData(material.model, realRoot);
+	}
+
+}
