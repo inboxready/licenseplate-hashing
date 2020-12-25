@@ -26,3 +26,24 @@ class Stencil {
 
 	public function new() {
 		setOp(Keep, Keep, Keep);
+		setFunc(Always);
+	}
+
+	public function setFront( stfail : StencilOp, dpfail : StencilOp, pass : StencilOp ) {
+		frontSTfail = stfail;
+		frontDPfail = dpfail;
+		frontPass   = pass;
+	}
+
+	public function setBack( stfail : StencilOp, dpfail : StencilOp, pass : StencilOp ) {
+		backSTfail  = stfail;
+		backDPfail  = dpfail;
+		backPass    = pass;
+	}
+
+	public function setOp( stfail : StencilOp, dpfail : StencilOp, pass : StencilOp ) {
+		setFront(stfail, dpfail, pass);
+		setBack(stfail, dpfail, pass);
+	}
+
+	public functi
