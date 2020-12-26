@@ -46,4 +46,23 @@ class Stencil {
 		setBack(stfail, dpfail, pass);
 	}
 
-	public functi
+	public function setFunc( f : Compare, reference = 0, readMask = 0xFF, writeMask = 0xFF ) {
+		frontTest = backTest = f;
+		this.reference = reference;
+		this.readMask = readMask;
+		this.writeMask = writeMask;
+	}
+
+	public function clone() {
+		var s = new Stencil();
+		s.opBits = opBits;
+		s.maskBits = maskBits;
+		return s;
+	}
+
+	public function load(s : Stencil) {
+		opBits = s.opBits;
+		maskBits = s.maskBits;
+	}
+
+}
