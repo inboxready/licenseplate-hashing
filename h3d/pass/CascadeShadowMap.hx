@@ -44,4 +44,16 @@ class CascadeShadowMap extends DirShadowMap {
 			return {near : min, far : min + firstCascadeSize};
 		}
 		var step = (max - min - firstCascadeSize) / (cascade - 1);
-		var near = min + firstCascadeSize + hxd.Ma
+		var near = min + firstCascadeSize + hxd.Math.pow((i - 1) / (cascade - 1), pow) * step;
+		var far = min + firstCascadeSize + hxd.Math.pow(i / (cascade - 1), pow) * step;
+		return {near : near, far : far};
+	}
+
+	public function updateCascadeBounds( camera : h3d.Camera ) {
+		var bounds = camera.orthoBounds;
+
+		var shadowNear = hxd.Math.POSITIVE_INFINITY;
+		var shadowFar = hxd.Math.NEGATIVE_INFINITY;
+		var corners = lightCamera.getFrustumCorners();
+		for ( corner in corners ) {
+			corner.transform(ctx.
