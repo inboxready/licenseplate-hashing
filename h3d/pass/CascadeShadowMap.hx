@@ -30,4 +30,18 @@ class CascadeShadowMap extends DirShadowMap {
 	}
 
 	public override function getShadowTex() {
-		return cshader.shadowMap
+		return cshader.shadowMap;
+	}
+
+	public function getShadowTextures() {
+		return cshader.cascadeShadowMaps;
+	}
+
+	function computeNearFar( i : Int ) {
+		var min = minDist < 0.0 ? ctx.camera.zNear : minDist;
+		var max = maxDist < 0.0 ? ctx.camera.zFar : maxDist;
+		if ( i == 0 ) {
+			return {near : min, far : min + firstCascadeSize};
+		}
+		var step = (max - min - firstCascadeSize) / (cascade - 1);
+		var near = min + firstCascadeSize + hxd.Ma
