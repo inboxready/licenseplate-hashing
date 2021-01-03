@@ -68,4 +68,18 @@ class CascadeShadowMap extends DirShadowMap {
 				cascadeBounds.addPos(pt.x, pt.y, pt.z);
 			}
 			function addCorners(d) {
-				addCorner(
+				addCorner(-1,-1,d);
+				addCorner(-1,1,d);
+				addCorner(1,-1,d);
+				addCorner(1,1,d);
+			}
+
+			var nearFar = computeNearFar(i);
+			addCorners(nearFar.near);
+			addCorners(nearFar.far);
+			// Increasing z range has no effect on resolution, only on depth precision.
+			cascadeBounds.zMax = lightCamera.orthoBounds.zMax;
+			cascadeBounds.zMin = lightCamera.orthoBounds.zMin;
+			lightCameras[i].orthoBounds = cascadeBounds;
+		}
+		lightCameras[cascade - 1].orthoBounds = ligh
