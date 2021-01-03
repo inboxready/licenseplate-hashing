@@ -56,4 +56,16 @@ class CascadeShadowMap extends DirShadowMap {
 		var shadowFar = hxd.Math.NEGATIVE_INFINITY;
 		var corners = lightCamera.getFrustumCorners();
 		for ( corner in corners ) {
-			corner.transform(ctx.
+			corner.transform(ctx.camera.mcam);
+			shadowNear = hxd.Math.min(shadowNear, corner.z / corner.w);
+			shadowFar = hxd.Math.max(shadowFar, corner.z / corner.w);
+		}
+		for ( i in 0...cascade - 1 ) {
+			var cascadeBounds = new h3d.col.Bounds();
+			function addCorner(x,y,d) {
+				var pt = ctx.camera.unproject(x,y,ctx.camera.distanceToDepth(d)).toPoint();
+				pt.transform(camera.mcam);
+				cascadeBounds.addPos(pt.x, pt.y, pt.z);
+			}
+			function addCorners(d) {
+				addCorner(
