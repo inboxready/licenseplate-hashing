@@ -82,4 +82,22 @@ class CascadeShadowMap extends DirShadowMap {
 			cascadeBounds.zMin = lightCamera.orthoBounds.zMin;
 			lightCameras[i].orthoBounds = cascadeBounds;
 		}
-		lightCameras[cascade - 1].orthoBounds = ligh
+		lightCameras[cascade - 1].orthoBounds = lightCamera.orthoBounds.clone();
+	}
+
+	override function setGlobals() {
+		super.setGlobals();
+		cameraViewProj = getCascadeProj(currentCascadeIndex);
+	}
+
+	function getCascadeProj(i:Int) {
+		return lightCameras[i].m;
+	}
+
+	function syncCascadeShader(textures : Array<h3d.mat.Texture>) {
+		cshader.DEBUG = debugShader;
+		for ( i in 0...cascade ) {
+			var c = cascade - 1 - i;
+			cshader.cascadeShadowMaps[c] = textures[i];
+			cshader.cascadeProjs[c] = lightCameras[i].m;
+			if ( debugShade
