@@ -100,4 +100,17 @@ class CascadeShadowMap extends DirShadowMap {
 			var c = cascade - 1 - i;
 			cshader.cascadeShadowMaps[c] = textures[i];
 			cshader.cascadeProjs[c] = lightCameras[i].m;
-			if ( debugShade
+			if ( debugShader )
+				cshader.cascadeDebugs[c] = h3d.Vector.fromColor(debugColors[i]);
+			cshader.cascadeBias[c] = Math.pow(computeNearFar(i).far / computeNearFar(0).far, 1.2) * bias;
+		}
+		cshader.CASCADE_COUNT = cascade;
+		cshader.shadowBias = bias;
+		cshader.shadowPower = power;
+		cshader.shadowProj = getShadowProj();
+
+		//ESM
+		cshader.USE_ESM = samplingKind == ESM;
+		cshader.shadowPower = power;
+
+	
