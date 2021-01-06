@@ -130,3 +130,17 @@ class CascadeShadowMap extends DirShadowMap {
 		if( mode != Mixed || ctx.computingStatic ) {
 			var ct = ctx.camera.target;
 			var slight = light == null ? ctx.lightSystem.shadowLight : light;
+			var ldir = slight == null ? null : @:privateAccess slight.getShadowDirection();
+			if( ldir == null )
+				lightCamera.target.set(0, 0, -1);
+			else {
+				lightCamera.target.set(ldir.x, ldir.y, ldir.z);
+				lightCamera.target.normalize();
+			}
+			lightCamera.target.x += ct.x;
+			lightCamera.target.y += ct.y;
+			lightCamera.target.z += ct.z;
+			lightCamera.pos.load(ct);
+			lightCamera.update();
+			for ( i in 0...lightCameras.length) {
+				if( ldir
