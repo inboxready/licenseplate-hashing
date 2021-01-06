@@ -113,4 +113,20 @@ class CascadeShadowMap extends DirShadowMap {
 		cshader.USE_ESM = samplingKind == ESM;
 		cshader.shadowPower = power;
 
-	
+		// PCF
+		cshader.USE_PCF = samplingKind == PCF;
+		cshader.shadowRes.set(textures[0].width,textures[0].height);
+		cshader.pcfScale = pcfScale;
+		cshader.pcfQuality = pcfQuality;
+	}
+
+	override function draw( passes, ?sort ) {
+		if( !enabled )
+			return;
+
+		if( !filterPasses(passes) )
+			return;
+
+		if( mode != Mixed || ctx.computingStatic ) {
+			var ct = ctx.camera.target;
+			var slight = light == null ? ctx.lightSystem.shadowLight : light;
