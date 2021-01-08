@@ -158,4 +158,19 @@ class CascadeShadowMap extends DirShadowMap {
 
 			lightCamera.orthoBounds.empty();
 			for ( lC in lightCameras ) lC.orthoBounds.empty();
-			if( !passes.isEmpt
+			if( !passes.isEmpty() ) calcShadowBounds(lightCamera);
+			if ( castingMaxDist > 0.0 ) {
+				var pt = ctx.camera.pos.clone();
+				pt.transform(lightCamera.mcam);
+				lightCamera.orthoBounds.zMax = pt.z + castingMaxDist; 
+				lightCamera.orthoBounds.zMin = pt.z - castingMaxDist;
+			} 
+			lightCamera.update();
+		}
+
+		cullPasses(passes,function(col) return col.inFrustum(lightCamera.frustum));
+
+		updateCascadeBounds(lightCamera);
+		for ( lC in lightCameras ) lC.update();
+
+		var textures = []
