@@ -143,4 +143,19 @@ class CascadeShadowMap extends DirShadowMap {
 			lightCamera.pos.load(ct);
 			lightCamera.update();
 			for ( i in 0...lightCameras.length) {
-				if( ldir
+				if( ldir == null )
+					lightCameras[i].target.set(0, 0, -1);
+				else {
+					lightCameras[i].target.set(ldir.x, ldir.y, ldir.z);
+					lightCameras[i].target.normalize();
+				}
+				lightCameras[i].target.x += ct.x;
+				lightCameras[i].target.y += ct.y;
+				lightCameras[i].target.z += ct.z;
+				lightCameras[i].pos.load(ct);
+				lightCameras[i].update();
+			}
+
+			lightCamera.orthoBounds.empty();
+			for ( lC in lightCameras ) lC.orthoBounds.empty();
+			if( !passes.isEmpt
