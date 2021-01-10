@@ -173,4 +173,16 @@ class CascadeShadowMap extends DirShadowMap {
 		updateCascadeBounds(lightCamera);
 		for ( lC in lightCameras ) lC.update();
 
-		var textures = []
+		var textures = [];
+		for (i in 0...cascade) {
+			var texture = ctx.textures.allocTarget("cascadeShadowMap", size, size, false, format);
+			if( customDepth && (depth == null || depth.width != size || depth.height != size || depth.isDisposed()) ) {
+				if( depth != null ) depth.dispose();
+				depth = new h3d.mat.DepthBuffer(size, size);
+			}
+			texture.depthBuffer = depth;
+			textures.push(texture);
+
+			currentCascadeIndex = i;
+			var p = passes.save();
+			cullPasses(passes,function(col) return 
