@@ -185,4 +185,26 @@ class CascadeShadowMap extends DirShadowMap {
 
 			currentCascadeIndex = i;
 			var p = passes.save();
-			cullPasses(passes,function(col) return 
+			cullPasses(passes,function(col) return col.inFrustum(lightCameras[i].frustum));
+			processShadowMap( passes, texture, sort);
+			passes.load(p);
+
+		}
+		syncCascadeShader(textures);
+
+		#if editor
+		drawDebug();
+		#end
+	}
+
+	override function drawDebug() {
+		super.drawDebug();
+
+		if ( !debug )
+			return;
+
+		for ( i in 0...cascade ) {
+			drawBounds(lightCameras[i], debugColors[i]);
+		}
+	}
+}
