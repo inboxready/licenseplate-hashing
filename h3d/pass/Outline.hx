@@ -24,4 +24,20 @@ class Outline extends ScreenFx<h3d.shader.Outline2D> {
 		shader.color.a = alpha;
 		shader.size.set(size / src.width, size / src.height);
 		shader.samples = Std.int(Math.max(quality * 100, 1));
-		shader.multiplyA
+		shader.multiplyAlpha = multiplyAlpha ? 0 : 1;
+
+		shader.texture = src;
+		engine.pushTarget(tmp);
+		render();
+		engine.popTarget();
+
+		shader.texture = tmp;
+		var outDepth = output.depthBuffer;
+		output.depthBuffer = null;
+		engine.pushTarget(output);
+		render();
+		engine.popTarget();
+		output.depthBuffer = outDepth;
+	}
+
+}
