@@ -30,4 +30,21 @@ class HMDModel extends MeshPrimitive {
 		return data.bounds;
 	}
 
-	override function selectMaterial( i 
+	override function selectMaterial( i : Int ) {
+		curMaterial = i;
+	}
+
+	override function getMaterialIndexes(material:Int):{count:Int, start:Int} {
+		return { start : indexesTriPos[material]*3, count : data.indexCounts[material] };
+	}
+
+	public function getDataBuffers(fmt, ?defaults,?material) {
+		return lib.getBuffers(data, fmt, defaults, material);
+	}
+
+	public function loadSkin(skin) {
+		lib.loadSkin(data, skin);
+	}
+
+	public function addAlias( name : String, realName : String, offset = 0 ) {
+		v
