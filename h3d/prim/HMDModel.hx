@@ -74,4 +74,20 @@ class HMDModel extends MeshPrimitive {
 			indexCount += n;
 		}
 		var is32 = data.vertexCount > 0x10000;
-		indexes = new h3d.
+		indexes = new h3d.Indexes(indexCount, is32);
+
+		var size = (is32 ? 4 : 2) * indexCount;
+		var bytes = entry.fetchBytes(dataPosition + data.indexPosition, size);
+		indexes.uploadBytes(bytes, 0, indexCount);
+
+		var pos = 0;
+		for( f in data.vertexFormat ) {
+			addBuffer(f.name, buffer, pos);
+			pos += f.format.getSize();
+		}
+
+		if( normalsRecomputed != null )
+			recomputeNormals(normalsRecomputed);
+
+		for( name in bufferAliases.keys() )
+			allocAlias(name);
