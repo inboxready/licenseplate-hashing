@@ -91,3 +91,11 @@ class HMDModel extends MeshPrimitive {
 
 		for( name in bufferAliases.keys() )
 			allocAlias(name);
+	}
+
+	function allocAlias( name : String ) {
+		var alias = bufferAliases.get(name);
+		var buffer = bufferCache.get(hxsl.Globals.allocID(alias.realName));
+		if( buffer == null ) throw "Buffer " + alias.realName+" not found for alias " + name;
+		if( buffer.offset + alias.offset > buffer.buffer.buffer.stride ) throw "Alias " + name+" for buffer " + alias.realName+" outside stride";
+		addBuffer(name, buffer.buffer, buffer.offs
