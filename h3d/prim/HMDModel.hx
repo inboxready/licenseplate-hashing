@@ -98,4 +98,23 @@ class HMDModel extends MeshPrimitive {
 		var buffer = bufferCache.get(hxsl.Globals.allocID(alias.realName));
 		if( buffer == null ) throw "Buffer " + alias.realName+" not found for alias " + name;
 		if( buffer.offset + alias.offset > buffer.buffer.buffer.stride ) throw "Alias " + name+" for buffer " + alias.realName+" outside stride";
-		addBuffer(name, buffer.buffer, buffer.offs
+		addBuffer(name, buffer.buffer, buffer.offset + alias.offset);
+	}
+
+	public function recomputeNormals( ?name : String ) {
+
+		for( f in data.vertexFormat )
+			if( f.name == name )
+				return;
+
+		if( name == null ) name = "normal";
+
+
+		var pos = lib.getBuffers(data, [new hxd.fmt.hmd.Data.GeometryFormat("position", DVec3)]);
+		var ids = new Array();
+		var pts : Array<h3d.col.Point> = [];
+		var mpts = new Map();
+
+		for( i in 0...data.vertexCount ) {
+			var added = false;
+			var px = 
