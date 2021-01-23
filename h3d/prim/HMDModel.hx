@@ -117,4 +117,23 @@ class HMDModel extends MeshPrimitive {
 
 		for( i in 0...data.vertexCount ) {
 			var added = false;
-			var px = 
+			var px = pos.vertexes[i * 3];
+			var py = pos.vertexes[i * 3 + 1];
+			var pz = pos.vertexes[i * 3 + 2];
+			var pid = Std.int((px + py + pz) * 10.01);
+			var arr = mpts.get(pid);
+			if( arr == null ) {
+				arr = [];
+				mpts.set(pid, arr);
+			} else {
+				for( idx in arr ) {
+					var p = pts[idx];
+					if( p.x == px && p.y == py && p.z == pz ) {
+						ids.push(idx);
+						added = true;
+						break;
+					}
+				}
+			}
+			if( !added ) {
+				ids.push(pts.le
