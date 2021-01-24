@@ -159,4 +159,18 @@ class HMDModel extends MeshPrimitive {
 			v[k++] = n.z;
 		}
 		var buf = h3d.Buffer.ofFloats(v, 3);
-		ad
+		addBuffer(name, buf, 0);
+		normalsRecomputed = name;
+	}
+
+	public function addTangents() {
+		var pos = lib.getBuffers(data, [new hxd.fmt.hmd.Data.GeometryFormat("position", DVec3)]);
+		var ids = new Array();
+		var pts : Array<h3d.col.Point> = [];
+		for( i in 0...data.vertexCount ) {
+			var added = false;
+			var px = pos.vertexes[i * 3];
+			var py = pos.vertexes[i * 3 + 1];
+			var pz = pos.vertexes[i * 3 + 2];
+			for(i in 0...pts.length) {
+		
