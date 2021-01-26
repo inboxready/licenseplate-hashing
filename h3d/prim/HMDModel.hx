@@ -194,4 +194,21 @@ class HMDModel extends MeshPrimitive {
 		var v = new hxd.FloatBuffer();
 		v.grow(data.vertexCount*3);
 		var k = 0;
-		for( i in 0...data
+		for( i in 0...data.vertexCount ) {
+			var t = pol.tangents[ids[i]];
+			v[k++] = t.x;
+			v[k++] = t.y;
+			v[k++] = t.z;
+		}
+		var buf = h3d.Buffer.ofFloats(v, 3);
+		addBuffer("tangent", buf, 0);
+	}
+
+	override function render( engine : h3d.Engine ) {
+		if( curMaterial < 0 ) {
+			super.render(engine);
+			return;
+		}
+		if( indexes == null || indexes.isDisposed() )
+			alloc(engine);
+		engine.renderMultiBuffers(getBuffers(engine), indexes, indexesTr
