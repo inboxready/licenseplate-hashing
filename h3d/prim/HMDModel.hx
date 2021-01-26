@@ -173,4 +173,25 @@ class HMDModel extends MeshPrimitive {
 			var py = pos.vertexes[i * 3 + 1];
 			var pz = pos.vertexes[i * 3 + 2];
 			for(i in 0...pts.length) {
-		
+				var p = pts[i];
+				if(p.x == px && p.y == py && p.z == pz) {
+					ids.push(i);
+					added = true;
+					break;
+				}
+			}
+			if( !added ) {
+				ids.push(pts.length);
+				pts.push(new h3d.col.Point(px,py,pz));
+			}
+		}
+		var idx = new hxd.IndexBuffer();
+		for( i in pos.indexes )
+			idx.push(ids[i]);
+		var pol = new Polygon(pts, idx);
+		pol.addNormals();
+		pol.addTangents();
+		var v = new hxd.FloatBuffer();
+		v.grow(data.vertexCount*3);
+		var k = 0;
+		for( i in 0...data
