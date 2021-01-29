@@ -211,4 +211,18 @@ class HMDModel extends MeshPrimitive {
 		}
 		if( indexes == null || indexes.isDisposed() )
 			alloc(engine);
-		engine.renderMultiBuffers(getBuffers(engine), indexes, indexesTr
+		engine.renderMultiBuffers(getBuffers(engine), indexes, indexesTriPos[curMaterial], Std.int(data.indexCounts[curMaterial]/3));
+		curMaterial = -1;
+	}
+
+	function initCollider( poly : h3d.col.PolygonBuffer ) {
+		var buf= lib.getBuffers(data, [new hxd.fmt.hmd.Data.GeometryFormat("position", DVec3)]);
+		poly.setData(buf.vertexes, buf.indexes);
+		if( collider == null ) {
+			var sphere = data.bounds.toSphere();
+			collider = new h3d.col.Collider.OptimizedCollider(sphere, poly);
+		}
+	}
+
+	override function getCollider() {
+		if( collider != n
