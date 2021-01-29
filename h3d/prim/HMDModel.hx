@@ -225,4 +225,20 @@ class HMDModel extends MeshPrimitive {
 	}
 
 	override function getCollider() {
-		if( collider != n
+		if( collider != null )
+			return collider;
+		var poly = new h3d.col.PolygonBuffer();
+		poly.source = {
+			entry : lib.resource.entry,
+			geometryName : null,
+		};
+		for( h in lib.header.models )
+			if( lib.header.geometries[h.geometry] == data ) {
+				poly.source.geometryName = h.name;
+				break;
+			}
+		initCollider(poly);
+		return collider;
+	}
+
+}
