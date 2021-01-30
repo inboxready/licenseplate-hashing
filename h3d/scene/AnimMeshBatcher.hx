@@ -22,4 +22,20 @@ class AnimMeshBatchShader extends hxsl.Shader {
 }
 
 class AnimMeshBatch extends MeshBatch {
-	var
+	var copyObject : Object;
+	var shader : AnimMeshBatchShader;
+
+	public function new(primitive, material, copyObject, ?parent) {
+		super(primitive, material, parent);
+		shader = new AnimMeshBatchShader();
+		material.mainPass.addShader(shader);
+		this.copyObject = copyObject;
+	}
+	override function sync(ctx : RenderContext) {
+		super.sync(ctx);
+		shader.animationMatrix = copyObject.defaultTransform;
+	}
+}
+
+class AnimMeshBatcher extends Object {
+	var or
