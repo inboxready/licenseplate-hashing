@@ -49,4 +49,21 @@ class AnimMeshBatcher extends Object {
 		originalObject.visible = false;
 		for ( m in originalObject.getMeshes() ) {
 			var mat : h3d.mat.Material = cast m.material.clone();
-			var batc
+			var batch = new AnimMeshBatch(cast(m.primitive,h3d.prim.MeshPrimitive), mat, m, this);
+			batch.begin();
+			batches.push(batch);
+		}
+
+		var tmp = new h3d.Matrix();
+		while ( spawn(tmp) ) {
+			for ( b in batches ) {
+				b.worldPosition = tmp;
+				b.emitInstance();
+			}
+		}
+	}
+
+	override function playAnimation(anim : h3d.anim.Animation) {
+		return originalObject.playAnimation(anim);
+	}
+}
