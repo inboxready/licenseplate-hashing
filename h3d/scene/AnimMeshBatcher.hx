@@ -38,4 +38,15 @@ class AnimMeshBatch extends MeshBatch {
 }
 
 class AnimMeshBatcher extends Object {
-	var or
+	var originalObject : Object;
+
+	var batches : Array<MeshBatch> = [];
+	public function new(object : h3d.scene.Object, spawn : h3d.Matrix -> Bool, ?parent) {
+		super(parent);
+		originalObject = object;
+		addChild(originalObject);
+		originalObject.alwaysSyncAnimation = true;
+		originalObject.visible = false;
+		for ( m in originalObject.getMeshes() ) {
+			var mat : h3d.mat.Material = cast m.material.clone();
+			var batc
