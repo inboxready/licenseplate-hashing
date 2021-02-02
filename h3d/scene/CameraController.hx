@@ -98,3 +98,197 @@ class CameraController extends h3d.scene.Object {
 	public function initFromScene() {
 		var scene = getScene();
 		if( scene == null ) throw "Not in scene";
+		var bounds = scene.getBounds();
+		var center = bounds.getCenter();
+		scene.camera.target.load(center.toVector());
+		var d = bounds.getMax().sub(center);
+		d.scale(5);
+		d.z *= 0.5;
+		d = d.add(center);
+		scene.camera.pos.load(d.toVector());
+		loadFromCamera();
+	}
+
+	/**
+		Stop animation by directly moving to end position.
+		Call after set() if you don't want to animate the change
+	**/
+	public function toTarget() {
+		curPos.load(targetPos);
+		curOffset.load(targetOffset);
+		syncCamera();
+	}
+
+	override function onAdd() {
+		super.onAdd();
+		scene = getScene();
+		scene.addEventListener(onEvent);
+		if( curOffset.w == 0 )
+			curPos.x *= scene.camera.fovY;
+		curOffset.w = scene.camera.fovY; // load
+		targetPos.load(curPos);
+		targetOffset.load(curOffset);
+	}
+
+	override function onRemove() {
+		super.onRemove();
+		scene.removeEventListener(onEvent);
+		scene = null;
+	}
+
+	public dynamic function onClick( e : hxd.Event ) {
+	}
+
+	function onEvent( e : hxd.Event ) {
+
+		var p : Object = this;
+		while( p != null ) {
+			if( !p.visible ) {
+				e.propagate = true;
+				return;
+			}
+			p = p.parent;
+		}
+
+		switch( e.kind ) {
+		case EWheel:
+			if( hxd.Key.isDown(hxd.Key.CTRL) )
+				fov(e.wheelDelta * fovZoomAmount * 2);
+			else
+				zoom(e.wheelDelta);
+		case EPush:
+			@:privateAccess scene.events.startCapture(onEvent, function() {
+				pushing = -1;
+				var wnd = hxd.Window.getInstance();
+				wnd.setCursorPos(Std.int(pushStartX), Std.int(pushStartY));
+				wnd.mouseMode = Absolute;
+			}, e.touchId);
+			pushing = e.button;
+			pushTime = haxe.Timer.stamp();
+			pushStartX = pushX = e.relX;
+			pushStartY = pushY = e.relY;
+			hxd.Window.getInstance().mouseMode = AbsoluteUnbound(true);
+		case ERelease, EReleaseOutside:
+			if( pushing == e.button ) {
+				pushing = -1;
+				var wnd = hxd.Window.getInstance();
+				@:privateAccess scene.events.stopCapture();
+				if( e.kind == ERelease && haxe.Timer.stamp() - pushTime < 0.2 && hxd.Math.distance(e.relX - pushStartX,e.relY - pushStartY) < 5 )
+					onClick(e);
+			}
+		case EMove:
+			switch( pushing ) {
+			case 0:
+				if( hxd.Key.isDown(hxd.Key.ALT) )
+					zoom(-((e.relX - pushX) +  (e.relY - pushY)) * 0.03);
+				else
+					rot(e.relX - pushX, e.relY - pushY);
+				pushX = e.relX;
+				pushY = e.relY;
+			case 1:
+				var m = 0.001 * curPos.x * panSpeed / 25;
+				pan(-(e.relX - pushX) * m, (e.relY - pushY) * m);
+				pushX = e.relX;
+				pushY = e.relY;
+			case 2:
+				rot(e.relX - pushX, e.relY - pushY);
+				pushX = e.relX;
+				pushY = e.relY;
+			default:
+			}
+		default:
+		}
+	}
+
+	function fov(delta) {
+		targetOffset.w += delta;
+		if( targetOffset.w >= 179 )
+			targetOffset.w = 179;
+		if( targetOffset.w < 1 )
+			targetOffset.w = 1;
+	}
+
+	function zoom(delta : Float) {
+		var dist = targetDistance;
+		if( (dist > minDistance && delta < 0) || (dist < maxDistance && delta > 0) ) {
+			targetPos.x *= Math.pow(zoomAmount, delta);
+			var expectedDist = targetDistance;
+			if( expectedDist < minDistance ) {
+				targetPos.x = minDistance * targetOffset.w;
+			}
+			if( expectedDist > maxDistance ) {
+				targetPos.x = maxDistance * targetOffset.w;
+			}
+		} else
+			pan( 0, 0, dist * (1 - Math.pow(zoomAmount, delta)) );
+	}
+
+	function rot(dx, dy) {
+		moveX += dx;
+		moveY += dy;
+	}
+
+	function pan(dx, dy, dz = 0.) {
+		var v = new h3d.Vector(dx, dy, dz);
+		scene.camera.update();
+		v.transform3x3(scene.camera.getInverseView());
+		v.w = 0;
+		targetOffset = targetOffset.add(v);
+	}
+
+	function syncCamera() {
+		var cam = getScene().camera;
+		var distance = distance;
+		cam.target.load(curOffset);
+		cam.target.w = 1;
+		cam.pos.set(
+			distance * Math.cos(theta) * Math.sin(phi) + cam.target.x,
+			distance * Math.sin(theta) * Math.sin(phi) + cam.target.y,
+			distance * Math.cos(phi) + cam.target.z
+		);
+		if( !lockZPlanes ) {
+			cam.zNear = distance * 0.01;
+			cam.zFar = distance * 100;
+		}
+		cam.fovY = curOffset.w;
+		cam.update();
+	}
+
+	override function sync(ctx:RenderContext) {
+
+		// Disable Camera Sync during bake
+		if( ctx.scene.renderer.renderMode == LightProbe )
+			return;
+
+		if( !ctx.visibleFlag && !alwaysSyncAnimation ) {
+			super.sync(ctx);
+			return;
+		}
+
+		if( moveX != 0 ) {
+			targetPos.y += moveX * 0.003 * rotateSpeed;
+			moveX *= 1 - friction;
+			if( Math.abs(moveX) < 1 ) moveX = 0;
+		}
+
+		if( moveY != 0 ) {
+			targetPos.z -= moveY * 0.003 * rotateSpeed;
+			var E = 2e-5;
+			var bound = Math.PI - E;
+			if( targetPos.z < E ) targetPos.z = E;
+			if( targetPos.z > bound ) targetPos.z = bound;
+			moveY *= 1 - friction;
+			if( Math.abs(moveY) < 1 ) moveY = 0;
+		}
+
+		var dt = hxd.Math.min(1, 1 - Math.pow(smooth, ctx.elapsedTime * 60));
+		var cam = scene.camera;
+		curOffset.lerp(curOffset, targetOffset, dt);
+		curPos.lerp(curPos, targetPos, dt );
+
+		syncCamera();
+
+		super.sync(ctx);
+	}
+
+}
