@@ -28,4 +28,21 @@ class Renderer extends hxd.impl.AnyProps {
 	var backToFront : h3d.pass.PassList -> Void;
 	var debugging = false;
 
-	public
+	public var effects : Array<h3d.impl.RendererFX> = [];
+
+	public var renderMode : RenderMode = Default;
+
+	public var shadows : Bool = true;
+
+	public function new() {
+		allPasses = [];
+		passObjects = new Map();
+		props = getDefaultProps();
+		// pre allocate closures
+		frontToBack = depthSort.bind(true);
+		backToFront = depthSort.bind(false);
+	}
+
+	public function getEffect<T:h3d.impl.RendererFX>( cl : Class<T> ) : T {
+		for( f in effects ) {
+			var 
