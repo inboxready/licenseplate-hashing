@@ -45,4 +45,26 @@ class Renderer extends hxd.impl.AnyProps {
 
 	public function getEffect<T:h3d.impl.RendererFX>( cl : Class<T> ) : T {
 		for( f in effects ) {
-			var 
+			var f = Std.downcast(f, cl);
+			if( f != null ) return f;
+		}
+		return null;
+	}
+
+	public function dispose() {
+		for( p in allPasses )
+			p.dispose();
+		for( f in effects )
+			f.dispose();
+		if ( ctx.lightSystem != null )
+			ctx.lightSystem.dispose();
+		passObjects = new Map();
+	}
+
+	function mark(id: String) {
+	}
+
+	/**
+		Inject a post process shader for the current frame. Shaders are reset after each render.
+	**/
+	public function ad
