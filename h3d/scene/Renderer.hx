@@ -87,4 +87,20 @@ class Renderer extends hxd.impl.AnyProps {
 	public function debugCompileShader( pass : h3d.mat.Pass ) {
 		var p = getPassByName(pass.name);
 		if( p == null ) p = defaultPass;
-		p.setCont
+		p.setContext(ctx);
+		return p.compileShader(pass);
+	}
+
+	function hasFeature(f) {
+		return h3d.Engine.getCurrent().driver.hasFeature(f);
+	}
+
+	function getLightSystem() : h3d.scene.LightSystem {
+		return ctx.scene.lightSystem;
+	}
+
+	@:access(h3d.scene.Object)
+	function depthSort( frontToBack, passes : h3d.pass.PassList ) {
+		var cam = ctx.camera.m;
+		for( p in passes ) {
+			var z = p.obj.absPos._41 * cam._13 + p.obj.absPos._42 * cam._23 +
