@@ -114,4 +114,17 @@ class Renderer extends hxd.impl.AnyProps {
 			passes.sort(function(p1, p2) return p1.pass.layer == p2.pass.layer ? (p1.depth > p2.depth ? -1 : 1) : p1.pass.layer - p2.pass.layer);
 	}
 
-	inline
+	inline function clear( ?color, ?depth, ?stencil ) {
+		ctx.engine.clear(color, depth, stencil);
+	}
+
+	inline function allocTarget( name : String, depth = true, size = 1., ?format ) {
+		return ctx.textures.allocTarget(name, Math.round(ctx.engine.width * size), Math.round(ctx.engine.height * size), depth, format);
+	}
+
+	function copy( from, to, ?blend ) {
+		h3d.pass.Copy.run(from, to, blend);
+	}
+
+	function setTarget( tex ) {
+		if( hasSetTarget ) ctx
