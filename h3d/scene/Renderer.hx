@@ -127,4 +127,24 @@ class Renderer extends hxd.impl.AnyProps {
 	}
 
 	function setTarget( tex ) {
-		if( hasSetTarget ) ctx
+		if( hasSetTarget ) ctx.engine.popTarget();
+		ctx.engine.pushTarget(tex);
+		hasSetTarget = true;
+	}
+
+	function setTargets<T:h3d.mat.Texture>( textures : Array<T> ) {
+		if( hasSetTarget ) ctx.engine.popTarget();
+		ctx.engine.pushTargets(cast textures);
+		hasSetTarget = true;
+	}
+
+	function resetTarget() {
+		if( hasSetTarget ) {
+			ctx.engine.popTarget();
+			hasSetTarget = false;
+		}
+	}
+
+	function has( name : String ) {
+		return passObjects.get(name) != null;
+	
