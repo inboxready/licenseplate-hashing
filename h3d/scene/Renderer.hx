@@ -147,4 +147,30 @@ class Renderer extends hxd.impl.AnyProps {
 
 	function has( name : String ) {
 		return passObjects.get(name) != null;
-	
+	}
+
+	function get( name : String ) {
+		var p = passObjects.get(name);
+		if( p == null ) return emptyPasses;
+		p.rendered = true;
+		return p.passes;
+	}
+
+	function draw( name : String ) {
+		defaultPass.draw(get(name));
+	}
+
+	function render() {
+		throw "Not implemented";
+	}
+
+	function computeStatic() {
+		throw "Not implemented";
+	}
+
+	public function start() {
+	}
+
+	public function process( passes : Array<PassObjects> ) {
+		hasSetTarget = false;
+		for( p in allPasses )
