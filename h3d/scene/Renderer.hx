@@ -174,3 +174,17 @@ class Renderer extends hxd.impl.AnyProps {
 	public function process( passes : Array<PassObjects> ) {
 		hasSetTarget = false;
 		for( p in allPasses )
+			p.setContext(ctx);
+		for( p in passes )
+			passObjects.set(p.name, p);
+		ctx.textures.begin();
+		if( ctx.computingStatic )
+			computeStatic();
+		else
+			render();
+		resetTarget();
+		for( p in passes )
+			passObjects.set(p.name, null);
+	}
+
+}
