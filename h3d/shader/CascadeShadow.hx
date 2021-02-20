@@ -33,3 +33,44 @@ class CascadeShadow extends DirShadow {
 						shadow = 1.0;
 						var zMax = shadowPos.z.saturate();
 						var shadowUv = screenToUv(shadowPos.xy);
+						var bias = cascadeBias[c];
+						if( USE_PCF ) {
+							var rot = rand(transformedPosition.x + transformedPosition.y + transformedPosition.z) * 3.14 * 2;
+							var cosR = cos(rot);
+							var sinR = sin(rot);
+							var sampleStrength = 1.0 / PCF_SAMPLES;
+							var offScale = texelSize * pcfScale;
+							for(i in 0...PCF_SAMPLES) {
+								var offset = poissonDisk[i].xy * offScale;
+								offset = vec2(cosR * offset.x - sinR * offset.y, cosR * offset.y + sinR * offset.x);
+								var depth = cascadeShadowMaps[c].getLod(shadowUv + offset, 0).r;
+								shadow  -= (zMax - bias > depth) ? sampleStrength : 0.0;
+							}
+						}
+						else if( USE_ESM ) {
+							var depth = cascadeShadowMaps[c].get(shadowUv).r;
+							var delta = (depth + bias).min(zMax) - zMax;
+							shadow = exp(shadowPower * delta).saturate();		
+						}
+						else {
+							var depth = cascadeShadowMaps[c].get(shadowUv).r;
+							shadow -= zMax - bias > depth ? 1 : 0;
+						}
+					}
+				}
+			}
+
+			if ( DEBUG ) {
+				pixelColor = vec4(1.0, 1.0, 1.0, 1.0);
+				@unroll for ( c in 0...CASCADE_COUNT ) {
+					var shadowPos = transformedPosition * cascadeProjs[c];
+					if ( inside(shadowPos) ) {
+						pixelColor.rgb = cascadeDebugs[c].rgb;
+					}
+				}
+			}
+			shadow = saturate(shadow);
+			dirShadow = shadow;
+		}
+	}
+}
