@@ -205,3 +205,265 @@ function psdnoise(pos:Vec2, per:Vec2) : Vec3 {
 //
 // 2-D tiling simplex noise with rotating gradients,
 // but without the analytical derivative.
+//
+function psrnoise(pos:Vec2, per:Vec2, rot:Float) : Float {
+  // Offset y slightly to hide some rare artifacts
+  pos.y += 0.001;
+  // Skew to hexagonal grid
+  var uv = vec2(pos.x + pos.y*0.5, pos.y);
+
+  var i0 = floor(uv);
+  var f0 = fract(uv);
+  // Traversal order
+  var i1 = (f0.x > f0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+
+  // Unskewed grid points in (x,y) space
+  var p0 = vec2(i0.x - i0.y * 0.5, i0.y);
+  var p1 = vec2(p0.x + i1.x - i1.y * 0.5, p0.y + i1.y);
+  var p2 = vec2(p0.x + 0.5, p0.y + 1.0);
+
+  // Integer grid point indices in (u,v) space
+  i1 = i0 + i1;
+  var i2 = i0 + vec2(1.0, 1.0);
+
+  // Vectors in unskewed (x,y) coordinates from
+  // each of the simplex corners to the evaluation point
+  var d0 = pos - p0;
+  var d1 = pos - p1;
+  var d2 = pos - p2;
+
+  // Wrap i0, i1 and i2 to the desired period before gradient hashing:
+  // wrap points in (x,y), map to (u,v)
+  var xw = mod(vec3(p0.x, p1.x, p2.x), per.x);
+  var yw = mod(vec3(p0.y, p1.y, p2.y), per.y);
+  var iuw = xw + 0.5 * yw;
+  var ivw = yw;
+
+  // Create gradients from indices
+  var g0 = rgrad2(vec2(iuw.x, ivw.x), rot);
+  var g1 = rgrad2(vec2(iuw.y, ivw.y), rot);
+  var g2 = rgrad2(vec2(iuw.z, ivw.z), rot);
+
+  // Gradients dot vectors to corresponding corners
+  // (The derivatives of this are simply the gradients)
+  var w = vec3(dot(g0, d0), dot(g1, d1), dot(g2, d2));
+
+  // Radial weights from corners
+  // 0.8 is the square of 2/sqrt(5), the distance from
+  // a grid point to the nearest simplex boundary
+  var t = 0.8 - vec3(dot(d0, d0), dot(d1, d1), dot(d2, d2));
+
+  // Set influence of each surflet to zero outside radius sqrt(0.8)
+  t = max(t, 0.0);
+
+  // Fourth power of t
+  var t2 = t * t;
+  var t4 = t2 * t2;
+
+  // Final noise value is:
+  // sum of ((radial weights) times (gradient dot vector from corner))
+  var n = dot(t4, w);
+
+  // Rescale to cover the range [-1,1] reasonably well
+  return 11.0*n;
+}
+
+//
+// 2-D tiling simplex noise with fixed gradients,
+// without the analytical derivative.
+// This function is implemented as a wrapper to "psrnoise",
+// at the minimal cost of three extra additions.
+//
+function psnoise(pos:Vec2, per:Vec2) : Float {
+  return psrnoise(pos, per, 0.0);
+}
+
+//
+// 2-D non-tiling simplex noise with rotating gradients and analytical derivative.
+// The first component of the 3-element return vector is the noise value,
+// and the second and third components are the x and y partial derivatives.
+//
+function srdnoise(pos:Vec2, rot:Float) : Vec3 {
+  // Offset y slightly to hide some rare artifacts
+  pos.y += 0.001;
+  // Skew to hexagonal grid
+  var uv = vec2(pos.x + pos.y*0.5, pos.y);
+
+  var i0 = floor(uv);
+  var f0 = fract(uv);
+  // Traversal order
+  var i1 = (f0.x > f0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+
+  // Unskewed grid points in (x,y) space
+  var p0 = vec2(i0.x - i0.y * 0.5, i0.y);
+  var p1 = vec2(p0.x + i1.x - i1.y * 0.5, p0.y + i1.y);
+  var p2 = vec2(p0.x + 0.5, p0.y + 1.0);
+
+  // Integer grid point indices in (u,v) space
+  i1 = i0 + i1;
+  var i2 = i0 + vec2(1.0, 1.0);
+
+  // Vectors in unskewed (x,y) coordinates from
+  // each of the simplex corners to the evaluation point
+  var d0 = pos - p0;
+  var d1 = pos - p1;
+  var d2 = pos - p2;
+
+  var x = vec3(p0.x, p1.x, p2.x);
+  var y = vec3(p0.y, p1.y, p2.y);
+  var iuw = x + 0.5 * y;
+  var ivw = y;
+
+  // Avoid precision issues in permutation
+  iuw = mod289_3(iuw);
+  ivw = mod289_3(ivw);
+
+  // Create gradients from indices
+  var g0 = rgrad2(vec2(iuw.x, ivw.x), rot);
+  var g1 = rgrad2(vec2(iuw.y, ivw.y), rot);
+  var g2 = rgrad2(vec2(iuw.z, ivw.z), rot);
+
+  // Gradients dot vectors to corresponding corners
+  // (The derivatives of this are simply the gradients)
+  var w = vec3(dot(g0, d0), dot(g1, d1), dot(g2, d2));
+
+  // Radial weights from corners
+  // 0.8 is the square of 2/sqrt(5), the distance from
+  // a grid point to the nearest simplex boundary
+  var t = 0.8 - vec3(dot(d0, d0), dot(d1, d1), dot(d2, d2));
+
+  // Partial derivatives for analytical gradient computation
+  var dtdx = -2.0 * vec3(d0.x, d1.x, d2.x);
+  var dtdy = -2.0 * vec3(d0.y, d1.y, d2.y);
+
+  // Set influence of each surflet to zero outside radius sqrt(0.8)
+  if (t.x < 0.0) {
+    dtdx.x = 0.0;
+    dtdy.x = 0.0;
+	t.x = 0.0;
+  }
+  if (t.y < 0.0) {
+    dtdx.y = 0.0;
+    dtdy.y = 0.0;
+	t.y = 0.0;
+  }
+  if (t.z < 0.0) {
+    dtdx.z = 0.0;
+    dtdy.z = 0.0;
+	t.z = 0.0;
+  }
+
+  // Fourth power of t (and third power for derivative)
+  var t2 = t * t;
+  var t4 = t2 * t2;
+  var t3 = t2 * t;
+
+  // Final noise value is:
+  // sum of ((radial weights) times (gradient dot vector from corner))
+  var n = dot(t4, w);
+
+  // Final analytical derivative (gradient of a sum of scalar products)
+  var dt0 = vec2(dtdx.x, dtdy.x) * 4.0 * t3.x;
+  var dn0 = t4.x * g0 + dt0 * w.x;
+  var dt1 = vec2(dtdx.y, dtdy.y) * 4.0 * t3.y;
+  var dn1 = t4.y * g1 + dt1 * w.y;
+  var dt2 = vec2(dtdx.z, dtdy.z) * 4.0 * t3.z;
+  var dn2 = t4.z * g2 + dt2 * w.z;
+
+  return 11.0*vec3(n, dn0 + dn1 + dn2);
+}
+
+//
+// 2-D non-tiling simplex noise with fixed gradients and analytical derivative.
+// This function is implemented as a wrapper to "srdnoise",
+// at the minimal cost of three extra additions.
+//
+function sdnoise(pos:Vec2) : Vec3 {
+  return srdnoise(pos, 0.0);
+}
+
+//
+// 2-D non-tiling simplex noise with rotating gradients,
+// without the analytical derivative.
+//
+function srnoise(pos:Vec2, rot:Float) : Float {
+  // Offset y slightly to hide some rare artifacts
+  pos.y += 0.001;
+  // Skew to hexagonal grid
+  var uv = vec2(pos.x + pos.y*0.5, pos.y);
+
+  var i0 = floor(uv);
+  var f0 = fract(uv);
+  // Traversal order
+  var i1 = (f0.x > f0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+
+  // Unskewed grid points in (x,y) space
+  var p0 = vec2(i0.x - i0.y * 0.5, i0.y);
+  var p1 = vec2(p0.x + i1.x - i1.y * 0.5, p0.y + i1.y);
+  var p2 = vec2(p0.x + 0.5, p0.y + 1.0);
+
+  // Integer grid point indices in (u,v) space
+  i1 = i0 + i1;
+  var i2 = i0 + vec2(1.0, 1.0);
+
+  // Vectors in unskewed (x,y) coordinates from
+  // each of the simplex corners to the evaluation point
+  var d0 = pos - p0;
+  var d1 = pos - p1;
+  var d2 = pos - p2;
+
+  // Wrap i0, i1 and i2 to the desired period before gradient hashing:
+  // wrap points in (x,y), map to (u,v)
+  var x = vec3(p0.x, p1.x, p2.x);
+  var y = vec3(p0.y, p1.y, p2.y);
+  var iuw = x + 0.5 * y;
+  var ivw = y;
+
+  // Avoid precision issues in permutation
+  iuw = mod289_3(iuw);
+  ivw = mod289_3(ivw);
+
+  // Create gradients from indices
+  var g0 = rgrad2(vec2(iuw.x, ivw.x), rot);
+  var g1 = rgrad2(vec2(iuw.y, ivw.y), rot);
+  var g2 = rgrad2(vec2(iuw.z, ivw.z), rot);
+
+  // Gradients dot vectors to corresponding corners
+  // (The derivatives of this are simply the gradients)
+  var w = vec3(dot(g0, d0), dot(g1, d1), dot(g2, d2));
+
+  // Radial weights from corners
+  // 0.8 is the square of 2/sqrt(5), the distance from
+  // a grid point to the nearest simplex boundary
+  var t = 0.8 - vec3(dot(d0, d0), dot(d1, d1), dot(d2, d2));
+
+  // Set influence of each surflet to zero outside radius sqrt(0.8)
+  t = max(t, 0.0);
+
+  // Fourth power of t
+  var t2 = t * t;
+  var t4 = t2 * t2;
+
+  // Final noise value is:
+  // sum of ((radial weights) times (gradient dot vector from corner))
+  var n = dot(t4, w);
+
+  // Rescale to cover the range [-1,1] reasonably well
+  return 11.0*n;
+}
+
+//
+// 2-D non-tiling simplex noise with fixed gradients,
+// without the analytical derivative.
+// This function is implemented as a wrapper to "srnoise",
+// at the minimal cost of three extra additions.
+// Note: if this kind of noise is all you want, there are faster
+// GLSL implementations of non-tiling simplex noise out there.
+// This one is included mainly for completeness and compatibility
+// with the other functions in the file.
+//
+function snoise(pos:Vec2) : Float {
+  return srnoise(pos, 0.0);
+}
+
+}}
