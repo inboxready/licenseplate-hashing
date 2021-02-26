@@ -19,4 +19,13 @@ class Outline2D extends ScreenShader {
 				angle += step;
 				displaced.x = input.uv.x + size.x * cos(angle);
 				displaced.y = input.uv.y + size.y * sin(angle);
-				curColor = textu
+				curColor = texture.get(displaced);
+				maxAlpha = max(maxAlpha, curColor.a);
+			}
+			var resultAlpha = max(maxAlpha, ownColor.a);
+			var resultColor = ownColor.rgb + color.rgb * (1. - ownColor.a);
+			var out = resultColor * max(float(multiplyAlpha), resultAlpha);
+			output.color = vec4(out, resultAlpha * mix(color.a, 1, ownColor.a));
+		}
+	};
+}
