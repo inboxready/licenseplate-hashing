@@ -18,4 +18,16 @@ class SAO extends ScreenShader {
 		@param var noiseScale : Vec2;
 		@range(0,10) @param var sampleRadius : Float;
 		@range(0,10) @param var intensity : Float;
-		@range(0,0.2) @param va
+		@range(0,0.2) @param var bias : Float;
+
+		@ignore @param var cameraView : Mat3x4;
+		@ignore @param var cameraInverseViewProj : Mat4;
+
+		@ignore @param var screenRatio : Vec2;
+		@ignore @param var fovTan : Float;
+
+		@ignore @param var microOcclusion : Channel;
+		@param var microOcclusionIntensity : Float;
+
+		function sampleAO(uv : Vec2, position : Vec3, normal : Vec3, radiusSS : Float, tapIndex : Int, rotationAngle : Float) : Float {
+			// returns a unit vector and a screen-space radiu
