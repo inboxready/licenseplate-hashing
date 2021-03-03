@@ -30,4 +30,15 @@ class SAO extends ScreenShader {
 		@param var microOcclusionIntensity : Float;
 
 		function sampleAO(uv : Vec2, position : Vec3, normal : Vec3, radiusSS : Float, tapIndex : Int, rotationAngle : Float) : Float {
-			// returns a unit vector and a screen-space radiu
+			// returns a unit vector and a screen-space radius for the tap on a unit disk
+			// (the caller should scale by the actual disk radius)
+			var alpha = (float(tapIndex) + 0.5) * (1.0 / float(numSamples));
+			var angle = alpha * (float(numSpiralTurns) * 6.28) + rotationAngle;
+
+			var unitOffset = vec2(cos(angle), sin(angle));
+			var targetUV = uv + radiusSS * alpha * unitOffset * screenRatio;
+			var Q = getPosition(targetUV);
+			var v = Q - position;
+
+			var vv = dot(v, v);
+			var vn = dot(
