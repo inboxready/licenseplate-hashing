@@ -41,4 +41,16 @@ class SAO extends ScreenShader {
 			var v = Q - position;
 
 			var vv = dot(v, v);
-			var vn = dot(
+			var vn = dot(v, normal) - (bias * sampleRadius);
+
+			// Smoother transition to zero (lowers contrast, smoothing out corners). [Recommended]
+			var radius2 = sampleRadius * sampleRadius;
+			var f = max(radius2 - vv, 0.0) / radius2;
+			var epsilon = 0.01;
+			return f * f * f * max(vn / (epsilon + vv), 0.0);
+		}
+
+		function getPosition( uv : Vec2 ) : Vec3 {
+			var depth = depthTexture.get(uv);
+			var uv2 = uvToScreen(uv);
+			var temp = vec4
