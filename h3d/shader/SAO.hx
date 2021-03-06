@@ -53,4 +53,22 @@ class SAO extends ScreenShader {
 		function getPosition( uv : Vec2 ) : Vec3 {
 			var depth = depthTexture.get(uv);
 			var uv2 = uvToScreen(uv);
-			var temp = vec4
+			var temp = vec4(uv2, depth, 1) * cameraInverseViewProj;
+			var originWS = temp.xyz / temp.w;
+			return originWS;
+		}
+
+		function fragment() {
+
+			var vUV = input.uv;
+			var occlusion = 0.0;
+			var origin = getPosition(vUV);
+			var normal = normalTexture.get(vUV);
+
+			var noiseUv : Vec2;
+			if( useWorldUV )
+				noiseUv = (origin.xy + origin.z) * noiseScale;
+			else
+				noiseUv = vUV / screenRatio * noiseScale;
+
+			var sampleN
