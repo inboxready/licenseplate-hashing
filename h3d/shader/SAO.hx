@@ -71,4 +71,16 @@ class SAO extends ScreenShader {
 			else
 				noiseUv = vUV / screenRatio * noiseScale;
 
-			var sampleN
+			var sampleNoise = noiseTexture.get(noiseUv).x;
+			var randomPatternRotationAngle = 2.0 * PI * sampleNoise;
+
+			// change from WS to DepthUV space
+			var radiusSS = (sampleRadius * fovTan) / (origin * cameraView).z;
+
+			for( i in 0...numSamples )
+				occlusion += sampleAO(vUV, origin, normal, radiusSS, i, randomPatternRotationAngle);
+
+			occlusion = 1.0 - occlusion / float(numSamples);
+			occlusion = pow(occlusion, 1.0 + intensity).saturate();
+
+			occlusion *= mix(1, 
