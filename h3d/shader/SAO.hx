@@ -83,4 +83,22 @@ class SAO extends ScreenShader {
 			occlusion = 1.0 - occlusion / float(numSamples);
 			occlusion = pow(occlusion, 1.0 + intensity).saturate();
 
-			occlusion *= mix(1, 
+			occlusion *= mix(1, microOcclusion.get(vUV).r, microOcclusionIntensity);
+
+			output.color = vec4(occlusion.xxx, 1.);
+		}
+	};
+
+	public function new() {
+		super();
+		numSamples = 20;
+		sampleRadius = 1;
+		intensity = 1;
+		numSpiralTurns = 7;
+		bias = 0.01;
+		noiseScale.set(10, 10);
+		noiseTexture = h3d.mat.Texture.genNoise(128);
+		noiseTexture.wrap = Repeat;
+	}
+
+}
