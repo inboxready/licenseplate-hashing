@@ -15,4 +15,21 @@ class SignedDistanceField extends hxsl.Shader {
 		@const var autoSmoothing : Bool = false;
 		/**
 			Variable used to determine the edge of the field. ( default : 0.5 ) 
-			Can be used to provide cheaper Outline for Text compared to Filte
+			Can be used to provide cheaper Outline for Text compared to Filter usage.
+		**/
+		@param var alphaCutoff : Float = 0.5;
+		/**
+			Determines smoothing of the edge. Lower value is sharper.
+		**/
+		@param var smoothing : Float = 0.04166666666666666666666666666667; // 1/24
+
+		function median(r : Float, g : Float, b : Float) : Float {
+			return max(min(r, g), min(max(r, g), b));
+		}
+
+		function fragment() {
+			var textureSample : Vec4 = textureColor;
+			var distance : Float;
+
+			distance = if (channel == 0) textureSample.r;
+				e
