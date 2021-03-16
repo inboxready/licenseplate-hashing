@@ -10,4 +10,23 @@ import haxe.xml.Access;
 #end
 
 class TmpObject {
-	public var ind
+	public var index : Int;
+	public var model : FbxNode;
+	public var parent : TmpObject;
+	public var isJoint : Bool;
+	public var isMesh : Bool;
+	public var childs : Array<TmpObject>;
+	#if !(dataOnly || macro)
+	public var obj : h3d.scene.Object;
+	#end
+	public var joint : h3d.anim.Skin.Joint;
+	public var skin : TmpObject;
+	public function new() {
+		childs = [];
+	}
+}
+
+private class AnimCurve {
+	public var def : DefaultMatrixes;
+	public var object : String;
+	public var t : { t :
