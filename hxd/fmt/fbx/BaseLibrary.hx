@@ -29,4 +29,10 @@ class TmpObject {
 private class AnimCurve {
 	public var def : DefaultMatrixes;
 	public var object : String;
-	public var t : { t :
+	public var t : { t : Array<Float>, x : Array<Float>, y : Array<Float>, z : Array<Float> };
+	public var r : { t : Array<Float>, x : Array<Float>, y : Array<Float>, z : Array<Float> };
+	public var s : { t : Array<Float>, x : Array<Float>, y : Array<Float>, z : Array<Float> };
+	public var a : { t : Array<Float>, v : Array<Float> };
+	public var fov : { t : Array<Float>, v : Array<Float> };
+	public var roll : { t : Array<Float>, v : Array<Float> };
+	public var uv :
