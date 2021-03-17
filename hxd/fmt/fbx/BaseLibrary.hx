@@ -35,4 +35,23 @@ private class AnimCurve {
 	public var a : { t : Array<Float>, v : Array<Float> };
 	public var fov : { t : Array<Float>, v : Array<Float> };
 	public var roll : { t : Array<Float>, v : Array<Float> };
-	public var uv :
+	public var uv : Array<{ t : Float, u : Float, v : Float }>;
+	public function new(def, object) {
+		this.def = def;
+		this.object = object;
+	}
+}
+
+class DefaultMatrixes {
+	public var trans : Null<Point>;
+	public var scale : Null<Point>;
+	public var rotate : Null<Point>;
+	public var preRot : Null<Point>;
+	public var wasRemoved : Null<Int>;
+
+	public var transPos : h3d.Matrix;
+
+	public function new() {
+	}
+
+	public static inline function rightHandToLeft( m : h3d.Mat
