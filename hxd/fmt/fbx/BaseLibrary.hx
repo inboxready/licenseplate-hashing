@@ -54,4 +54,19 @@ class DefaultMatrixes {
 	public function new() {
 	}
 
-	public static inline function rightHandToLeft( m : h3d.Mat
+	public static inline function rightHandToLeft( m : h3d.Matrix ) {
+		// if [x,y,z] is our original point and M the matrix
+		// in right hand we have [x,y,z] * M = [x',y',z']
+		// we need to ensure that left hand matrix convey the x axis flip,
+		// in order to have [-x,y,z] * M = [-x',y',z']
+		m._12 = -m._12;
+		m._13 = -m._13;
+		m._21 = -m._21;
+		m._31 = -m._31;
+		m._41 = -m._41;
+	}
+
+	public function toMatrix(leftHand) {
+		var m = new h3d.Matrix();
+		m.identity();
+		if( scale != 
