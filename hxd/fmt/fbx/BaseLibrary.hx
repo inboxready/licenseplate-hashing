@@ -69,4 +69,16 @@ class DefaultMatrixes {
 	public function toMatrix(leftHand) {
 		var m = new h3d.Matrix();
 		m.identity();
-		if( scale != 
+		if( scale != null ) m.scale(scale.x, scale.y, scale.z);
+		if( rotate != null ) m.rotate(rotate.x, rotate.y, rotate.z);
+		if( preRot != null ) m.rotate(preRot.x, preRot.y, preRot.z);
+		if( trans != null ) m.translate(trans.x, trans.y, trans.z);
+		if( leftHand ) rightHandToLeft(m);
+		return m;
+	}
+
+	public function toQuaternion(leftHand) {
+		var m = new h3d.Matrix();
+		m.identity();
+		if( rotate != null ) m.rotate(rotate.x, rotate.y, rotate.z);
+		if( preRot
