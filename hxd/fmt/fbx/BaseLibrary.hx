@@ -81,4 +81,22 @@ class DefaultMatrixes {
 		var m = new h3d.Matrix();
 		m.identity();
 		if( rotate != null ) m.rotate(rotate.x, rotate.y, rotate.z);
-		if( preRot
+		if( preRot != null ) m.rotate(preRot.x, preRot.y, preRot.z);
+		if( leftHand ) rightHandToLeft(m);
+		var q = new h3d.Quat();
+		q.initRotateMatrix(m);
+		return q;
+	}
+
+}
+
+class BaseLibrary {
+
+	var root : FbxNode;
+	var ids : Map<Int,FbxNode>;
+	var connect : Map<Int,Array<Int>>;
+	var namedConnect : Map<Int,Map<String,Int>>;
+	var invConnect : Map<Int,Array<Int>>;
+	var leftHand : Bool;
+	var defaultModelMatrixes : Map<Int,DefaultMatrixes>;
+	var u
