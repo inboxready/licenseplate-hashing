@@ -113,4 +113,24 @@ class BaseLibrary {
 	/**
 		Allows to prevent some terminal unskinned joints to be removed, for instance if we want to track their position
 	**/
-	public var keepJoints : Map<String,Boo
+	public var keepJoints : Map<String,Bool>;
+
+	/**
+		Allows to skip some objects from being processed as if they were not part of the FBX
+	**/
+	public var skipObjects : Map<String,Bool>;
+
+	/**
+		Use 4 bones of influence per vertex instead of 3
+	**/
+	public var fourBonesByVertex = false;
+
+	/**
+		If there are too many bones, the model will be split in separate render passes.
+	**/
+	public var maxBonesPerSkin = 34;
+
+	/**
+		Consider unskinned joints to be simple objects
+	**/
+	public var uns
