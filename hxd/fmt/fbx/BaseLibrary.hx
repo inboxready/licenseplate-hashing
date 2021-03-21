@@ -99,4 +99,18 @@ class BaseLibrary {
 	var invConnect : Map<Int,Array<Int>>;
 	var leftHand : Bool;
 	var defaultModelMatrixes : Map<Int,DefaultMatrixes>;
-	var u
+	var uvAnims : Map<String, Array<{ t : Float, u : Float, v : Float }>>;
+	var animationEvents : Array<{ frame : Int, data : String }>;
+	var isMaya : Bool;
+
+	public var fileName : String;
+
+	/**
+		The FBX version that was decoded
+	**/
+	public var version : Float = 0.;
+
+	/**
+		Allows to prevent some terminal unskinned joints to be removed, for instance if we want to track their position
+	**/
+	public var keepJoints : Map<String,Boo
