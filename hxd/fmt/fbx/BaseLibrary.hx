@@ -133,4 +133,20 @@ class BaseLibrary {
 	/**
 		Consider unskinned joints to be simple objects
 	**/
-	public var uns
+	public var unskinnedJointsAsObjects : Bool;
+
+	public var allowVertexColor : Bool = true;
+
+	/**
+		Convert centimeters to meters and axis to Z-up (Maya FBX export)
+	**/
+	public var normalizeScaleOrient : Bool = true;
+
+	/**
+		Keep high precision values. Might increase animation data size and compressed size.
+	**/
+	public var highPrecision : Bool = false;
+
+	public function new( fileName ) {
+		this.fileName = fileName;
+		root = { name : "Root
