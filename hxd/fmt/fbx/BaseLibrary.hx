@@ -149,4 +149,26 @@ class BaseLibrary {
 
 	public function new( fileName ) {
 		this.fileName = fileName;
-		root = { name : "Root
+		root = { name : "Root", props : [], childs : [] };
+		keepJoints = new Map();
+		skipObjects = new Map();
+		reset();
+	}
+
+	function reset() {
+		ids = new Map();
+		connect = new Map();
+		namedConnect = new Map();
+		invConnect = new Map();
+		defaultModelMatrixes = new Map();
+	}
+
+	public function loadFile( data : Bytes ) {
+		load(Parser.parse(data));
+	}
+
+	public function load( root : FbxNode ) {
+		reset();
+		this.root = root;
+
+		version = root.get("FBXHeaderExtension.FBXVers
