@@ -171,4 +171,20 @@ class BaseLibrary {
 		reset();
 		this.root = root;
 
-		version = root.get("FBXHeaderExtension.FBXVers
+		version = root.get("FBXHeaderExtension.FBXVersion").props[0].toInt() / 1000;
+		if( Std.int(version) != 7 )
+			throw "FBX Version 7.x required : use FBX 2010 export";
+
+		for( p in root.getAll("FBXHeaderExtension.SceneInfo.Properties70.P") )
+			if( p.props[0].toString() == "Original|ApplicationName" ) {
+				isMaya = p.props[4].toString().toLowerCase().indexOf("maya") >= 0;
+				break;
+			}
+
+		for( c in root.childs )
+			init(c);
+
+		if( normalizeScaleOrient )
+			updateModelScale();
+
+		// in
