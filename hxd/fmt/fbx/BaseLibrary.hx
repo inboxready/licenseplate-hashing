@@ -187,4 +187,16 @@ class BaseLibrary {
 		if( normalizeScaleOrient )
 			updateModelScale();
 
-		// in
+		// init properties
+		for( m in getAllModels() ) {
+			for( p in m.getAll("Properties70.P") )
+				switch( p.props[0].toString() ) {
+				case "UDP3DSMAX" | "Events":
+					var userProps = p.props[4].toString().split("&cr;&lf;");
+					for( p in userProps ) {
+						var pl = p.split("=");
+						var pname = StringTools.trim(pl.shift());
+						var pval = StringTools.trim(pl.join("="));
+						switch( pname ) {
+						case "UV" if( pval != "" ):
+							v
