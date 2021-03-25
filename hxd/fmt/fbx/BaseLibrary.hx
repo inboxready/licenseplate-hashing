@@ -199,4 +199,9 @@ class BaseLibrary {
 						var pval = StringTools.trim(pl.join("="));
 						switch( pname ) {
 						case "UV" if( pval != "" ):
-							v
+							var xml = try Xml.parse(pval) catch( e : Dynamic ) throw "Invalid UV data in " + m.getName();
+							var frames = [for( f in new Access(xml.firstElement()).elements ) { var f = f.innerData.split(" ");  { t : Std.parseFloat(f[0]) * 9622116.25, u : Std.parseFloat(f[1]), v : Std.parseFloat(f[2]) }} ];
+							if( uvAnims == null ) uvAnims = new Map();
+							uvAnims.set(m.getName(), frames);
+						case "Events":
+							var xml = try Xml.parse(pval) catch( e : Dynamic ) throw
