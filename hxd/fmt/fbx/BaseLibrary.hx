@@ -219,3 +219,29 @@ class BaseLibrary {
 		case PInts(vl):
 			var vl = [for( v in vl ) (v:Float)];
 			n.props[0] = PFloats(vl);
+			vl;
+		case PFloats(vl):
+			vl;
+		default:
+			throw n.props[0]+" should be floats ";
+		}
+	}
+
+	function getAllModels() {
+		return this.root.getAll("Objects.Model");
+	}
+
+	function getRootModels() {
+		return [for( m in getAllModels() ) if( isRootModel(m) ) m];
+	}
+
+	function isRootModel( m ) {
+		return getParent(m,"Model",true) == null;
+	}
+
+	function updateModelScale() {
+		var unitScale = 1;
+		var originScale = 1;
+		var upAxis = 1;
+		var originalUpAxis = 2;
+		f
