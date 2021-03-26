@@ -204,4 +204,18 @@ class BaseLibrary {
 							if( uvAnims == null ) uvAnims = new Map();
 							uvAnims.set(m.getName(), frames);
 						case "Events":
-							var xml = try Xml.parse(pval) catch( e : Dynamic ) throw
+							var xml = try Xml.parse(pval) catch( e : Dynamic ) throw "Invalid Events data in " + m.getName();
+							animationEvents = [for( f in new Access(xml.firstElement()).elements ) { var f = f.innerData.split(" ");  { frame : Std.parseInt(f.shift()), data : StringTools.trim(f.join(" ")) }} ];
+						default:
+						}
+					}
+				default:
+				}
+		}
+	}
+
+	function toFloats( n : FbxNode ) {
+		return switch( n.props[0] ) {
+		case PInts(vl):
+			var vl = [for( v in vl ) (v:Float)];
+			n.props[0] = PFloats(vl);
