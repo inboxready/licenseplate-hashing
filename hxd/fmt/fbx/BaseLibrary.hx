@@ -244,4 +244,14 @@ class BaseLibrary {
 		var originScale = 1;
 		var upAxis = 1;
 		var originalUpAxis = 2;
-		f
+		for( p in root.getAll("GlobalSettings.Properties70.P") ) {
+			switch( p.props[0].toString() ) {
+			case "UnitScaleFactor": unitScale = p.props[4].toInt();
+			case "OriginalUnitScaleFactor": originScale = p.props[4].toInt();
+			case "UpAxis": upAxis = p.props[4].toInt();
+			case "OriginalUpAxis": originalUpAxis = p.props[4].toInt();
+			default:
+			}
+		}
+		var scaleFactor : Float = unitScale == 100 && originScale == 1 ? 100 : 1;
+		var geometr
