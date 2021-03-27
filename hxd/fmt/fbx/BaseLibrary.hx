@@ -254,4 +254,16 @@ class BaseLibrary {
 			}
 		}
 		var scaleFactor : Float = unitScale == 100 && originScale == 1 ? 100 : 1;
-		var geometr
+		var geometryScaleFactor = scaleFactor;
+
+		if( upAxis == 1 ) // Y-up
+			convertYupToZup(originalUpAxis);
+
+		var app = "";
+		for( p in root.getAll("FBXHeaderExtension.SceneInfo.Properties70.P") )
+			switch( p.props[0].toString() ) {
+			case "LastSaved|ApplicationName": app = p.props[4].toString();
+			default:
+			}
+		if( app.indexOf("Blender") >= 0 && unitScale == originScale ) {
+			if ( unitScale == 0 ) scaleFactor = 1; // 0.9999999776482582 scale turning into 
