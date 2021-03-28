@@ -266,4 +266,24 @@ class BaseLibrary {
 			default:
 			}
 		if( app.indexOf("Blender") >= 0 && unitScale == originScale ) {
-			if ( unitScale == 0 ) scaleFactor = 1; // 0.9999999776482582 scale turning into 
+			if ( unitScale == 0 ) scaleFactor = 1; // 0.9999999776482582 scale turning into 0
+			else scaleFactor = unitScale / 100; // Adjust blender output scaling
+		}
+
+		if( scaleFactor == 1 && geometryScaleFactor == 1 )
+			return;
+
+		// scale on geometry
+		if( geometryScaleFactor != 1 ) {
+			for( g in this.root.getAll("Objects.Geometry.Vertices") ) {
+				var v = toFloats(g);
+				for( i in 0...v.length )
+					v[i] = v[i] / geometryScaleFactor;
+			}
+		}
+
+		if( scaleFactor == 1 )
+			return;
+
+		// scale on root models
+		for( m in getAllMod
