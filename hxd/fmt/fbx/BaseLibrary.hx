@@ -286,4 +286,16 @@ class BaseLibrary {
 			return;
 
 		// scale on root models
-		for( m in getAllMod
+		for( m in getAllModels() ) {
+			var isRoot = isRootModel(m);
+			for( p in m.getAll("Properties70.P") )
+				switch( p.props[0].toString() ) {
+				case "Lcl Scaling" if( isRoot ):
+					for( idx in [4,5,6] ) {
+						var v = p.props[idx].toFloat();
+						p.props[idx] = PFloat(v * scaleFactor);
+					}
+				case "Lcl Translation", "GeometricTranslation" if( !isRoot ):
+					for( idx in [4,5,6] ) {
+						var v = p.props[idx].toFloat();
+						p.props[idx] 
