@@ -298,4 +298,22 @@ class BaseLibrary {
 				case "Lcl Translation", "GeometricTranslation" if( !isRoot ):
 					for( idx in [4,5,6] ) {
 						var v = p.props[idx].toFloat();
-						p.props[idx] 
+						p.props[idx] = PFloat(v / scaleFactor);
+					}
+				default:
+				}
+		}
+		// scale on skin
+		for( t in this.root.getAll("Objects.Deformer.Transform") ) {
+			var m = toFloats(t);
+			m[12] /= scaleFactor;
+			m[13] /= scaleFactor;
+			m[14] /= scaleFactor;
+		}
+		// scale on animation
+		for( n in this.root.getAll("Objects.AnimationCurveNode") ) {
+			var name = n.getName();
+			var model = getParent(n,"Model",true);
+			var isRoot = model != null && getParent(model,"Model",true) == null;
+			for( p in n.getAll("Properties70.P") )
+				sw
