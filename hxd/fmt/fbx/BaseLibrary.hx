@@ -316,4 +316,13 @@ class BaseLibrary {
 			var model = getParent(n,"Model",true);
 			var isRoot = model != null && getParent(model,"Model",true) == null;
 			for( p in n.getAll("Properties70.P") )
-				sw
+				switch( p.props[0].toString() ) {
+				case "d|X", "d|Y", "d|Z" if( name == "T" && !isRoot ): p.props[4] = PFloat(p.props[4].toFloat() / scaleFactor);
+				case "d|X", "d|Y", "d|Z" if( name == "S" && isRoot ): p.props[4] = PFloat(p.props[4].toFloat() * scaleFactor);
+				default:
+				}
+			for( c in getChilds(n,"AnimationCurve") ) {
+				var vl = toFloats(c.get("KeyValueFloat"));
+				switch( name ) {
+				case "T" if( !isRoot ):
+					for( i 
