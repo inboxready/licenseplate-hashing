@@ -325,4 +325,21 @@ class BaseLibrary {
 				var vl = toFloats(c.get("KeyValueFloat"));
 				switch( name ) {
 				case "T" if( !isRoot ):
-					for( i 
+					for( i in 0...vl.length )
+						vl[i] = vl[i] / scaleFactor;
+				case "S" if( isRoot ):
+					for( i in 0...vl.length )
+						vl[i] = vl[i] * scaleFactor;
+				default:
+				}
+			}
+		}
+	}
+
+	function convertYupToZup( originalUpAxis : Int ) {
+		switch( originalUpAxis ) {
+			case 2: // Original Axis Z - Maya & 3DS Max
+				for( rootObject in getRootModels() ) {
+					var props = rootObject.get("Properties70");
+					for( c in props.childs ) {
+						if( c.prop
