@@ -342,4 +342,14 @@ class BaseLibrary {
 				for( rootObject in getRootModels() ) {
 					var props = rootObject.get("Properties70");
 					for( c in props.childs ) {
-						if( c.prop
+						if( c.props[0].toString() == "PreRotation" && c.props[4].toFloat() == -90 && c.props[5].toFloat()== 0 && c.props[6].toFloat() == 0 ) {
+							props.childs.remove(c);
+							break;
+						}
+					}
+				}
+			case -1, 1: // Original Axis -Y or Y - Blender & Maya
+				for( m in getRootModels() ) {
+					var needPreRot = true;
+					for( c in root.getAll("GlobalSettings.Properties70.P") ) {
+						if( c.props[0].toString() == "PreRotation" && c.props[4
