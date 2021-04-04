@@ -363,4 +363,22 @@ class BaseLibrary {
 					}
 				}
 			default:
-				throw "From Y-up to Z-up w
+				throw "From Y-up to Z-up with orginalUpAxis = " + originalUpAxis + " not implemented.";
+		}
+	}
+
+	function convertPoints( a : Array<Float> ) {
+		var p = 0;
+		for( i in 0...Std.int(a.length / 3) ) {
+			a[p] = -a[p]; // inverse X axis
+			p += 3;
+		}
+	}
+
+	public function leftHandConvert() {
+		if( leftHand ) return;
+		leftHand = true;
+		for( g in root.getAll("Objects.Geometry") ) {
+			for( v in g.getAll("Vertices") )
+				convertPoints(v.getFloats());
+	
