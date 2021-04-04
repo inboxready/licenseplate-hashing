@@ -352,4 +352,15 @@ class BaseLibrary {
 				for( m in getRootModels() ) {
 					var needPreRot = true;
 					for( c in root.getAll("GlobalSettings.Properties70.P") ) {
-						if( c.props[0].toString() == "PreRotation" && c.props[4
+						if( c.props[0].toString() == "PreRotation" && c.props[4].toFloat() == 90 && c.props[5].toFloat()== 0 && c.props[6].toFloat() == 0 ) {
+							needPreRot = false;
+							break;
+						}
+					}
+					if( needPreRot ) {
+						var preRotProp : FbxNode = {name : "P", props : [PString("PreRotation"), PString("Vector3D"), PString("Vector"), PString(""), PFloat(90),PFloat(0),PFloat(0)], childs : []};
+						m.get("Properties70").childs.insert(0, preRotProp);
+					}
+				}
+			default:
+				throw "From Y-up to Z-up w
