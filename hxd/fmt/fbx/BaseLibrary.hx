@@ -381,4 +381,20 @@ class BaseLibrary {
 		for( g in root.getAll("Objects.Geometry") ) {
 			for( v in g.getAll("Vertices") )
 				convertPoints(v.getFloats());
-	
+			for( v in g.getAll("LayerElementNormal.Normals") )
+				convertPoints(v.getFloats());
+			for( v in g.getAll("LayerElementTangent.Tangents") )
+				convertPoints(v.getFloats());
+			for( v in g.getAll("LayerElementBinormal.Binormals") )
+				convertPoints(v.getFloats());
+		}
+	}
+
+	function init( n : FbxNode ) {
+		switch( n.name ) {
+		case "Connections":
+			for( c in n.childs ) {
+				if( c.name != "C" )
+					continue;
+				var child = c.props[1].toInt();
+				var parent 
