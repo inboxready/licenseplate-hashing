@@ -397,4 +397,19 @@ class BaseLibrary {
 				if( c.name != "C" )
 					continue;
 				var child = c.props[1].toInt();
-				var parent 
+				var parent = c.props[2].toInt();
+
+				// Maya exports invalid references
+				if( ids.get(child) == null || ids.get(parent) == null ) continue;
+
+				var name = c.props[3];
+
+				if( name != null ) {
+					var name = name.toString();
+					var nc = namedConnect.get(parent);
+					if( nc == null ) {
+						nc = new Map();
+						namedConnect.set(parent, nc);
+					}
+					nc.set(name, child);
+					// don't register as a parent, since the target can also be the child o
