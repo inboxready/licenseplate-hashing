@@ -412,4 +412,28 @@ class BaseLibrary {
 						namedConnect.set(parent, nc);
 					}
 					nc.set(name, child);
-					// don't register as a parent, since the target can also be the child o
+					// don't register as a parent, since the target can also be the child of something else
+					if( name == "LookAtProperty" ) continue;
+				}
+
+				var c = connect.get(parent);
+				if( c == null ) {
+					c = [];
+					connect.set(parent, c);
+				}
+				c.push(child);
+
+				if( parent == 0 )
+					continue;
+
+				var c = invConnect.get(child);
+				if( c == null ) {
+					c = [];
+					invConnect.set(child, c);
+				}
+				c.push(parent);
+			}
+		case "Objects":
+			for( c in n.childs )
+				ids.set(c.getId(), c);
+		default
