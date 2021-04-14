@@ -454,3 +454,14 @@ class BaseLibrary {
 
 	public function getParent( node : FbxNode, nodeName : String, ?opt : Bool ) {
 		var p = getParents(node, nodeName);
+		if( p.length > 1 )
+			throw node.getName() + " has " + p.length + " " + nodeName + " parents "+[for( o in p ) o.getName()].join(",");
+		if( p.length == 0 && !opt )
+			throw "Missing " + node.getName() + " " + nodeName + " parent";
+		return p[0];
+	}
+
+	public function getChild( node : FbxNode, nodeName : String, ?opt : Bool ) {
+		var c = getChilds(node, nodeName);
+		if( c.length > 1 )
+			throw node.getName() + " has " + c.length + " " + nodeName + " childs "+[for( o in c ) o.getName()].j
