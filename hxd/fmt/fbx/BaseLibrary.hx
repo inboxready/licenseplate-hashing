@@ -436,4 +436,21 @@ class BaseLibrary {
 		case "Objects":
 			for( c in n.childs )
 				ids.set(c.getId(), c);
-		default
+		default:
+		}
+	}
+
+	public function getGeometry( name : String = "" ) {
+		var geom = null;
+		for( g in root.getAll("Objects.Geometry") )
+			if( g.hasProp(PString("Geometry::" + name)) ) {
+				geom = g;
+				break;
+			}
+		if( geom == null )
+			throw "Geometry " + name + " not found";
+		return new Geometry(this, geom);
+	}
+
+	public function getParent( node : FbxNode, nodeName : String, ?opt : Bool ) {
+		var p = getParents(node, nodeName);
