@@ -464,4 +464,21 @@ class BaseLibrary {
 	public function getChild( node : FbxNode, nodeName : String, ?opt : Bool ) {
 		var c = getChilds(node, nodeName);
 		if( c.length > 1 )
-			throw node.getName() + " has " + c.length + " " + nodeName + " childs "+[for( o in c ) o.getName()].j
+			throw node.getName() + " has " + c.length + " " + nodeName + " childs "+[for( o in c ) o.getName()].join(",");
+		if( c.length == 0 && !opt )
+			throw "Missing " + node.getName() + " " + nodeName + " child";
+		return c[0];
+	}
+
+	public function getSpecChild( node : FbxNode, name : String ) {
+		var nc = namedConnect.get(node.getId());
+		if( nc == null )
+			return null;
+		var id = nc.get(name);
+		if( id == null )
+			return null;
+		return ids.get(id);
+	}
+
+	public function getChilds( node : FbxNode, ?nodeName : String ) {
+		var c
