@@ -481,4 +481,21 @@ class BaseLibrary {
 	}
 
 	public function getChilds( node : FbxNode, ?nodeName : String ) {
-		var c
+		var c = connect.get(node.getId());
+		var subs = [];
+		if( c != null )
+			for( id in c ) {
+				var n = ids.get(id);
+				if( n == null ) throw id + " not found";
+				if( nodeName != null && n.name != nodeName ) continue;
+				subs.push(n);
+			}
+		return subs;
+	}
+
+	public function getParents( node : FbxNode, ?nodeName : String ) {
+		var c = invConnect.get(node.getId());
+		var pl = [];
+		if( c != null )
+			for( id in c ) {
+				var n = ids.get(i
