@@ -534,4 +534,24 @@ class BaseLibrary {
 			var o = new TmpObject();
 			o.model = model;
 			o.isJoint = isJoint;
-			o.isMesh =
+			o.isMesh = mtype == "Mesh";
+			hobjects.set(model.getId(), o);
+			objects.push(o);
+		}
+
+		// build hierarchy
+		for( o in objects ) {
+			var p = getParent(o.model, "Model", true);
+			var pid = if( p == null ) 0 else p.getId();
+			var op = hobjects.get(pid);
+			if( op == null ) op = oroot; // if parent has been removed
+			op.childs.push(o);
+			o.parent = op;
+		}
+
+		inline function getDepth( o : TmpObject ) {
+			var k = 0;
+			while( o != oroot ) {
+				o = o.parent;
+				k++;
+			}
