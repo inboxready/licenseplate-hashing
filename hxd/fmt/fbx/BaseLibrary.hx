@@ -521,4 +521,17 @@ class BaseLibrary {
 
 	function buildHierarchy() {
 		// init objects
-		var oroot = new Tm
+		var oroot = new TmpObject();
+		var objects = new Array<TmpObject>();
+		var hobjects = new Map<Int, TmpObject>();
+
+		hobjects.set(0, oroot);
+		for( model in getAllModels() ) {
+			if( skipObjects.get(model.getName()) )
+				continue;
+			var mtype = model.getType();
+			var isJoint = mtype == "LimbNode" && (!unskinnedJointsAsObjects || !isNullJoint(model));
+			var o = new TmpObject();
+			o.model = model;
+			o.isJoint = isJoint;
+			o.isMesh =
