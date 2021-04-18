@@ -498,4 +498,27 @@ class BaseLibrary {
 		var pl = [];
 		if( c != null )
 			for( id in c ) {
-				var n = ids.get(i
+				var n = ids.get(id);
+				if( n == null ) throw id + " not found";
+				if( nodeName != null && n.name != nodeName ) continue;
+				pl.push(n);
+			}
+		return pl;
+	}
+
+	public function getRoot() {
+		return root;
+	}
+
+	function ignoreMissingObject( id : Int ) {
+		var def = defaultModelMatrixes.get(id);
+		if( def == null ) {
+			def = new DefaultMatrixes();
+			def.wasRemoved = -2;
+			defaultModelMatrixes.set(id, def);
+		}
+	}
+
+	function buildHierarchy() {
+		// init objects
+		var oroot = new Tm
