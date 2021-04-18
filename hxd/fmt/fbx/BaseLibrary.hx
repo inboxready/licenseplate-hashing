@@ -555,3 +555,18 @@ class BaseLibrary {
 				o = o.parent;
 				k++;
 			}
+			return k;
+		}
+
+		// look for common skin ancestor
+		for( o in objects ) {
+			if( !o.isMesh ) continue;
+			var g = getChild(o.model, "Geometry");
+			var def = getChild(g, "Deformer", true);
+			if( def == null ) continue;
+			var bones = [for( d in getChilds(def, "Deformer") ) hobjects.get(getChild(d, "Model").getId())];
+			if( bones.length == 0 ) continue;
+
+
+			// first let's go the minimal depth for all bones
+			var minDepth = getDept
