@@ -589,4 +589,26 @@ class BaseLibrary {
 
 			while( bones.length > 1 ) {
 				for( b in bones )
-					b.isJoint
+					b.isJoint = true;
+				var parents = [];
+				for( b in bones ) {
+					if( b.parent == oroot || b.parent.isMesh ) continue;
+					parents.remove(b.parent);
+					parents.push(b.parent);
+				}
+				bones = parents;
+			}
+		}
+
+		// propagates joint flags
+		var changed = true;
+		while( changed ) {
+			changed = false;
+			for( o in objects ) {
+				if( o.isJoint || o.isMesh ) continue;
+				if( o.parent.isJoint ) {
+					o.isJoint = true;
+					changed = true;
+					continue;
+				}
+	
