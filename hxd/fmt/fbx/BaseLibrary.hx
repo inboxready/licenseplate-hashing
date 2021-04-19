@@ -569,4 +569,24 @@ class BaseLibrary {
 
 
 			// first let's go the minimal depth for all bones
-			var minDepth = getDept
+			var minDepth = getDepth(bones[0]);
+			for( i in 1...bones.length ) {
+				var d = getDepth(bones[i]);
+				if( d < minDepth ) minDepth = d;
+			}
+			var out = [];
+			for( i in 0...bones.length ) {
+				var b = bones[i];
+				var n = getDepth(b) - minDepth;
+				for( i in 0...n ) {
+					b.isJoint = true;
+					b = b.parent;
+				}
+				out.remove(b);
+				out.push(b);
+			}
+			bones = out;
+
+			while( bones.length > 1 ) {
+				for( b in bones )
+					b.isJoint
