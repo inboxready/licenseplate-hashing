@@ -642,4 +642,16 @@ class BaseLibrary {
 		// if it's a move animation on a terminal unskinned joint, let's skip it
 		var isMove = curveName != "Visibility" && curveName != "UV";
 		if( def.wasRemoved != null && (isMove || def.wasRemoved == -1) )
-			
+			return null;
+		// allow not move animations on root model
+		if( def.wasRemoved != null && def.wasRemoved != -2 ) {
+			// apply it on the skin instead
+			model = ids.get(def.wasRemoved);
+			name = model.getName();
+			c = curves.get(def.wasRemoved);
+			def = getDefaultMatrixes(model);
+			// todo : change behavior not to remove the mesh but the skin instead!
+			if( def == null ) throw "assert";
+		}
+		if( c == null ) {
+			c = n
