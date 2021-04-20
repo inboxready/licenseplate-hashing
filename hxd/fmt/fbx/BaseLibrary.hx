@@ -611,4 +611,23 @@ class BaseLibrary {
 					changed = true;
 					continue;
 				}
-	
+				var hasJoint = false;
+				for( c in o.childs )
+					if( c.isJoint ) {
+						hasJoint = true;
+						break;
+					}
+				if( hasJoint )
+					for( c in o.parent.childs )
+						if( c.isJoint ) {
+							o.isJoint = true;
+							changed = true;
+							break;
+						}
+			}
+		}
+		return { root : oroot, objects : objects };
+	}
+
+	function getObjectCurve( curves : Map < Int, AnimCurve > , model : FbxNode, curveName : String, animName : String ) : AnimCurve {
+		var 
