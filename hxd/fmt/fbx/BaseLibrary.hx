@@ -630,4 +630,16 @@ class BaseLibrary {
 	}
 
 	function getObjectCurve( curves : Map < Int, AnimCurve > , model : FbxNode, curveName : String, animName : String ) : AnimCurve {
-		var 
+		var c = curves.get(model.getId());
+		if( c != null )
+			return c;
+		var name = model.getName();
+		if( skipObjects.get(name) )
+			return null;
+		var def = getDefaultMatrixes(model);
+		if( def == null )
+			return null;
+		// if it's a move animation on a terminal unskinned joint, let's skip it
+		var isMove = curveName != "Visibility" && curveName != "UV";
+		if( def.wasRemoved != null && (isMove || def.wasRemoved == -1) )
+			
