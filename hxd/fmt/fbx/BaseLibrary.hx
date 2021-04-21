@@ -687,4 +687,20 @@ class BaseLibrary {
 			// merge materials
 			var mindex = [];
 			var materials = getChilds(m, "Material");
-			for( mat 
+			for( mat in getChilds(m2, "Material") ) {
+				var idx = materials.indexOf(mat);
+				if( idx < 0 ) {
+					idx = materials.length;
+					materials.push(mat);
+					addLink(m, mat);
+				}
+				mindex.push(idx);
+			}
+
+			// merge geometry
+			geom.merge(geom2, mindex);
+
+			// merge skinning
+			var def2 = getChild(geom2.getRoot(), "Deformer", true);
+			if( def2 != null ) {
+				if( def == null ) throw m.getName() + " does not have a deformer bu
