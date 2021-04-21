@@ -654,4 +654,23 @@ class BaseLibrary {
 			if( def == null ) throw "assert";
 		}
 		if( c == null ) {
-			c = n
+			c = new AnimCurve(def, name);
+			curves.set(model.getId(), c);
+		}
+		return c;
+	}
+
+
+	public function mergeModels( modelNames : Array<String> ) {
+		if( modelNames.length <= 1 )
+			return;
+		var models = getAllModels();
+		function getModel(name) {
+			for( m in models )
+				if( m.getName() == name )
+					return m;
+			throw "Model not found " + name;
+			return null;
+		}
+		var m = getModel(modelNames[0]);
+		var geom = new Geometry(this, getChild(m, "Geometry
