@@ -673,4 +673,18 @@ class BaseLibrary {
 			return null;
 		}
 		var m = getModel(modelNames[0]);
-		var geom = new Geometry(this, getChild(m, "Geometry
+		var geom = new Geometry(this, getChild(m, "Geometry"));
+		var def = getChild(geom.getRoot(), "Deformer", true);
+		var subDefs = getChilds(def, "Deformer");
+		for( i in 1...modelNames.length ) {
+			var name = modelNames[i];
+			var m2 = getModel(name);
+			var geom2 = new Geometry(this, getChild(m2, "Geometry"));
+			var vcount = Std.int(geom.getVertices().length / 3);
+
+			skipObjects.set(name, true);
+
+			// merge materials
+			var mindex = [];
+			var materials = getChilds(m, "Material");
+			for( mat 
