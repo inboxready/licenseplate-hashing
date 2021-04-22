@@ -739,4 +739,19 @@ class BaseLibrary {
 		}
 	}
 
-	func
+	function addLink( parent : FbxNode, child : FbxNode ) {
+		var pid = parent.getId();
+		var nid = child.getId();
+		connect.get(pid).push(nid);
+		invConnect.get(nid).push(pid);
+	}
+
+	function removeLink( parent : FbxNode, child : FbxNode ) {
+		var pid = parent.getId();
+		var nid = child.getId();
+		connect.get(pid).remove(nid);
+		invConnect.get(nid).remove(pid);
+	}
+
+	function checkData( t : { x : Array<Float>, y :Array<Float>, z:Array<Float> } ) {
+		if(
