@@ -719,4 +719,24 @@ class BaseLibrary {
 					var idx = subDef.get("Indexes", true);
 					if( idx == null ) continue;
 
-					if( prevDef == null
+					if( prevDef == null ) {
+						addLink(def, subDef);
+						removeLink(def2, subDef);
+						subDefs.push(subDef);
+						var idx = idx.getInts();
+						for( i in 0...idx.length )
+							idx[i] += vcount;
+					} else {
+						var pidx = prevDef.get("Indexes").getInts();
+						for( i in idx.getInts() )
+							pidx.push(i + vcount);
+						var weights = prevDef.get("Weights").getFloats();
+						for( w in subDef.get("Weights").getFloats() )
+							weights.push(w);
+					}
+				}
+			}
+		}
+	}
+
+	func
