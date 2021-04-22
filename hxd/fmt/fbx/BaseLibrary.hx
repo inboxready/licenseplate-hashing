@@ -703,4 +703,20 @@ class BaseLibrary {
 			// merge skinning
 			var def2 = getChild(geom2.getRoot(), "Deformer", true);
 			if( def2 != null ) {
-				if( def == null ) throw m.getName() + " does not have a deformer bu
+				if( def == null ) throw m.getName() + " does not have a deformer but " + name + " has one";
+				for( subDef in getChilds(def2, "Deformer") ) {
+					var subModel = getChild(subDef, "Model");
+					var prevDef = null;
+					for( s in subDefs )
+						if( getChild(s, "Model") == subModel ) {
+							prevDef = s;
+							break;
+						}
+
+					if( prevDef != null )
+						removeLink(subDef, subModel);
+
+					var idx = subDef.get("Indexes", true);
+					if( idx == null ) continue;
+
+					if( prevDef == null
