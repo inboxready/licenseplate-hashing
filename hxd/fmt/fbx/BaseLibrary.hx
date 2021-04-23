@@ -779,4 +779,22 @@ class BaseLibrary {
 
 	function roundValues( data : Array<Float>, def : Float, mult : Float = 1. ) {
 		var hasValue = false;
-	
+		var epsi = highPrecision ? 0 : 1e-3;
+		for( i in 0...data.length ) {
+			var v = data[i] * mult;
+			if( Math.abs(v - def) > epsi )
+				hasValue = true;
+			else
+				v = def;
+			data[i] = round(v);
+		}
+		return hasValue;
+	}
+
+	/**
+		Returns an array of names with all animations present in FBX file.
+	**/
+	public function getAnimationNames() : Array<String> {
+		var names = [];
+		for ( a in this.root.getAll("Objects.AnimationStack") ) {
+			if( getChilds(a, "AnimationL
