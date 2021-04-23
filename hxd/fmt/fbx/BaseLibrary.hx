@@ -754,4 +754,29 @@ class BaseLibrary {
 	}
 
 	function checkData( t : { x : Array<Float>, y :Array<Float>, z:Array<Float> } ) {
-		if(
+		if( t == null )
+			return true;
+		if( t.x != null ) {
+			var v = t.x[0];
+			for( v2 in t.x )
+				if( v != v2 )
+					return false;
+		}
+		if( t.y != null ) {
+			var v = t.y[0];
+			for( v2 in t.y )
+				if( v != v2 )
+					return false;
+		}
+		if( t.z != null ) {
+			var v = t.z[0];
+			for( v2 in t.z )
+				if( v != v2 )
+					return false;
+		}
+		return true;
+	}
+
+	function roundValues( data : Array<Float>, def : Float, mult : Float = 1. ) {
+		var hasValue = false;
+	
