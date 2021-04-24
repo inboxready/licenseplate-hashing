@@ -812,4 +812,15 @@ class BaseLibrary {
 			var l = new BaseLibrary(fileName);
 			l.normalizeScaleOrient = normalizeScaleOrient;
 			l.load(root);
-			if(
+			if( leftHand ) l.leftHandConvert();
+			l.defaultModelMatrixes = defaultModelMatrixes;
+			return l.loadAnimation(animName);
+		}
+		var defNode = null;
+		var animNodes = [];
+		for( a in this.root.getAll("Objects.AnimationStack") )
+			if( animName == null || a.getName()	== animName ) {
+				for( n in getChilds(a, "AnimationLayer") ) {
+					defNode = n;
+					if( getChilds(n,"AnimationCurveNode").length > 0 )
+						animN
