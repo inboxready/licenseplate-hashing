@@ -797,4 +797,19 @@ class BaseLibrary {
 	public function getAnimationNames() : Array<String> {
 		var names = [];
 		for ( a in this.root.getAll("Objects.AnimationStack") ) {
-			if( getChilds(a, "AnimationL
+			if( getChilds(a, "AnimationLayer").length > 0 )
+				names.push(a.getName());
+		}
+		return names;
+	}
+
+	public function loadAnimation( ?animName : String, ?root : FbxNode, ?lib : BaseLibrary ) : h3d.anim.Animation {
+		if( lib != null ) {
+			lib.defaultModelMatrixes = defaultModelMatrixes;
+			return lib.loadAnimation(animName);
+		}
+		if( root != null ) {
+			var l = new BaseLibrary(fileName);
+			l.normalizeScaleOrient = normalizeScaleOrient;
+			l.load(root);
+			if(
