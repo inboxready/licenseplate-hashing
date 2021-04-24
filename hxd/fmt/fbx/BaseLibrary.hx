@@ -823,4 +823,24 @@ class BaseLibrary {
 				for( n in getChilds(a, "AnimationLayer") ) {
 					defNode = n;
 					if( getChilds(n,"AnimationCurveNode").length > 0 )
-						animN
+						animNodes.push(n);
+				}
+			}
+		var animNode = switch( animNodes.length ) {
+		case 0:
+			defNode;
+		case 1:
+			animNodes[0];
+		default:
+			trace("Multiple animation layers curves are currently not supported");
+			animNodes[0];
+		}
+
+		if( animNode == null ) {
+			if( animName != null )
+				throw "Animation not found " + animName;
+			if( uvAnims == null )
+				return null;
+		}
+
+		if( animName == null ) animName = getParent(animNode,"AnimationSt
