@@ -843,4 +843,17 @@ class BaseLibrary {
 				return null;
 		}
 
-		if( animName == null ) animName = getParent(animNode,"AnimationSt
+		if( animName == null ) animName = getParent(animNode,"AnimationStack").getName();
+
+		var curves = new Map();
+		var P0 = new Point();
+		var P1 = new Point(1, 1, 1);
+		var F = Math.PI / 180;
+		var allTimes = new Map();
+
+		if( animNode != null ) for( cn in getChilds(animNode, "AnimationCurveNode") ) {
+			var model = getParent(cn, "Model", true);
+			if( model == null ) {
+				switch( cn.getName() ) {
+				case "Roll", "FieldOfView":
+					// the parent is not a Model but a NodeAttribute
