@@ -857,3 +857,20 @@ class BaseLibrary {
 				switch( cn.getName() ) {
 				case "Roll", "FieldOfView":
 					// the parent is not a Model but a NodeAttribute
+					var nattr = getParent(cn, "NodeAttribute", true);
+					model = nattr == null ? null : getParent(nattr, "Model", true);
+					if( model == null ) continue;
+				default:
+					continue; //morph support
+				}
+			}
+
+			var c = getObjectCurve(curves, model, cn.getName(), animName);
+			if( c == null )
+				continue;
+
+			var dataCurves = getChilds(cn, "AnimationCurve");
+			if( dataCurves.length == 0 ) continue;
+
+			var cname = cn.getName();
+			// collect all the timestam
