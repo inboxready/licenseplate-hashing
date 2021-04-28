@@ -909,4 +909,16 @@ class BaseLibrary {
 					continue;
 				case "FieldOfView":
 					var ratio = 16/9, fov = 45.;
-					for( p in getChild(model, "NodeAttribute").get
+					for( p in getChild(model, "NodeAttribute").getAll("Properties70.P") ) {
+						switch( p.props[0].toString() ) {
+						case "FilmAspectRatio": ratio = p.props[4].toFloat();
+						case "FieldOfView": fov = p.props[4].toFloat();
+						default:
+						}
+					}
+					inline function fovXtoY(v:Float) {
+						return 2 * Math.atan( Math.tan(v * 0.5 * Math.PI / 180) / ratio ) * 180 / Math.PI;
+					}
+					for( i in 0...values.length )
+						values[i] = fovXtoY(values[i]);
+					if( !roundValues(values, fovXt
