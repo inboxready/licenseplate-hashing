@@ -889,4 +889,24 @@ class BaseLibrary {
 
 			// handle special curves
 			if( dataCurves.length != 3 ) {
-				var values = dataCurves[0].get("KeyValue
+				var values = dataCurves[0].get("KeyValueFloat").getFloats();
+				switch( cname ) {
+				case "Visibility":
+					if( !roundValues(values, 1) )
+						continue;
+					c.a = {
+						v : values,
+						t : times,
+					};
+					continue;
+				case "Roll":
+					if( !roundValues(values, 0) )
+						continue;
+					c.roll = {
+						v : values,
+						t : times,
+					};
+					continue;
+				case "FieldOfView":
+					var ratio = 16/9, fov = 45.;
+					for( p in getChild(model, "NodeAttribute").get
