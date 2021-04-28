@@ -873,4 +873,20 @@ class BaseLibrary {
 			if( dataCurves.length == 0 ) continue;
 
 			var cname = cn.getName();
-			// collect all the timestam
+			// collect all the timestamps
+			var times = dataCurves[0].get("KeyTime").getFloats();
+			for( i in 0...times.length ) {
+				var t = times[i];
+				// fix rounding error
+				if( t % 100 != 0 ) {
+					t += 100 - (t % 100);
+					times[i] = t;
+				}
+				// this should give significant-enough key
+				var it = Std.int(t / 200000);
+				allTimes.set(it, t);
+			}
+
+			// handle special curves
+			if( dataCurves.length != 3 ) {
+				var values = dataCurves[0].get("KeyValue
