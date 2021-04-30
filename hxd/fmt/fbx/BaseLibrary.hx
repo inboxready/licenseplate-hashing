@@ -942,4 +942,15 @@ class BaseLibrary {
 			var curves = namedConnect.get(cn.getId());
 			for( cname in curves.keys() ) {
 				var values = ids.get(curves.get(cname)).get("KeyValueFloat").getFloats();
-				swit
+				switch( cname ) {
+				case "d|X": data.x = values;
+				case "d|Y": data.y = values;
+				case "d|Z": data.z = values;
+				default:
+					trace("Unsupported key name "+cname);
+				}
+			}
+
+			// this can happen when resampling anims due to rounding errors, let's ignore it for now
+			//if( data.y.length != times.length || data.z.length != times.length )
+			//	throw "Unsynchronized curve componen
