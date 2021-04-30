@@ -921,4 +921,25 @@ class BaseLibrary {
 					}
 					for( i in 0...values.length )
 						values[i] = fovXtoY(values[i]);
-					if( !roundValues(values, fovXt
+					if( !roundValues(values, fovXtoY(fov)) )
+						continue;
+					c.fov = {
+						v : values,
+						t : times,
+					};
+					continue;
+				default:
+				}
+			}
+			// handle TRS curves
+			var data = {
+				x : null,
+				y : null,
+				z : null,
+				t : times,
+			};
+
+			var curves = namedConnect.get(cn.getId());
+			for( cname in curves.keys() ) {
+				var values = ids.get(curves.get(cname)).get("KeyValueFloat").getFloats();
+				swit
