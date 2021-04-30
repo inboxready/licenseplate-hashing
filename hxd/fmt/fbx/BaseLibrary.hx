@@ -953,4 +953,16 @@ class BaseLibrary {
 
 			// this can happen when resampling anims due to rounding errors, let's ignore it for now
 			//if( data.y.length != times.length || data.z.length != times.length )
-			//	throw "Unsynchronized curve componen
+			//	throw "Unsynchronized curve components on " + model.getName()+"."+cname+" (" + data.x.length + "/" + data.y.length + "/" + data.z.length + ")";
+			// optimize empty animations out
+			var M = 1.0;
+			var def = switch( cname ) {
+			case "T":
+				if( c.def.trans == null ) P0 else c.def.trans;
+			case "R":
+				M = F;
+				if( c.def.rotate == null && c.def.preRot == null ) P0 else
+				if( c.def.rotate == null ) c.def.preRot else
+				if( c.def.preRot == null ) c.def.rotate else
+				{
+					var q = new h3d.Quat(),
