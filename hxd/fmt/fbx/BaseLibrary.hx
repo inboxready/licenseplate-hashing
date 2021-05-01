@@ -979,4 +979,16 @@ class BaseLibrary {
 			}
 			var hasValue = false;
 			if( data.x != null && roundValues(data.x, def.x, M) )
-				hasVal
+				hasValue = true;
+			if( data.y != null && roundValues(data.y, def.y, M) )
+				hasValue = true;
+			if( data.z != null && roundValues(data.z, def.z, M) )
+				hasValue = true;
+			// no meaningful value found
+			if( !hasValue )
+				continue;
+			var keyCount = 0;
+			if( data.x != null ) keyCount = data.x.length;
+			if( data.y != null ) keyCount = data.y.length;
+			if( data.z != null ) keyCount = data.z.length;
+			if( data.x == null ) data.x = [for( i
