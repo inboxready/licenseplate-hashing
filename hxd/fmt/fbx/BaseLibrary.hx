@@ -991,4 +991,20 @@ class BaseLibrary {
 			if( data.x != null ) keyCount = data.x.length;
 			if( data.y != null ) keyCount = data.y.length;
 			if( data.z != null ) keyCount = data.z.length;
-			if( data.x == null ) data.x = [for( i
+			if( data.x == null ) data.x = [for( i in 0...keyCount ) def.x];
+			if( data.y == null ) data.y = [for( i in 0...keyCount ) def.y];
+			if( data.z == null ) data.z = [for( i in 0...keyCount ) def.z];
+			switch( cname ) {
+			case "T": c.t = data;
+			case "R": c.r = data;
+			case "S": c.s = data;
+			default: throw "assert";
+			}
+		}
+
+		// process UVs
+		if( uvAnims != null ) {
+			var modelByName = new Map();
+			for( obj in getAllModels() )
+				modelByName.set(obj.getName(), obj);
+			for( obj i
