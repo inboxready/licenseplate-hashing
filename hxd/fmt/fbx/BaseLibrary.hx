@@ -965,4 +965,18 @@ class BaseLibrary {
 				if( c.def.rotate == null ) c.def.preRot else
 				if( c.def.preRot == null ) c.def.rotate else
 				{
-					var q = new h3d.Quat(),
+					var q = new h3d.Quat(), q2 = new h3d.Quat();
+					q2.initRotation(c.def.preRot.x, c.def.preRot.y, c.def.preRot.z);
+					q.initRotation(c.def.rotate.x, c.def.rotate.y, c.def.rotate.z);
+					q.multiply(q2,q);
+					q.toEuler().toPoint();
+				}
+			case "S":
+				if( c.def.scale == null ) P1 else c.def.scale;
+			default:
+				trace("Unknown curve " + model.getName()+"."+cname);
+				continue;
+			}
+			var hasValue = false;
+			if( data.x != null && roundValues(data.x, def.x, M) )
+				hasVal
