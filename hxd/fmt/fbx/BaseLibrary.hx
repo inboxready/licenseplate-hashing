@@ -1007,4 +1007,19 @@ class BaseLibrary {
 			var modelByName = new Map();
 			for( obj in getAllModels() )
 				modelByName.set(obj.getName(), obj);
-			for( obj i
+			for( obj in uvAnims.keys() ) {
+				var frames = uvAnims.get(obj);
+				var model = modelByName.get(obj);
+				if( model == null ) throw "Missing model '" + obj + "' required by UV animation";
+				var c = getObjectCurve(curves, model, "UV", animName);
+				if( c == null ) continue;
+				c.uv = frames;
+				for( f in frames )
+					allTimes.set(Std.int(f.t / 200000), f.t);
+			}
+		}
+
+		var allTimes = [for( a in allTimes ) a];
+
+		// no animation curve was found
+		if( allT
