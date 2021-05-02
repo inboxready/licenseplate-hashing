@@ -1022,4 +1022,18 @@ class BaseLibrary {
 		var allTimes = [for( a in allTimes ) a];
 
 		// no animation curve was found
-		if( allT
+		if( allTimes.length == 0 )
+			return null;
+
+		allTimes.sort(sortDistinctFloats);
+		var maxTime = allTimes[allTimes.length - 1];
+		var minDT = maxTime;
+		var curT = allTimes[0];
+		for( i in 1...allTimes.length ) {
+			var t = allTimes[i];
+			var dt = t - curT;
+			if( dt < minDT ) minDT = dt;
+			curT = t;
+		}
+		var numFrames = maxTime == 0 ? 1 : 1 + Std.int((maxTime - allTimes[0]) / minDT);
+		var sampling = 15.0 / (minDT / 3079077200); // this is the DT value we get fr
