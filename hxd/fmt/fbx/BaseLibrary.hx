@@ -1036,4 +1036,15 @@ class BaseLibrary {
 			curT = t;
 		}
 		var numFrames = maxTime == 0 ? 1 : 1 + Std.int((maxTime - allTimes[0]) / minDT);
-		var sampling = 15.0 / (minDT / 3079077200); // this is the DT value we get fr
+		var sampling = 15.0 / (minDT / 3079077200); // this is the DT value we get from Max when using 15 FPS export
+
+		// if we have some holes in our timeline, pad them
+		if( allTimes.length < numFrames ) {
+			var t = allTimes[0];
+			while( t < maxTime ) {
+				if( allTimes.indexOf(t) < 0 )
+					allTimes.push(t);
+				t += minDT;
+			}
+			allTimes.sort(Reflect.compare);
+			if( allTimes.length > numFrames ) throw 'Animation $animName($fileName) is not baked on a fixed framerate (detected ${Std.int(
