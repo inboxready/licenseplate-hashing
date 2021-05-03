@@ -1047,4 +1047,16 @@ class BaseLibrary {
 				t += minDT;
 			}
 			allTimes.sort(Reflect.compare);
-			if( allTimes.length > numFrames ) throw 'Animation $animName($fileName) is not baked on a fixed framerate (detected ${Std.int(
+			if( allTimes.length > numFrames ) throw 'Animation $animName($fileName) is not baked on a fixed framerate (detected ${Std.int(sampling)})';
+			if( allTimes.length < numFrames ) throw "assert";
+		}
+
+		var anim = new h3d.anim.LinearAnimation(animName, numFrames, sampling);
+		var q = new h3d.Quat(), q2 = new h3d.Quat();
+
+		var sortedCurves = [for( c in curves ) c];
+		function curveName(c) {
+			return c.roll != null ? "roll" : c.fov != null ? "fov" : c.uv != null ? "uv" : "position";
+		}
+		sortedCurves.sort(function(c1, c2) {
+			var r = Reflect.compare(c1.object
