@@ -1093,4 +1093,15 @@ class BaseLibrary {
 			var crz = c.r == null ? null : c.r.z;
 			var crt = c.r == null ? [-1.] : c.r.t;
 			var csx = c.s == null ? null : c.s.x;
-			var csy = 
+			var csy = c.s == null ? null : c.s.y;
+			var csz = c.s == null ? null : c.s.z;
+			var cst = c.s == null ? [ -1.] : c.s.t;
+			var cav = c.a == null ? null : c.a.v;
+			var cat = c.a == null ? null : c.a.t;
+			var cuv = c.uv;
+			var def = c.def;
+			var tp = 0, rp = 0, sp = 0, ap = 0, uvp = 0, fovp = 0, rollp = 0;
+			var curFrame = null;
+			for( f in 0...numFrames ) {
+				var changed = curFrame == null;
+				if( allTimes[f] == ctt[tp]
