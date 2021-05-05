@@ -1073,4 +1073,13 @@ class BaseLibrary {
 					sameData = checkData(c.t);
 				if( sameData )
 					sameData = checkData(c.r);
-				
+				if( sameData )
+					sameData = checkData(c.s);
+			}
+			var frames = new haxe.ds.Vector(sameData ? 1 : numFrames);
+			var alpha = c.a == null ? null : new haxe.ds.Vector(numFrames);
+			var uvs = c.uv == null ? null : new haxe.ds.Vector(numFrames * 2);
+			var roll = c.roll == null ? null : new haxe.ds.Vector(numFrames);
+			var fov = c.fov == null ? null : new haxe.ds.Vector(numFrames);
+			// skip empty curves
+			if( frames == null && alpha == null &
