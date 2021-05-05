@@ -1082,4 +1082,15 @@ class BaseLibrary {
 			var roll = c.roll == null ? null : new haxe.ds.Vector(numFrames);
 			var fov = c.fov == null ? null : new haxe.ds.Vector(numFrames);
 			// skip empty curves
-			if( frames == null && alpha == null &
+			if( frames == null && alpha == null && uvs == null && roll == null && fov == null )
+				continue;
+			var ctx = c.t == null ? null : c.t.x;
+			var cty = c.t == null ? null : c.t.y;
+			var ctz = c.t == null ? null : c.t.z;
+			var ctt = c.t == null ? [-1.] : c.t.t;
+			var crx = c.r == null ? null : c.r.x;
+			var cry = c.r == null ? null : c.r.y;
+			var crz = c.r == null ? null : c.r.z;
+			var crt = c.r == null ? [-1.] : c.r.t;
+			var csx = c.s == null ? null : c.s.x;
+			var csy = 
