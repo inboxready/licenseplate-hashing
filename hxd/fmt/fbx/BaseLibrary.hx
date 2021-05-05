@@ -1059,4 +1059,18 @@ class BaseLibrary {
 			return c.roll != null ? "roll" : c.fov != null ? "fov" : c.uv != null ? "uv" : "position";
 		}
 		sortedCurves.sort(function(c1, c2) {
-			var r = Reflect.compare(c1.object
+			var r = Reflect.compare(c1.object, c2.object);
+			if( r != 0 ) return r;
+			return Reflect.compare(curveName(c1), curveName(c2));
+		});
+		for( c in sortedCurves ) {
+			var numFrames = numFrames;
+			var sameData = true;
+			if( c.t == null && c.r == null && c.s == null && c.a == null && c.uv == null && c.roll == null && c.fov == null )
+				numFrames = 1;
+			else {
+				if( sameData )
+					sameData = checkData(c.t);
+				if( sameData )
+					sameData = checkData(c.r);
+				
