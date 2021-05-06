@@ -1104,4 +1104,25 @@ class BaseLibrary {
 			var curFrame = null;
 			for( f in 0...numFrames ) {
 				var changed = curFrame == null;
-				if( allTimes[f] == ctt[tp]
+				if( allTimes[f] == ctt[tp] ) {
+					changed = true;
+					tp++;
+				}
+				if( allTimes[f] == crt[rp] ) {
+					changed = true;
+					rp++;
+				}
+				if( allTimes[f] == cst[sp] ) {
+					changed = true;
+					sp++;
+				}
+				if( changed ) {
+					var f = new h3d.anim.LinearAnimation.LinearFrame();
+					if( c.s == null || sp == 0 ) {
+						if( def.scale != null ) {
+							f.sx = def.scale.x;
+							f.sy = def.scale.y;
+							f.sz = def.scale.z;
+						} else {
+							f.sx = 1;
+							f.sy
