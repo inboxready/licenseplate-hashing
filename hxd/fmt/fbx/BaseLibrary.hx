@@ -1125,4 +1125,22 @@ class BaseLibrary {
 							f.sz = def.scale.z;
 						} else {
 							f.sx = 1;
-							f.sy
+							f.sy = 1;
+							f.sz = 1;
+						}
+					} else {
+						f.sx = csx[sp - 1];
+						f.sy = csy[sp - 1];
+						f.sz = csz[sp - 1];
+					}
+
+					if( c.r == null || rp == 0 ) {
+						if( def.rotate != null ) {
+							q.initRotation(def.rotate.x, def.rotate.y, def.rotate.z);
+						} else
+							q.identity();
+					} else
+						q.initRotation(crx[rp-1], cry[rp-1], crz[rp-1]);
+
+					if( def.preRot != null ) {
+						q2.initRotation(def.preRot.
