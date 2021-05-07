@@ -1170,4 +1170,23 @@ class BaseLibrary {
 
 					if( leftHand ) {
 						f.tx = -f.tx;
-	
+						f.qy = -f.qy;
+						f.qz = -f.qz;
+					}
+
+					curFrame = f;
+				}
+				if( frames != null && f < frames.length )
+					frames[f] = curFrame;
+				if( alpha != null ) {
+					if( allTimes[f] == cat[ap] )
+						ap++;
+					alpha[f] = cav[ap - 1];
+				}
+				if( uvs != null ) {
+					if( uvp < cuv.length && allTimes[f] == cuv[uvp].t )
+						uvp++;
+					uvs[f<<1] = cuv[uvp - 1].u;
+					uvs[(f<<1)|1] = cuv[uvp - 1].v;
+				}
+				if( roll !=
