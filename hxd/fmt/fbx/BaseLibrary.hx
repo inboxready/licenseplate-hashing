@@ -1143,4 +1143,31 @@ class BaseLibrary {
 						q.initRotation(crx[rp-1], cry[rp-1], crz[rp-1]);
 
 					if( def.preRot != null ) {
-						q2.initRotation(def.preRot.
+						q2.initRotation(def.preRot.x, def.preRot.y, def.preRot.z);
+						q.multiply(q2,q);
+					}
+
+					f.qx = q.x;
+					f.qy = q.y;
+					f.qz = q.z;
+					f.qw = q.w;
+
+					if( c.t == null || tp == 0 ) {
+						if( def.trans != null ) {
+							f.tx = def.trans.x;
+							f.ty = def.trans.y;
+							f.tz = def.trans.z;
+						} else {
+							f.tx = 0;
+							f.ty = 0;
+							f.tz = 0;
+						}
+					} else {
+						f.tx = ctx[tp - 1];
+						f.ty = cty[tp - 1];
+						f.tz = ctz[tp - 1];
+					}
+
+					if( leftHand ) {
+						f.tx = -f.tx;
+	
