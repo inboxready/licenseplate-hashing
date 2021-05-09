@@ -1204,4 +1204,21 @@ class BaseLibrary {
 				var hasTrans = c.t != null;
 				var hasRot = c.r != null || def.rotate != null || def.preRot != null;
 				var hasScale = c.s != null || def.scale != null;
-				// force position for objects unless it's d
+				// force position for objects unless it's default to skin
+				if( !hasTrans && def.transPos == null )
+					hasTrans = true;
+				anim.addCurve(c.object, frames, hasTrans, hasRot, hasScale);
+			}
+			if( alpha != null )
+				anim.addAlphaCurve(c.object, alpha);
+			if( uvs != null )
+				anim.addUVCurve(c.object, uvs);
+			if( roll != null )
+				anim.addPropCurve(c.object, "Roll", roll);
+			if( fov != null )
+				anim.addPropCurve(c.object, "FOVY", fov);
+		}
+		return anim;
+	}
+
+	function s
