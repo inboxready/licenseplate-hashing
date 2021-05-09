@@ -1189,4 +1189,19 @@ class BaseLibrary {
 					uvs[f<<1] = cuv[uvp - 1].u;
 					uvs[(f<<1)|1] = cuv[uvp - 1].v;
 				}
-				if( roll !=
+				if( roll != null ) {
+					if( allTimes[f] == c.roll.t[rollp] )
+						rollp++;
+					roll[f] = c.roll.v[rollp - 1];
+				}
+				if( fov != null ) {
+					if( allTimes[f] == c.fov.t[fovp] )
+						fovp++;
+					fov[f] = c.fov.v[fovp - 1];
+				}
+			}
+			if( frames != null ) {
+				var hasTrans = c.t != null;
+				var hasRot = c.r != null || def.rotate != null || def.preRot != null;
+				var hasScale = c.s != null || def.scale != null;
+				// force position for objects unless it's d
