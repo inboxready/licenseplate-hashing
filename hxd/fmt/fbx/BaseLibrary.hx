@@ -1221,4 +1221,21 @@ class BaseLibrary {
 		return anim;
 	}
 
-	function s
+	function sortDistinctFloats( a : Float, b : Float ) {
+		return if( a > b ) 1 else -1;
+	}
+
+	function isNullJoint( model : FbxNode ) {
+		if( getParents(model, "Deformer").length > 0 )
+			return false;
+		var parent = getParent(model, "Model", true);
+		if( parent == null )
+			return true;
+		var t = parent.getType();
+		if( t == "LimbNode" || t == "Root" )
+			return false;
+		return true;
+	}
+
+	function getModelPath( model : FbxNode ) {
+		var pare
