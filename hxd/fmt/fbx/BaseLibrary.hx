@@ -1238,4 +1238,18 @@ class BaseLibrary {
 	}
 
 	function getModelPath( model : FbxNode ) {
-		var pare
+		var parent = getParent(model, "Model", true);
+		var name = model.getName();
+		if( parent == null )
+			return name;
+		return getModelPath(parent) + "." + name;
+	}
+
+	function autoMerge() {
+		// if we have multiple deformers on the same joint, let's merge the geometries
+		var toMerge = [], mergeGroups = new Map<Int,Array<FbxNode>>();
+		for( model in getAllModels() ) {
+			if( skipObjects.get(model.getName()) )
+				continue;
+			var mtype = model.getType();
+		
