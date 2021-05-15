@@ -1252,4 +1252,17 @@ class BaseLibrary {
 			if( skipObjects.get(model.getName()) )
 				continue;
 			var mtype = model.getType();
-		
+			var isJoint = mtype == "LimbNode" && (!unskinnedJointsAsObjects || !isNullJoint(model));
+			if( !isJoint ) continue;
+			var deformers = getParents(model, "Deformer");
+			if( deformers.length <= 1 ) continue;
+			var group = [];
+			for( d in deformers ) {
+				var def = getParent(d, "Deformer");
+				if( def == null ) continue;
+				var geom = getParent(def, "Geometry");
+				if( geom == null ) continue;
+				var model2 = getParent(geom, "Model");
+				if( model2 == null ) continue;
+
+				var id = mod
