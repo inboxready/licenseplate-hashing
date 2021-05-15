@@ -1302,4 +1302,18 @@ class BaseLibrary {
 	function createSkin( hskins : Map<Int,h3d.anim.Skin>, hgeom : Map<Int,{
 		function vertexCount():Int; function setSkin(s:h3d.anim.Skin):Void;
 	}>, rootJoints : Array<h3d.anim.Skin.Joint> ) {
-		var allJo
+		var allJoints = [];
+		function collectJoints(j:h3d.anim.Skin.Joint) {
+			// collect subs first (allow easy removal of terminal unskinned joints)
+			for( j in j.subs )
+				collectJoints(cast j);
+			allJoints.push(j);
+		}
+		for( j in rootJoints )
+			collectJoints(j);
+		var skin = null;
+		var geomTrans = null;
+		var iterJoints = allJoints.copy();
+		for( j in iterJoints ) {
+			var jModel = ids.get(j.index);
+			var subDef = getParent(jModel, "Deforme
