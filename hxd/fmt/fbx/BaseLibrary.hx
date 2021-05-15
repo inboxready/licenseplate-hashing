@@ -1284,4 +1284,22 @@ class BaseLibrary {
 			group.sort(function(m1, m2) return Reflect.compare(m1.getName(), m2.getName()));
 			for( g in toMerge )
 				if( g != group ) {
-					var foun
+					var found = false;
+					for( m in group )
+						if( g.remove(m) )
+							found = true;
+					if( found )
+						g.push(group[0]);
+				}
+			mergeModels([for( g in group ) g.getName()]);
+		}
+	}
+
+	function keepJoint( j : h3d.anim.Skin.Joint ) : Bool {
+		return keepJoints.get(j.name);
+	}
+
+	function createSkin( hskins : Map<Int,h3d.anim.Skin>, hgeom : Map<Int,{
+		function vertexCount():Int; function setSkin(s:h3d.anim.Skin):Void;
+	}>, rootJoints : Array<h3d.anim.Skin.Joint> ) {
+		var allJo
