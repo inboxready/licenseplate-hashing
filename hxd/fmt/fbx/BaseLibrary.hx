@@ -1265,4 +1265,23 @@ class BaseLibrary {
 				var model2 = getParent(geom, "Model");
 				if( model2 == null ) continue;
 
-				var id = mod
+				var id = model2.getId();
+				var g = mergeGroups.get(id);
+				if( g != null ) {
+					for( g in g ) {
+						group.remove(g);
+						group.push(g);
+					}
+					toMerge.remove(g);
+				}
+				group.remove(model2);
+				group.push(model2);
+				mergeGroups.set(id, group);
+			}
+			toMerge.push(group);
+		}
+		for( group in toMerge ) {
+			group.sort(function(m1, m2) return Reflect.compare(m1.getName(), m2.getName()));
+			for( g in toMerge )
+				if( g != group ) {
+					var foun
