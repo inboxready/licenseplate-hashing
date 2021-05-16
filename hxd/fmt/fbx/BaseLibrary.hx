@@ -1330,4 +1330,18 @@ class BaseLibrary {
 				else
 					j.parent.subs.remove(j);
 				allJoints.remove(j);
-				// ignore ke
+				// ignore key frames for this joint
+				defMat.wasRemoved = -1;
+				continue;
+			}
+			// create skin
+			if( skin == null ) {
+				var def = getParent(subDef, "Deformer");
+				skin = hskins.get(def.getId());
+				// shared skin between same instances
+				if( skin != null )
+					return skin;
+				var geom = hgeom.get(getParent(def, "Geometry").getId());
+				skin = new h3d.anim.Skin(null, geom.vertexCount(), fourBonesByVertex ? 4 : 3);
+				geom.setSkin(skin);
+				hskins.set(def.ge
