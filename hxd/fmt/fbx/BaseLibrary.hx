@@ -1361,4 +1361,19 @@ class BaseLibrary {
 			}
 		}
 		if( skin == null )
-			throw "No joint is skinned ("+[for( j in iterJo
+			throw "No joint is skinned ("+[for( j in iterJoints ) j.name].join(",")+")";
+		allJoints.reverse();
+		for( i in 0...allJoints.length )
+			allJoints[i].index = i;
+		skin.setJoints(allJoints, rootJoints);
+		skin.initWeights();
+		return skin;
+	}
+
+	function round(v:Float) {
+		if( v != v ) throw "NaN found";
+		return highPrecision ? v : std.Math.fround(v * 131072) / 131072;
+	}
+
+	function updateDefaultMatrix( model : FbxNode, d : DefaultMatrixes ) {
+		// default matrix should be skinning position (not frame 0 objects posit
