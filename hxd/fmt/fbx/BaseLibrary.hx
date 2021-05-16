@@ -1316,4 +1316,18 @@ class BaseLibrary {
 		var iterJoints = allJoints.copy();
 		for( j in iterJoints ) {
 			var jModel = ids.get(j.index);
-			var subDef = getParent(jModel, "Deforme
+			var subDef = getParent(jModel, "Deformer", true);
+			var defMat = defaultModelMatrixes.get(jModel.getId());
+			j.defMat = defMat.toMatrix(leftHand);
+
+			if( subDef == null ) {
+				// if we have skinned subs, we need to keep in joint hierarchy
+				if( j.subs.length > 0 || keepJoint(j) )
+					continue;
+				// otherwise we're an ending bone, we can safely be removed
+				if( j.parent == null )
+					rootJoints.remove(j);
+				else
+					j.parent.subs.remove(j);
+				allJoints.remove(j);
+				// ignore ke
