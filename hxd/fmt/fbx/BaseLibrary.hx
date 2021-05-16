@@ -1344,4 +1344,21 @@ class BaseLibrary {
 				var geom = hgeom.get(getParent(def, "Geometry").getId());
 				skin = new h3d.anim.Skin(null, geom.vertexCount(), fourBonesByVertex ? 4 : 3);
 				geom.setSkin(skin);
-				hskins.set(def.ge
+				hskins.set(def.getId(), skin);
+			}
+			j.transPos = defMat.transPos;
+
+			var weights = subDef.getAll("Weights");
+			if( weights.length > 0 ) {
+				var weights = weights[0].getFloats();
+				var vertex = subDef.get("Indexes").getInts();
+				for( i in 0...vertex.length ) {
+					var w = weights[i];
+					if( w < 0.01 )
+						continue;
+					skin.addInfluence(vertex[i], j, w);
+				}
+			}
+		}
+		if( skin == null )
+			throw "No joint is skinned ("+[for( j in iterJo
