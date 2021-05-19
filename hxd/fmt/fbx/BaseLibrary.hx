@@ -1390,4 +1390,14 @@ class BaseLibrary {
 			not based on the first animation frame but based on the
 			model bind pose.
 
-			It seems works correctly although i
+			It seems works correctly although in Maya it does not seem
+			possible to reconstruct exactly the bind pose rotation
+			(have to set it to null manualy)
+
+			However it is a bit complex and potentially error prone.
+			It also gives slighly different results in terms of translation
+			(between reconstructed bind pose and first animation frame)
+			that forces some extra position data in animation because of the
+			small delta.
+
+			I prefer to disable for now, it could still be useful i
