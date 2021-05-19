@@ -1376,4 +1376,18 @@ class BaseLibrary {
 	}
 
 	function updateDefaultMatrix( model : FbxNode, d : DefaultMatrixes ) {
-		// default matrix should be skinning position (not frame 0 objects posit
+		// default matrix should be skinning position (not frame 0 objects position)
+		var subDef = getParent(model, "Deformer", true);
+		if( subDef == null )
+			return; // exporting without model will not export Deformer :'(
+
+		var transPos = h3d.Matrix.L(subDef.get("Transform").getFloats());
+		if( leftHand ) DefaultMatrixes.rightHandToLeft(transPos);
+		d.transPos = transPos;
+
+		/*
+			This code was meant to reconstruct the default matrix,
+			not based on the first animation frame but based on the
+			model bind pose.
+
+			It seems works correctly although i
