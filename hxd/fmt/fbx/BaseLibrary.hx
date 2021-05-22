@@ -1444,4 +1444,23 @@ class BaseLibrary {
 		if( hxd.Math.abs(rot.z) < 1e-4 ) rot.z = 0;
 
 		var rlen = rot.length();
-		var dist = d.rotate == null ? rlen : d.rotate.sub(rot).length()
+		var dist = d.rotate == null ? rlen : d.rotate.sub(rot).length();
+		if( dist > 1e-3 )
+			d.rotate = rlen < 1e-3 ? null : rot;
+		if( isMaya )
+			d.rotate = null;
+		*/
+	}
+
+	function getDefaultMatrixes( model : FbxNode ) {
+		var id = model.getId();
+		var d = defaultModelMatrixes.get(id);
+		if( d != null )
+			return d;
+		d = new DefaultMatrixes();
+		var F = Math.PI / 180;
+		for( p in model.getAll("Properties70.P") )
+			switch( p.props[0].toString() ) {
+			case "GeometricTranslation":
+				// handle in Geometry directly
+			ca
