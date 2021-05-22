@@ -1415,4 +1415,20 @@ class BaseLibrary {
 			if( mp.transPos != null ) {
 				var inv = new h3d.Matrix();
 				inv.initInverse(mp.transPos);
-				
+				m.multiply(m, inv);
+				break;
+			}
+			if( isMaya ) break;
+			m.multiply(m, mp.toMatrix(leftHand));
+			parent = getParent(parent, "Model", true);
+		}
+		m.multiply(m, transPos);
+		m.invert();
+
+		// we have  d.toMatrix(leftHand) == m  (in skin position only)
+		// revert m to feed default matrix
+		if( leftHand ) DefaultMatrixes.rightHandToLeft(m); // undo LH/RH transform
+
+		var trans = m.getPosition().toPoint();
+		var tlen = trans.length();
+		var dist = d.trans 
