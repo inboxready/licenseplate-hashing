@@ -1431,4 +1431,17 @@ class BaseLibrary {
 
 		var trans = m.getPosition().toPoint();
 		var tlen = trans.length();
-		var dist = d.trans 
+		var dist = d.trans == null ? tlen : d.trans.sub(trans).length();
+		if( dist > 1e-2 )
+			d.trans = tlen < 1e-3 ? null : trans;
+
+		var q = new h3d.Quat();
+		q.initRotateMatrix(m);
+
+		var rot = q.toEuler().toPoint();
+		if( hxd.Math.abs(rot.x) < 1e-4 ) rot.x = 0;
+		if( hxd.Math.abs(rot.y) < 1e-4 ) rot.y = 0;
+		if( hxd.Math.abs(rot.z) < 1e-4 ) rot.z = 0;
+
+		var rlen = rot.length();
+		var dist = d.rotate == null ? rlen : d.rotate.sub(rot).length()
