@@ -1400,4 +1400,19 @@ class BaseLibrary {
 			that forces some extra position data in animation because of the
 			small delta.
 
-			I prefer to disable for now, it could still be useful i
+			I prefer to disable for now, it could still be useful if having
+			some animations with a constant translation that is only
+			set on first animation frame - this will be removed from animation data
+			instead of kept for overriding bind pose.
+		*/
+
+		/*
+		var m = new h3d.Matrix();
+		var parent = getParent(model, "Model", true);
+		m.identity();
+		while( parent != null ) {
+			var mp = getDefaultMatrixes(parent);
+			if( mp.transPos != null ) {
+				var inv = new h3d.Matrix();
+				inv.initInverse(mp.transPos);
+				
