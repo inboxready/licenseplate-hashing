@@ -1463,4 +1463,10 @@ class BaseLibrary {
 			switch( p.props[0].toString() ) {
 			case "GeometricTranslation":
 				// handle in Geometry directly
-			ca
+			case "PreRotation":
+				d.preRot = new Point(round(p.props[4].toFloat() * F), round(p.props[5].toFloat() * F), round(p.props[6].toFloat() * F));
+				if( d.preRot.x == 0 && d.preRot.y == 0 && d.preRot.z == 0 )
+					d.preRot = null;
+			case "Lcl Rotation":
+				d.rotate = new Point(round(p.props[4].toFloat() * F), round(p.props[5].toFloat() * F), round(p.props[6].toFloat() * F));
+				if( d.rotate.x == 0 && d.rota
