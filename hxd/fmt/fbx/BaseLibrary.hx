@@ -1469,4 +1469,12 @@ class BaseLibrary {
 					d.preRot = null;
 			case "Lcl Rotation":
 				d.rotate = new Point(round(p.props[4].toFloat() * F), round(p.props[5].toFloat() * F), round(p.props[6].toFloat() * F));
-				if( d.rotate.x == 0 && d.rota
+				if( d.rotate.x == 0 && d.rotate.y == 0 && d.rotate.z == 0 )
+					d.rotate = null;
+			case "Lcl Translation":
+				d.trans = new Point(round(p.props[4].toFloat()), round(p.props[5].toFloat()), round(p.props[6].toFloat()));
+				if( d.trans.x == 0 && d.trans.y == 0 && d.trans.z == 0 )
+					d.trans = null;
+			case "Lcl Scaling":
+				d.scale = new Point(round(p.props[4].toFloat()), round(p.props[5].toFloat()), round(p.props[6].toFloat()));
+				if( d.scale.x == 1 && d.
