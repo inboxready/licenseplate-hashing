@@ -1477,4 +1477,15 @@ class BaseLibrary {
 					d.trans = null;
 			case "Lcl Scaling":
 				d.scale = new Point(round(p.props[4].toFloat()), round(p.props[5].toFloat()), round(p.props[6].toFloat()));
-				if( d.scale.x == 1 && d.
+				if( d.scale.x == 1 && d.scale.y == 1 && d.scale.z == 1 )
+					d.scale = null;
+			default:
+			}
+		if( model.getType() == "LimbNode" )
+			updateDefaultMatrix(model, d);
+
+		defaultModelMatrixes.set(id, d);
+		return d;
+	}
+
+}
