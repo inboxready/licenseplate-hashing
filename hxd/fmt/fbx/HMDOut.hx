@@ -24,4 +24,18 @@ class HMDOut extends BaseLibrary {
 
 	override function keepJoint(j:h3d.anim.Skin.Joint) {
 		if( !optimizeSkin )
-			re
+			return true;
+		// remove these unskinned terminal bones if they are not named in a special manner
+		if( ~/^Bip00[0-9] /.match(j.name) || ~/^Bone[0-9][0-9][0-9]$/.match(j.name) )
+			return false;
+		return true;
+	}
+
+	function buildTangents( geom : hxd.fmt.fbx.Geometry ) {
+		var verts = geom.getVertices();
+		var normals = geom.getNormals();
+		var uvs = geom.getUVs();
+		var index = geom.getIndexes();
+
+		if ( index.vidx.length > 0 && uvs[0] == null )
+			throw "Need UVs to bu
