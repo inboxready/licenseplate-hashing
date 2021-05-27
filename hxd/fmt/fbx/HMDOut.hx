@@ -38,4 +38,18 @@ class HMDOut extends BaseLibrary {
 		var index = geom.getIndexes();
 
 		if ( index.vidx.length > 0 && uvs[0] == null )
-			throw "Need UVs to bu
+			throw "Need UVs to build tangents";
+
+		#if (hl && !hl_disable_mikkt && (haxe_ver >= "4.0"))
+		var m = new hl.Format.Mikktspace();
+		m.buffer = new hl.Bytes(8 * 4 * index.vidx.length);
+		m.stride = 8;
+		m.xPos = 0;
+		m.normalPos = 3;
+		m.uvPos = 6;
+
+		m.indexes = new hl.Bytes(4 * index.vidx.length);
+		m.indices = index.vidx.length;
+
+		m.tangents = new hl.Bytes(4 * 4 * index.vidx.length);
+		(m.tangents:hl.Bytes).fill(0,4 * 4 * index.vidx.length,0
