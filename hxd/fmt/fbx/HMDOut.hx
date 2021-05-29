@@ -69,4 +69,20 @@ class HMDOut extends BaseLibrary {
 			var uidx = uvs[0].index[i];
 
 			m.buffer[out++] = uvs[0].values[uidx*2];
-			m.buffer[out++] = uvs
+			m.buffer[out++] = uvs[0].values[uidx*2+1];
+
+			m.tangents[i<<2] = 1;
+
+			m.indexes[i] = i;
+		}
+
+		m.compute();
+		return m.tangents;
+		#elseif (sys || nodejs)
+		var tmp = Sys.getEnv("TMPDIR");
+		if( tmp == null ) tmp = Sys.getEnv("TMP");
+		if( tmp == null ) tmp = Sys.getEnv("TEMP");
+		if( tmp == null ) tmp = ".";
+		var fileName = tmp+"/mikktspace_data"+Date.now().getTime()+"_"+Std.random(0x1000000)+".bin";
+		var outFile = fileName+".out";
+		var outputData = ne
