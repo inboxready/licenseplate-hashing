@@ -101,4 +101,16 @@ class HMDOut extends BaseLibrary {
 			w(normals[i*3]);
 			w(normals[i*3+1]);
 			w(normals[i*3+2]);
-			var uid
+			var uidx = uvs[0].index[i];
+
+			w(uvs[0].values[uidx*2]);
+			w(uvs[0].values[uidx*2+1]);
+		}
+		outputData.addInt32(index.vidx.length);
+		for( i in 0...index.vidx.length )
+			outputData.addInt32(i);
+		sys.io.File.saveBytes(fileName, outputData.getBytes());
+		var ret = try Sys.command("mikktspace",[fileName,outFile]) catch( e : Dynamic ) -1;
+		if( ret != 0 ) {
+			sys.FileSystem.deleteFile(fileName);
+			throw "Failed to call 'mikktspace' executable required to gene
