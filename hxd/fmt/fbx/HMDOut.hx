@@ -85,4 +85,20 @@ class HMDOut extends BaseLibrary {
 		if( tmp == null ) tmp = ".";
 		var fileName = tmp+"/mikktspace_data"+Date.now().getTime()+"_"+Std.random(0x1000000)+".bin";
 		var outFile = fileName+".out";
-		var outputData = ne
+		var outputData = new haxe.io.BytesBuffer();
+		outputData.addInt32(index.vidx.length);
+		outputData.addInt32(8);
+		outputData.addInt32(0);
+		outputData.addInt32(3);
+		outputData.addInt32(6);
+		for( i in 0...index.vidx.length ) {
+			inline function w(v:Float) outputData.addFloat(v);
+			var vidx = index.vidx[i];
+			w(verts[vidx*3]);
+			w(verts[vidx*3+1]);
+			w(verts[vidx*3+2]);
+
+			w(normals[i*3]);
+			w(normals[i*3+1]);
+			w(normals[i*3+2]);
+			var uid
