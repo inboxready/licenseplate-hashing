@@ -113,4 +113,19 @@ class HMDOut extends BaseLibrary {
 		var ret = try Sys.command("mikktspace",[fileName,outFile]) catch( e : Dynamic ) -1;
 		if( ret != 0 ) {
 			sys.FileSystem.deleteFile(fileName);
-			throw "Failed to call 'mikktspace' executable required to gene
+			throw "Failed to call 'mikktspace' executable required to generate tangent data. Please ensure it's in your PATH";
+		}
+		var bytes = sys.io.File.getBytes(outFile);
+		var arr = [];
+		for( i in 0...index.vidx.length*4 )
+			arr[i] = bytes.getFloat(i << 2);
+		sys.FileSystem.deleteFile(fileName);
+		sys.FileSystem.deleteFile(outFile);
+		return arr;
+		#else
+		throw "Tangent generation is not supported on this platform";
+		return ([] : Array<Float>);
+		#end
+	}
+
+	function up
