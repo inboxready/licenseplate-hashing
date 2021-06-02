@@ -142,4 +142,24 @@ class HMDOut extends BaseLibrary {
 			var x = vbuf[vid * stride];
 			var y = vbuf[vid * stride + 1];
 			var z = vbuf[vid * stride + 2];
-			var 
+			var found = false;
+			for( i in 0...points.length ) {
+				var p = points[i];
+				if( p.x == x && p.y == y && p.z == z ) {
+					pmap[vid] = i;
+					found = true;
+					break;
+				}
+			}
+			if( !found ) {
+				pmap[vid] = points.length;
+				points.push(new h3d.col.Point(x,y,z));
+			}
+		}
+		var realIdx = new hxd.IndexBuffer();
+		for( idx in idx )
+			for( i in idx )
+				realIdx.push(pmap[i]);
+
+		var poly = new h3d.prim.Polygon(points, realIdx);
+		po
