@@ -128,4 +128,18 @@ class HMDOut extends BaseLibrary {
 		#end
 	}
 
-	function up
+	function updateNormals( g : Geometry, vbuf : hxd.FloatBuffer, idx : Array<Array<Int>> ) {
+		var stride = g.vertexStride;
+		var normalPos = 0;
+		for( f in g.vertexFormat ) {
+			if( f.name == "logicNormal" ) break;
+			normalPos += f.format.getSize();
+		}
+
+		var points : Array<h3d.col.Point> = [];
+		var pmap = [];
+		for( vid in 0...g.vertexCount ) {
+			var x = vbuf[vid * stride];
+			var y = vbuf[vid * stride + 1];
+			var z = vbuf[vid * stride + 2];
+			var 
