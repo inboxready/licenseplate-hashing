@@ -162,4 +162,17 @@ class HMDOut extends BaseLibrary {
 				realIdx.push(pmap[i]);
 
 		var poly = new h3d.prim.Polygon(points, realIdx);
-		po
+		poly.addNormals();
+
+		for( vid in 0...g.vertexCount ) {
+			var nid = pmap[vid];
+			vbuf[vid*stride + normalPos] = poly.normals[nid].x;
+			vbuf[vid*stride + normalPos + 1] = poly.normals[nid].y;
+			vbuf[vid*stride + normalPos + 2] = poly.normals[nid].z;
+		}
+	}
+
+	function buildGeom( geom : hxd.fmt.fbx.Geometry, skin : h3d.anim.Skin, dataOut : haxe.io.BytesOutput, genTangents : Bool ) {
+		var g = new Geometry();
+
+		var verts
