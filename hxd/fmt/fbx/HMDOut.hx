@@ -175,4 +175,26 @@ class HMDOut extends BaseLibrary {
 	function buildGeom( geom : hxd.fmt.fbx.Geometry, skin : h3d.anim.Skin, dataOut : haxe.io.BytesOutput, genTangents : Bool ) {
 		var g = new Geometry();
 
-		var verts
+		var verts = geom.getVertices();
+		var normals = geom.getNormals();
+		var uvs = geom.getUVs();
+		var colors = geom.getColors();
+		var mats = geom.getMaterials();
+
+		// remove empty color data
+		if( colors != null ) {
+			var hasData = false;
+			for( v in colors.values )
+				if( v < 0.99 ) {
+					hasData = true;
+					break;
+				}
+			if( !hasData )
+				colors = null;
+		}
+
+		// generate tangents
+		var tangents = genTangents ? buildTangents(geom) : null;
+
+		// build format
+		g.vertexFo
