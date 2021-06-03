@@ -197,4 +197,17 @@ class HMDOut extends BaseLibrary {
 		var tangents = genTangents ? buildTangents(geom) : null;
 
 		// build format
-		g.vertexFo
+		g.vertexFormat = [
+			new GeometryFormat("position", DVec3),
+		];
+		if( normals != null )
+			g.vertexFormat.push(new GeometryFormat("normal", DVec3));
+		if( tangents != null )
+			g.vertexFormat.push(new GeometryFormat("tangent", DVec3));
+		for( i in 0...uvs.length )
+			g.vertexFormat.push(new GeometryFormat("uv" + (i == 0 ? "" : "" + (i + 1)), DVec2));
+		if( colors != null )
+			g.vertexFormat.push(new GeometryFormat("color", DVec3));
+
+		if( skin != null ) {
+			if(fo
