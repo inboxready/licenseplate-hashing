@@ -210,4 +210,16 @@ class HMDOut extends BaseLibrary {
 			g.vertexFormat.push(new GeometryFormat("color", DVec3));
 
 		if( skin != null ) {
-			if(fo
+			if(fourBonesByVertex)
+				g.props = [FourBonesByVertex];
+			g.vertexFormat.push(new GeometryFormat("weights", DVec3));  // Only 3 weights are necessary even in fourBonesByVertex since they sum-up to 1
+			g.vertexFormat.push(new GeometryFormat("indexes", DBytes4));
+		}
+
+		if( generateNormals )
+			g.vertexFormat.push(new GeometryFormat("logicNormal", DVec3));
+
+		var stride = 0;
+		for( f in g.vertexFormat )
+			stride += f.format.getSize();
+		g.vert
