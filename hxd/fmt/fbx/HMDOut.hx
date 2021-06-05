@@ -222,4 +222,22 @@ class HMDOut extends BaseLibrary {
 		var stride = 0;
 		for( f in g.vertexFormat )
 			stride += f.format.getSize();
-		g.vert
+		g.vertexStride = stride;
+		g.vertexCount = 0;
+
+		// build geometry
+		var gm = geom.getGeomMatrix();
+		var vbuf = new hxd.FloatBuffer();
+		var ibufs = [];
+
+		if( skin != null && skin.isSplit() ) {
+			for( _ in skin.splitJoints )
+				ibufs.push([]);
+		}
+
+		g.bounds = new h3d.col.Bounds();
+		var tmpBuf = new hxd.impl.TypedArray.Float32Array(stride);
+		var vertexRemap = new Array<Int>();
+		var index = geom.getPolygons();
+		var count = 0, matPos = 0, stri = 0;
+		var
