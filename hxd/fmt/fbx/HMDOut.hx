@@ -240,4 +240,22 @@ class HMDOut extends BaseLibrary {
 		var vertexRemap = new Array<Int>();
 		var index = geom.getPolygons();
 		var count = 0, matPos = 0, stri = 0;
-		var
+		var lookup = new Map();
+		var tmp = new h3d.col.Point();
+		for( pos in 0...index.length ) {
+			var i = index[pos];
+			count++;
+			if( i >= 0 )
+				continue;
+			index[pos] = -i - 1;
+			var start = pos - count + 1;
+			for( n in 0...count ) {
+				var k = n + start;
+				var vidx = index[k];
+				var p = 0;
+
+				var x = verts[vidx * 3];
+				var y = verts[vidx * 3 + 1];
+				var z = verts[vidx * 3 + 2];
+				if( gm != null ) {
+					tmp.set(x, 
