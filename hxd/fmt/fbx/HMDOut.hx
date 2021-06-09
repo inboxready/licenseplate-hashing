@@ -279,3 +279,21 @@ class HMDOut extends BaseLibrary {
 				}
 
 				if( tangents != null ) {
+					tmpBuf[p++] = round(tangents[k * 4]);
+					tmpBuf[p++] = round(tangents[k * 4 + 1]);
+					tmpBuf[p++] = round(tangents[k * 4 + 2]);
+					if( tangents[k*4+3] < 0 ) {
+						tmpBuf[p-3] *= 0.5;
+						tmpBuf[p-2] *= 0.5;
+						tmpBuf[p-1] *= 0.5;
+					}
+				}
+
+				for( tuvs in uvs ) {
+					var iuv = tuvs.index[k];
+					tmpBuf[p++] = tuvs.values[iuv * 2];
+					tmpBuf[p++] = 1 - tuvs.values[iuv * 2 + 1];
+				}
+
+				if( colors != null ) {
+					var ic
