@@ -258,4 +258,24 @@ class HMDOut extends BaseLibrary {
 				var y = verts[vidx * 3 + 1];
 				var z = verts[vidx * 3 + 2];
 				if( gm != null ) {
-					tmp.set(x, 
+					tmp.set(x, y, z);
+					tmp.transform(gm);
+					x = tmp.x;
+					y = tmp.y;
+					z = tmp.z;
+				}
+				tmpBuf[p++] = x;
+				tmpBuf[p++] = y;
+				tmpBuf[p++] = z;
+				g.bounds.addPos(x, y, z);
+
+				if( normals != null ) {
+					var nx = normals[k * 3];
+					var ny = normals[k * 3 + 1];
+					var nz = normals[k * 3 + 2];
+					tmpBuf[p++] = nx;
+					tmpBuf[p++] = ny;
+					tmpBuf[p++] = nz;
+				}
+
+				if( tangents != null ) {
