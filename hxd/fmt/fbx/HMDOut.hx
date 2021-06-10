@@ -296,4 +296,15 @@ class HMDOut extends BaseLibrary {
 				}
 
 				if( colors != null ) {
-					var ic
+					var icol = colors.index[k];
+					tmpBuf[p++] = colors.values[icol * 4];
+					tmpBuf[p++] = colors.values[icol * 4 + 1];
+					tmpBuf[p++] = colors.values[icol * 4 + 2];
+				}
+
+				if( skin != null ) {
+					var k = vidx * skin.bonesPerVertex;
+					var idx = 0;
+					if(!(skin.bonesPerVertex == 3 || skin.bonesPerVertex == 4)) throw "assert";
+					for( i in 0...3 )  // Only 3 weights are necessary even in fourBonesByVertex since they sum-up to 1
+						tmpBuf[p+
