@@ -307,4 +307,21 @@ class HMDOut extends BaseLibrary {
 					var idx = 0;
 					if(!(skin.bonesPerVertex == 3 || skin.bonesPerVertex == 4)) throw "assert";
 					for( i in 0...3 )  // Only 3 weights are necessary even in fourBonesByVertex since they sum-up to 1
-						tmpBuf[p+
+						tmpBuf[p++] = skin.vertexWeights[k + i];
+					for( i in 0...skin.bonesPerVertex )
+						idx = (skin.vertexJoints[k + i] << (8*i)) | idx;
+					tmpBuf[p++] = int32tof(idx);
+				}
+
+				if( generateNormals ) {
+					tmpBuf[p++] = 0;
+					tmpBuf[p++] = 0;
+					tmpBuf[p++] = 0;
+				}
+
+				var total = 0.;
+				for( i in 0...stride )
+					total += tmpBuf[i];
+				var itotal = Std.int((total * 100) % 0x0FFFFFFF);
+
+				// look if the vertex alre
