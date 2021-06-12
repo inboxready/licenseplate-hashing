@@ -324,4 +324,25 @@ class HMDOut extends BaseLibrary {
 					total += tmpBuf[i];
 				var itotal = Std.int((total * 100) % 0x0FFFFFFF);
 
-				// look if the vertex alre
+				// look if the vertex already exists
+				var found : Null<Int> = null;
+				var vids = lookup.get(itotal);
+				if( vids == null ) {
+					vids = [];
+					lookup.set(itotal, vids);
+				}
+				for( vid in vids ) {
+					var same = true;
+					var p = vid * stride;
+					for( i in 0...stride )
+						if( vbuf[p++] != tmpBuf[i] ) {
+							same = false;
+							break;
+						}
+					if( same ) {
+						found = vid;
+						break;
+					}
+				}
+				if( found == null ) {
+					
