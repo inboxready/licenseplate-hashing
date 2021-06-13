@@ -381,3 +381,27 @@ class HMDOut extends BaseLibrary {
 					idx.push(vertexRemap[start + n]);
 					idx.push(vertexRemap[start + count - 1]);
 					idx.push(vertexRemap[start + n + 1]);
+				}
+			}
+
+			index[pos] = i; // restore
+			count = 0;
+		}
+
+		if( generateNormals )
+			updateNormals(g,vbuf,ibufs);
+
+		// write data
+		g.vertexPosition = dataOut.length;
+		for( i in 0...vbuf.length )
+			writeFloat(vbuf[i]);
+		g.indexPosition = dataOut.length;
+		g.indexCounts = [];
+
+		var matMap = [], matCount = 0;
+		var is32 = g.vertexCount > 0x10000;
+
+		for( idx in ibufs ) {
+			if( idx == null ) {
+				matCount++;
+				
