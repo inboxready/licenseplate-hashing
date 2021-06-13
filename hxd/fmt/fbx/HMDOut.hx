@@ -362,4 +362,22 @@ class HMDOut extends BaseLibrary {
 					idx.push(vertexRemap[start + count - 1]);
 					idx.push(vertexRemap[start + n + 1]);
 				}
-		
+			}
+			// by-material index
+			else {
+				var mid;
+				if( mats == null )
+					mid = 0;
+				else {
+					mid = mats[matPos];
+					if( mats.length > 1 ) matPos++;
+				}
+				var idx = ibufs[mid];
+				if( idx == null ) {
+					idx = [];
+					ibufs[mid] = idx;
+				}
+				for( n in 0...count - 2 ) {
+					idx.push(vertexRemap[start + n]);
+					idx.push(vertexRemap[start + count - 1]);
+					idx.push(vertexRemap[start + n + 1]);
