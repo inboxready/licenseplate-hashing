@@ -404,4 +404,26 @@ class HMDOut extends BaseLibrary {
 		for( idx in ibufs ) {
 			if( idx == null ) {
 				matCount++;
-				
+				continue;
+			}
+			matMap.push(matCount++);
+			g.indexCounts.push(idx.length);
+			if( is32 ) {
+				for( i in idx )
+					dataOut.writeInt32(i);
+			} else {
+				for( i in idx )
+					dataOut.writeUInt16(i);
+			}
+		}
+
+		if( skin != null && skin.isSplit() )
+			matMap = null;
+
+		return { g : g, materials : matMap };
+	}
+
+	function addModels(includeGeometry) {
+
+		var root = buildHierarchy().root;
+		var objects = [], joints = [], skins = [], foundSk
