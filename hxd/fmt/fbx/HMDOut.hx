@@ -345,4 +345,21 @@ class HMDOut extends BaseLibrary {
 					}
 				}
 				if( found == null ) {
-					
+					found = g.vertexCount;
+					g.vertexCount++;
+					for( i in 0...stride )
+						vbuf.push(tmpBuf[i]);
+					vids.push(found);
+				}
+				vertexRemap.push(found);
+			}
+
+			// by-skin-group index
+			if( skin != null && skin.isSplit() ) {
+				for( n in 0...count - 2 ) {
+					var idx = ibufs[skin.triangleGroups[stri++]];
+					idx.push(vertexRemap[start + n]);
+					idx.push(vertexRemap[start + count - 1]);
+					idx.push(vertexRemap[start + n + 1]);
+				}
+		
