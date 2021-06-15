@@ -444,4 +444,23 @@ class HMDOut extends BaseLibrary {
 				if( isSkin ) {
 					skins.push(t);
 				} else
-					object
+					objects.push(t);
+			}
+			for( c in t.childs )
+				indexRec(c);
+		}
+		indexRec(root);
+
+		// create joints
+		for( o in joints ) {
+			if( o.isMesh ) throw "assert";
+			var j = new h3d.anim.Skin.Joint();
+			getDefaultMatrixes(o.model); // store for later usage in animation
+			j.index = o.model.getId();
+			j.name = o.model.getName();
+			o.joint = j;
+			if( o.parent != null ) {
+				j.parent = o.parent.joint;
+				if( o.parent.isJoint ) o.parent.joint.subs.push(j);
+			}
+		}
