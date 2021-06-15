@@ -426,4 +426,22 @@ class HMDOut extends BaseLibrary {
 	function addModels(includeGeometry) {
 
 		var root = buildHierarchy().root;
-		var objects = [], joints = [], skins = [], foundSk
+		var objects = [], joints = [], skins = [], foundSkin : Array<TmpObject> = null;
+		var uid = 0;
+		function indexRec( t : TmpObject ) {
+			if( t.isJoint ) {
+				joints.push(t);
+			} else {
+				var isSkin = false;
+				if( foundSkin == null ) {
+					for( c in t.childs )
+						if( c.isJoint ) {
+							isSkin = true;
+							break;
+						}
+				} else
+					isSkin = foundSkin.indexOf(t) >= 0;
+				if( isSkin ) {
+					skins.push(t);
+				} else
+					object
