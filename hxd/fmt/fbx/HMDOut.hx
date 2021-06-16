@@ -494,4 +494,16 @@ class HMDOut extends BaseLibrary {
 				if( o2.model == m ) {
 					foundSkin.push(o);
 					o2.skin = o;
-					if( o.m
+					if( o.model == null ) o.model = m;
+					ignoreMissingObject(m.getId()); // make sure we don't store animation for the model (only skin object has one)
+					// copy parent
+					var p = o.parent;
+					if( p != o2 ) {
+						o2.parent.childs.remove(o2);
+						o2.parent = p;
+						if( p != null ) p.childs.push(o2) else root = o2;
+					}
+					// remove skin from hierarchy
+					if( p != null ) p.childs.remove(o);
+					// move not joint to new parent
+					// (only first level, others wil
