@@ -483,4 +483,15 @@ class HMDOut extends BaseLibrary {
 			if( subDef == null )
 				continue;
 			var def = getParent(subDef, "Deformer");
-			va
+			var geoms = getParents(def, "Geometry");
+			if( geoms.length == 0 ) continue;
+			if( geoms.length > 1 ) throw "Single skin applied to multiple geometries not supported";
+			var models = getParents(geoms[0],"Model");
+			if( models.length == 0 ) continue;
+			if( models.length > 1 ) throw "Single skin applied to multiple models not supported";
+			var m = models[0];
+			for( o2 in objects )
+				if( o2.model == m ) {
+					foundSkin.push(o);
+					o2.skin = o;
+					if( o.m
