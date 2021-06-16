@@ -464,3 +464,23 @@ class HMDOut extends BaseLibrary {
 				if( o.parent.isJoint ) o.parent.joint.subs.push(j);
 			}
 		}
+
+		// mark skin references
+		foundSkin = [];
+		for( o in skins ) {
+			function loopRec( o : TmpObject ) {
+				for( j in o.childs ) {
+					if( !j.isJoint ) continue;
+					var s = getParent(j.model, "Deformer", true);
+					if( s != null ) return s;
+					s = loopRec(j);
+					if( s != null ) return s;
+				}
+				return null;
+			}
+			var subDef = loopRec(o);
+			// skip skin with no skinned bone
+			if( subDef == null )
+				continue;
+			var def = getParent(subDef, "Deformer");
+			va
