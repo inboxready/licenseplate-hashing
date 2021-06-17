@@ -506,4 +506,24 @@ class HMDOut extends BaseLibrary {
 					// remove skin from hierarchy
 					if( p != null ) p.childs.remove(o);
 					// move not joint to new parent
-					// (only first level, others wil
+					// (only first level, others will follow their respective joint)
+					for( c in o.childs.copy() )
+						if( !c.isJoint ) {
+							o.childs.remove(c);
+							o2.childs.push(c);
+							c.parent = o2;
+						}
+					break;
+				}
+		}
+
+		// we need to have ignored skins objects anims first
+		if( !includeGeometry )
+			return;
+
+		objects = [];
+		if( root.childs.length <= 1 && root.model == null ) {
+			root = root.childs[0];
+			root.parent = null;
+		}
+		if( root != null ) indexRec(root
