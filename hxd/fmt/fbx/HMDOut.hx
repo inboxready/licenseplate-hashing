@@ -538,4 +538,14 @@ class HMDOut extends BaseLibrary {
 		var index = 0;
 		for( o in objects ) {
 
-			o.
+			o.index = index++;
+
+			var model = new Model();
+			var ref = o.skin == null ? o : o.skin;
+
+			model.name = o.model == null ? null : o.model.getName();
+			model.parent = o.parent == null || o.parent.isJoint ? -1 : o.parent.index;
+			model.follow = o.parent != null && o.parent.isJoint ? o.parent.model.getName() : null;
+			var m = ref.model == null ? new hxd.fmt.fbx.BaseLibrary.DefaultMatrixes() : getDefaultMatrixes(ref.model);
+			var p = new Position();
+			p.x = m.trans == nu
