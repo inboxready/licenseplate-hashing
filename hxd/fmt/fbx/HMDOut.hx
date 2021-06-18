@@ -548,4 +548,15 @@ class HMDOut extends BaseLibrary {
 			model.follow = o.parent != null && o.parent.isJoint ? o.parent.model.getName() : null;
 			var m = ref.model == null ? new hxd.fmt.fbx.BaseLibrary.DefaultMatrixes() : getDefaultMatrixes(ref.model);
 			var p = new Position();
-			p.x = m.trans == nu
+			p.x = m.trans == null ? 0 : -m.trans.x;
+			p.y = m.trans == null ? 0 : m.trans.y;
+			p.z = m.trans == null ? 0 : m.trans.z;
+			p.sx = m.scale == null ? 1 : m.scale.x;
+			p.sy = m.scale == null ? 1 : m.scale.y;
+			p.sz = m.scale == null ? 1 : m.scale.z;
+
+			if( o.model != null && o.model.getType() == "Camera" ) {
+				var props = getChild(o.model, "NodeAttribute");
+				var fov = 45., ratio = 16 / 9;
+				for( p in props.getAll("Properties70.P") ) {
+				
