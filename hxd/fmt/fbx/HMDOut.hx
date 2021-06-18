@@ -526,4 +526,16 @@ class HMDOut extends BaseLibrary {
 			root = root.childs[0];
 			root.parent = null;
 		}
-		if( root != null ) indexRec(root
+		if( root != null ) indexRec(root); // reorder after we have changed hierarchy
+
+		var hskins = new Map(), tmpGeom = new Map();
+		// prepare things for skinning
+		for( g in this.root.getAll("Objects.Geometry") )
+			tmpGeom.set(g.getId(), { setSkin : function(_) { }, vertexCount : function() return Std.int(new hxd.fmt.fbx.Geometry(this, g).getVertices().length/3) } );
+
+		var hgeom = new Map();
+		var hmat = new Map<Int,Int>();
+		var index = 0;
+		for( o in objects ) {
+
+			o.
