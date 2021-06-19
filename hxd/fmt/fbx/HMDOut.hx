@@ -559,4 +559,19 @@ class HMDOut extends BaseLibrary {
 				var props = getChild(o.model, "NodeAttribute");
 				var fov = 45., ratio = 16 / 9;
 				for( p in props.getAll("Properties70.P") ) {
-				
+					switch( p.props[0].toString() ) {
+					case "FilmAspectRatio":
+						ratio = p.props[4].toFloat();
+					case "FieldOfView":
+						fov = p.props[4].toFloat();
+					default:
+					}
+				}
+				var fovY = 2 * Math.atan( Math.tan(fov * 0.5 * Math.PI / 180) / ratio ) * 180 / Math.PI;
+				if( model.props == null ) model.props = [];
+				model.props.push(CameraFOVY(fovY));
+			}
+
+			var q = m.toQuaternion(true);
+			q.normalize();
+			if( q.w < 0 ) q.negate(
