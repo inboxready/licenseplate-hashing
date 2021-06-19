@@ -594,4 +594,18 @@ class HMDOut extends BaseLibrary {
 					hasNormalMap = m.normalMap != null;
 					continue;
 				}
-				
+				var mat = new Material();
+				mid = d.materials.length;
+				mids.push(mid);
+				hmat.set(m.getId(), mid);
+				d.materials.push(mat);
+
+				mat.name = m.getName();
+				mat.blendMode = null;
+
+				// if there's a slight amount of opacity on the material
+				// it's usually meant to perform additive blending on 3DSMax
+				for( p in m.getAll("Properties70.P") ) {
+					var pval = p.props[4];
+					switch( p.props[0].toString() ) {
+					
