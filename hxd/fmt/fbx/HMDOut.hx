@@ -608,4 +608,21 @@ class HMDOut extends BaseLibrary {
 				for( p in m.getAll("Properties70.P") ) {
 					var pval = p.props[4];
 					switch( p.props[0].toString() ) {
-					
+					case "Opacity":
+						var v = pval.toFloat();
+						if( v < 1 && v > 0.98 && mat.blendMode == null ) mat.blendMode = Add;
+					default:
+					}
+				}
+
+				// get texture
+				var texture = getSpecChild(m, "DiffuseColor");
+				if( texture != null ) {
+					var path = makeTexturePath(texture);
+					if( path != null ) mat.diffuseTexture = path;
+				}
+
+				// get other textures
+				mat.normalMap = makeTexturePath(getSpecChild(m, "NormalMap"));
+				if( mat.normalMap != null )
+					hasNo
