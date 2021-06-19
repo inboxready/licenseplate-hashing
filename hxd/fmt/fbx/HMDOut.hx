@@ -574,4 +574,24 @@ class HMDOut extends BaseLibrary {
 
 			var q = m.toQuaternion(true);
 			q.normalize();
-			if( q.w < 0 ) q.negate(
+			if( q.w < 0 ) q.negate();
+			p.qx = q.x;
+			p.qy = q.y;
+			p.qz = q.z;
+			model.position = p;
+			model.geometry = -1;
+			d.models.push(model);
+
+			if( !o.isMesh ) continue;
+
+			var mids : Array<Int> = [];
+			var hasNormalMap = false;
+			for( m in getChilds(o.model, "Material") ) {
+				var mid = hmat.get(m.getId());
+				if( mid != null ) {
+					mids.push(mid);
+					var m = d.materials[mid];
+					hasNormalMap = m.normalMap != null;
+					continue;
+				}
+				
