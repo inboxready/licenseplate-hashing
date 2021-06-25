@@ -636,4 +636,12 @@ class HMDOut extends BaseLibrary {
 
 				// get alpha map
 				var transp = getSpecChild(m, "TransparentColor");
-				if( t
+				if( transp != null ) {
+					var path = transp.get("FileName").props[0].toString();
+					if( path != "" ) {
+						path = path.toLowerCase();
+						var ext = path.split(".").pop();
+						if( texture != null && path == texture.get("FileName").props[0].toString().toLowerCase() ) {
+							// if that's the same file, we're doing alpha blending
+							if( mat.blendMode == null && ext != "jpg" && ext != "jpeg" ) mat.blendMode = Alpha;
+						} els
