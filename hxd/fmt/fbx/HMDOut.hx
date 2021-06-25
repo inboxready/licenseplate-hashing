@@ -644,4 +644,21 @@ class HMDOut extends BaseLibrary {
 						if( texture != null && path == texture.get("FileName").props[0].toString().toLowerCase() ) {
 							// if that's the same file, we're doing alpha blending
 							if( mat.blendMode == null && ext != "jpg" && ext != "jpeg" ) mat.blendMode = Alpha;
-						} els
+						} else
+							throw "Alpha texture that is different from diffuse is not supported in HMD";
+					}
+				}
+
+				if( mat.blendMode == null ) mat.blendMode = None;
+			}
+
+			var g = getChild(o.model, "Geometry");
+
+			var skin = null;
+			if( o.skin != null ) {
+				var rootJoints = [];
+				for( c in o.skin.childs )
+					if( c.isJoint )
+						rootJoints.push(c.joint);
+				skin = createSkin(hskins, tmpGeom, rootJoints);
+				if( skin.boundJoints.length > ma
