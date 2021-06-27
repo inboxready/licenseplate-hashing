@@ -671,4 +671,20 @@ class HMDOut extends BaseLibrary {
 
 			var gdata = hgeom.get(g.getId());
 			if( gdata == null ) {
-				var geom = buildGeom(new hxd.fmt.fbx.Geometry(this, g), skin, dataOut, hasNormalMap ||
+				var geom = buildGeom(new hxd.fmt.fbx.Geometry(this, g), skin, dataOut, hasNormalMap || generateTangents);
+				gdata = { gid : d.geometries.length, materials : geom.materials };
+				d.geometries.push(geom.g);
+				hgeom.set(g.getId(), gdata);
+			}
+			model.geometry = gdata.gid;
+
+			if( mids.length == 0 ) {
+				var mat = new Material();
+				mat.blendMode = None;
+				mat.name = "default";
+				var mid = d.materials.length;
+				d.materials.push(mat);
+				mids = [mid];
+			}
+			if( gdata.materials == null )
+				mod
