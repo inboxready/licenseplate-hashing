@@ -687,4 +687,20 @@ class HMDOut extends BaseLibrary {
 				mids = [mid];
 			}
 			if( gdata.materials == null )
-				mod
+				model.materials = mids;
+			else
+				model.materials = [for( id in gdata.materials ) mids[id]];
+		}
+	}
+
+	function makeTexturePath( tex : FbxNode ) {
+		if( tex == null )
+			return null;
+		var path = tex.get("FileName").props[0].toString();
+		if( path == "" )
+			return null;
+		path = path.split("\\").join("/");
+		if( !absoluteTexturePath ) {
+			if( filePath != null && StringTools.startsWith(path.toLowerCase(), filePath) )
+				path = path.substr(filePath.length);
+			els
