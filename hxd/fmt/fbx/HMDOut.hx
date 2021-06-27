@@ -722,4 +722,13 @@ class HMDOut extends BaseLibrary {
 		for( jo in skin.allJoints ) {
 			var j = new SkinJoint();
 			j.name = jo.name;
-			j.parent = jo
+			j.parent = jo.parent == null ? -1 : jo.parent.index;
+			j.bind = jo.bindIndex;
+			j.position = makePosition(jo.defMat);
+			if( jo.transPos != null ) {
+				j.transpos = makePosition(jo.transPos);
+				if( j.transpos.sx != 1 || j.transpos.sy != 1 || j.transpos.sz != 1 ) {
+					// FIX : the scale is not correctly taken into account, this formula will extract it and fix things
+					var tmp = jo.transPos.clone();
+					tmp.transpose();
+					var s = tmp.getSc
