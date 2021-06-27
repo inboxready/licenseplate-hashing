@@ -703,4 +703,23 @@ class HMDOut extends BaseLibrary {
 		if( !absoluteTexturePath ) {
 			if( filePath != null && StringTools.startsWith(path.toLowerCase(), filePath) )
 				path = path.substr(filePath.length);
-			els
+			else {
+				// relative resource path
+				var k = path.split("/res/");
+				if( k.length > 1 ) {
+					k.shift();
+					path = k.join("/res/");
+				}
+			}
+		}
+		return path;
+	}
+
+	function makeSkin( skin : h3d.anim.Skin, obj : TmpObject ) {
+		var s = new Skin();
+		s.name = obj.model.getName();
+		s.joints = [];
+		for( jo in skin.allJoints ) {
+			var j = new SkinJoint();
+			j.name = jo.name;
+			j.parent = jo
