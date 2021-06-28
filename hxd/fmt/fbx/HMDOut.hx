@@ -773,4 +773,19 @@ class HMDOut extends BaseLibrary {
 		return p;
 	}
 
-	inline function writeFloat( f : Floa
+	inline function writeFloat( f : Float ) {
+		dataOut.writeFloat( f == 0 ? 0 : f ); // prevent negative zero
+	}
+
+	function writeFrame( o : h3d.anim.LinearAnimation.LinearObject, fid : Int ) {
+		if( d.version < 3 ) return;
+		if( o.frames != null ) {
+			var f = o.frames[fid];
+			if( o.hasPosition ) {
+				writeFloat(f.tx);
+				writeFloat(f.ty);
+				writeFloat(f.tz);
+			}
+			if( o.hasRotation ) {
+				var ql = Math.sqrt(f.qx * f.qx + f.qy * f.qy + f.qz * f.qz + f.qw * f.qw);
+				if( ql * f.qw < 0 ) ql = -ql; // mak
