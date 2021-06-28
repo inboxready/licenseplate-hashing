@@ -751,4 +751,26 @@ class HMDOut extends BaseLibrary {
 				s.split.push(ss);
 			}
 		}
-	
+		return s;
+	}
+
+	function makePosition( m : h3d.Matrix ) {
+		var p = new Position();
+		var s = m.getScale();
+		var q = new h3d.Quat();
+		q.initRotateMatrix(m);
+		q.normalize();
+		if( q.w < 0 ) q.negate();
+		p.sx = round(s.x);
+		p.sy = round(s.y);
+		p.sz = round(s.z);
+		p.qx = round(q.x);
+		p.qy = round(q.y);
+		p.qz = round(q.z);
+		p.x = round(m._41);
+		p.y = round(m._42);
+		p.z = round(m._43);
+		return p;
+	}
+
+	inline function writeFloat( f : Floa
