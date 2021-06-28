@@ -731,4 +731,24 @@ class HMDOut extends BaseLibrary {
 					// FIX : the scale is not correctly taken into account, this formula will extract it and fix things
 					var tmp = jo.transPos.clone();
 					tmp.transpose();
-					var s = tmp.getSc
+					var s = tmp.getScale();
+					tmp.prependScale(1 / s.x, 1 / s.y, 1 / s.z);
+					tmp.transpose();
+					j.transpos = makePosition(tmp);
+					j.transpos.sx = round(s.x);
+					j.transpos.sy = round(s.y);
+					j.transpos.sz = round(s.z);
+				}
+			}
+			s.joints.push(j);
+		}
+		if( skin.splitJoints != null ) {
+			s.split = [];
+			for( sp in skin.splitJoints ) {
+				var ss = new SkinSplit();
+				ss.materialIndex = sp.material;
+				ss.joints = [for( j in sp.joints ) j.index];
+				s.split.push(ss);
+			}
+		}
+	
