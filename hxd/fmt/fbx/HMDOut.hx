@@ -806,4 +806,18 @@ class HMDOut extends BaseLibrary {
 		if( o.alphas != null )
 			writeFloat(o.alphas[fid]);
 		if( o.propValues != null )
-			writeFloat(
+			writeFloat(o.propValues[fid]);
+	}
+
+	function makeAnimation( anim : h3d.anim.Animation ) {
+		var a = new Animation();
+		a.name = anim.name;
+		a.loop = true;
+		a.speed = 1;
+		a.sampling = anim.sampling;
+		a.frames = anim.frameCount;
+		a.objects = [];
+		a.dataPosition = dataOut.length;
+		if( animationEvents != null )
+			a.events = [for( a in animationEvents ) { var e = new AnimationEvent(); e.frame = a.frame; e.data = a.data; e; } ];
+		var object
