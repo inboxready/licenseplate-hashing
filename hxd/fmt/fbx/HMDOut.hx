@@ -788,4 +788,22 @@ class HMDOut extends BaseLibrary {
 			}
 			if( o.hasRotation ) {
 				var ql = Math.sqrt(f.qx * f.qx + f.qy * f.qy + f.qz * f.qz + f.qw * f.qw);
-				if( ql * f.qw < 0 ) ql = -ql; // mak
+				if( ql * f.qw < 0 ) ql = -ql; // make sure normalized qw > 0
+				writeFloat(round(f.qx / ql));
+				writeFloat(round(f.qy / ql));
+				writeFloat(round(f.qz / ql));
+			}
+			if( o.hasScale ) {
+				writeFloat(f.sx);
+				writeFloat(f.sy);
+				writeFloat(f.sz);
+			}
+		}
+		if( o.uvs != null ) {
+			writeFloat(o.uvs[fid<<1]);
+			writeFloat(o.uvs[(fid<<1)+1]);
+		}
+		if( o.alphas != null )
+			writeFloat(o.alphas[fid]);
+		if( o.propValues != null )
+			writeFloat(
