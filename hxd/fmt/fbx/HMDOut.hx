@@ -830,4 +830,19 @@ class HMDOut extends BaseLibrary {
 			o.name = obj.objectName;
 			o.flags = new haxe.EnumFlags();
 			o.props = [];
-			if( obj.frames != 
+			if( obj.frames != null ) {
+				count = obj.frames.length;
+				if( obj.hasPosition || d.version < 3 )
+					o.flags.set(HasPosition);
+				if( obj.hasRotation )
+					o.flags.set(HasRotation);
+				if( obj.hasScale )
+					o.flags.set(HasScale);
+				if( d.version < 3 ) {
+					for( f in obj.frames ) {
+						if( o.flags.has(HasPosition) ) {
+							writeFloat(f.tx);
+							writeFloat(f.ty);
+							writeFloat(f.tz);
+						}
+						if( o.flags.has(HasRotati
