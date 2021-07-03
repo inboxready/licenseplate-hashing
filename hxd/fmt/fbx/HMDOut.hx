@@ -861,4 +861,15 @@ class HMDOut extends BaseLibrary {
 				}
 			}
 			if( obj.uvs != null ) {
-				o.flags.set(HasUV
+				o.flags.set(HasUV);
+				if( count == 0 ) count = obj.uvs.length>>1 else if( count != obj.uvs.length>>1 ) throw "assert";
+				if( d.version < 3 )
+					for( f in obj.uvs )
+						writeFloat(f);
+				}
+			if( obj.alphas != null ) {
+				o.flags.set(HasAlpha);
+				if( count == 0 ) count = obj.alphas.length else if( count != obj.alphas.length ) throw "assert";
+				if( d.version < 3 )
+					for( f in obj.alphas )
+						writeFloat(f);
