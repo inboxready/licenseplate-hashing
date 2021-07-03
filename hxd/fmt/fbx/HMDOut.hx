@@ -873,3 +873,19 @@ class HMDOut extends BaseLibrary {
 				if( d.version < 3 )
 					for( f in obj.alphas )
 						writeFloat(f);
+			}
+			if( obj.propValues != null ) {
+				o.flags.set(HasProps);
+				o.props.push(obj.propName);
+				if( count == 0 ) count = obj.propValues.length else if( count != obj.propValues.length ) throw "assert";
+				if( d.version < 3 )
+					for( f in obj.propValues )
+						writeFloat(f);
+			}
+			if( count == 0 )
+				throw "assert"; // no data ?
+			if( count == 1 ) {
+				o.flags.set(SingleFrame);
+				writeFrame(obj,0);
+			} else {
+				if( count != anim.frameCount ) throw "assert"
