@@ -904,4 +904,20 @@ class HMDOut extends BaseLibrary {
 		// if we have only animation data, make sure to export all joints positions
 		// because they might be applied to a different model at runtime
 		if( !includeGeometry )
-			optimizeSkin = 
+			optimizeSkin = false;
+
+		leftHandConvert();
+		autoMerge();
+
+		if( filePath != null ) {
+			filePath = filePath.split("\\").join("/").toLowerCase();
+			if( !StringTools.endsWith(filePath, "/") )
+				filePath += "/";
+		}
+		this.filePath = filePath;
+
+		d = new Data();
+		#if hmd_version
+		d.version = Std.parseInt(#if macro haxe.macro.Context.definedValue("hmd_version") #else haxe.macro.Compiler.getDefine("hmd_version") #end);
+		#else
+		d.version = Data.CURRENT_V
