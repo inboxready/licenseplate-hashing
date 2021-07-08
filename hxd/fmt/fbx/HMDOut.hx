@@ -920,4 +920,26 @@ class HMDOut extends BaseLibrary {
 		#if hmd_version
 		d.version = Std.parseInt(#if macro haxe.macro.Context.definedValue("hmd_version") #else haxe.macro.Compiler.getDefine("hmd_version") #end);
 		#else
-		d.version = Data.CURRENT_V
+		d.version = Data.CURRENT_VERSION;
+		#end
+		d.geometries = [];
+		d.materials = [];
+		d.models = [];
+		d.animations = [];
+
+		dataOut = new haxe.io.BytesOutput();
+
+		addModels(includeGeometry);
+
+		var names = getAnimationNames();
+		for ( animName in names ) {
+			var anim = loadAnimation(animName);
+			if(anim != null)
+				d.animations.push(makeAnimation(anim));
+		}
+
+		d.data = dataOut.getBytes();
+		return d;
+	}
+
+}
