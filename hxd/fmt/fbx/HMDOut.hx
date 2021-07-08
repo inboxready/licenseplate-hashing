@@ -888,4 +888,20 @@ class HMDOut extends BaseLibrary {
 				o.flags.set(SingleFrame);
 				writeFrame(obj,0);
 			} else {
-				if( count != anim.frameCount ) throw "assert"
+				if( count != anim.frameCount ) throw "assert";
+				animatedObjects.push(obj);
+			}
+			a.objects.push(o);
+		}
+		for( i in 0...anim.frameCount )
+			for( obj in animatedObjects )
+				writeFrame(obj,i);
+		return a;
+	}
+
+	public function toHMD( filePath : String, includeGeometry : Bool ) : Data {
+
+		// if we have only animation data, make sure to export all joints positions
+		// because they might be applied to a different model at runtime
+		if( !includeGeometry )
+			optimizeSkin = 
