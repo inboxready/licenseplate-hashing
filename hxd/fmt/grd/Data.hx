@@ -46,4 +46,7 @@ class GradientStop {
 	public var opacity   : Float;
 	public var colorStop : ColorStop;
 
-	public function new(
+	public function new() {}
+}
+
+class Data extends haxe.ds.StringMap<Gradient> { }
