@@ -27,4 +27,16 @@ class Reader {
             case "VlLs" : value = parseList(i);
             case "doub" : value = i.readDouble();
             case "UntF" : i.readString(4); value = i.readDouble();
-            case "TEXT" : value = readUnicod
+            case "TEXT" : value = readUnicode(i, i.readInt32());
+            case "enum" : value = parseEnum(i);
+            case "long" : value = i.readInt32();
+            case "bool" : value = i.readByte();
+            case "tdtd" : var len = i.readInt32(); value = { length : len, value : i.read(len) };
+			default     : throw "Unhandled type \"" + type + "\"";
+		}
+		return value;
+	}
+
+	function parseObj(i : haxe.io.Input) : Dynamic {
+		var len  = i.readInt32(); if (len == 0) len = 4;
+		var name
