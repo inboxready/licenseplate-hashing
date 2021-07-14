@@ -39,4 +39,20 @@ class Reader {
 
 	function parseObj(i : haxe.io.Input) : Dynamic {
 		var len  = i.readInt32(); if (len == 0) len = 4;
-		var name
+		var name = readUnicode(i, len);
+
+		len = i.readInt32(); if (len == 0) len = 4;
+		var type = i.readString(len);
+
+		var obj = { name : name, type : type }
+
+		var numProperties = i.readInt32();
+		for (pi in 0...numProperties) {
+			len = i.readInt32(); if (len == 0) len = 4;
+			var key = i.readString(len);
+			var si = key.indexOf(" ");
+			if (si > 0) key = key.substring(0, si);
+			Reflect.setField(obj, key, parseValue(i));
+		}
+
+		retu
