@@ -76,4 +76,18 @@ class Reader {
 
 	public function read() : Data {
 		var d = new Data();
-		i.re
+		i.read(32);      // skip header
+		i.readString(4); // main object
+
+		var list = cast(parseValue(i), Array<Dynamic>);
+		for (obj in list) {
+			var obj = obj.Grad;
+			var grd = new Gradient();
+
+			var nm : String = obj.Nm;
+			grd.name = nm.substring(nm.indexOf("=") + 1);
+			grd.interpolation = obj.Intr;
+
+			createColorStops        (obj.Clrs, grd.colorStops);
+			createTransparencyStops (obj.Trns, grd.transparencyStops);
+			createGradientStops     (grd.colorStops,
