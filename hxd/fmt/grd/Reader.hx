@@ -55,4 +55,25 @@ class Reader {
 			Reflect.setField(obj, key, parseValue(i));
 		}
 
-		retu
+		return obj;
+	}
+
+	function parseList(i : haxe.io.Input) {
+		var res = new Array<Dynamic>();
+		var len = i.readInt32();
+		for (li in 0...len)
+			res.push(parseValue(i));
+		return res;
+	}
+
+	function parseEnum(i : haxe.io.Input) {
+		var len  = i.readInt32(); if (len == 0) len = 4;
+		var type = i.readString(len);
+		len = i.readInt32(); if (len == 0) len = 4;
+		var value = i.readString(len);
+		return { type : type, value : value };
+	}
+
+	public function read() : Data {
+		var d = new Data();
+		i.re
