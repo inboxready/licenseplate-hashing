@@ -90,4 +90,22 @@ class Reader {
 
 			createColorStops        (obj.Clrs, grd.colorStops);
 			createTransparencyStops (obj.Trns, grd.transparencyStops);
-			createGradientStops     (grd.colorStops,
+			createGradientStops     (grd.colorStops, grd.transparencyStops, grd.gradientStops);
+
+			d.set(grd.name, grd);
+		}
+		return d;
+	}
+
+	function createColorStops(list : Array<Dynamic>, out : Array<ColorStop>) {
+		for (e in list) {
+			var color = Color.RGB(0, 0, 0);
+			var type  : ColorStopType;
+			switch(e.Type.value) {
+				case "UsrS" : type = User;
+				case "BckC" : type = Background;
+				case "FrgC" : type = Foreground;
+				default : throw "unhalndled color stop type : " + e.Type.value;
+			}
+
+			if (
