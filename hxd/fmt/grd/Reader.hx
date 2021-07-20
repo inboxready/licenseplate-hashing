@@ -108,4 +108,21 @@ class Reader {
 				default : throw "unhalndled color stop type : " + e.Type.value;
 			}
 
-			if (
+			if (type == User) {
+				switch(e.Clr.type) {
+					case "RGBC" : color = Color.RGB(e.Clr.Rd, e.Clr.Grn,  e.Clr.Bl);
+					case "HSBC" : color = Color.HSB(e.Clr.H,  e.Clr.Strt, e.Clr.Brgh);
+					default : //throw "unhandled color type : " + e.Clr.type;
+				}
+			}
+
+			var stop = new ColorStop();
+			stop.color = color;
+			stop.location = e.Lctn;
+			stop.midpoint = e.Mdpn;
+			stop.type = type;
+			out.push(stop);
+		}
+	}
+
+	function crea
