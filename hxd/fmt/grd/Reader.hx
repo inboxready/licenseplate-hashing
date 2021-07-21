@@ -162,4 +162,13 @@ class Reader {
 		if (index <  0) return trns[trns.length - 1].opacity;
 
 		var prev = trns[index - 1];
-		var next = trn
+		var next = trns[index];
+		var w = next.location - prev.location;
+		var h = next.opacity - prev.opacity;
+
+		if (w == 0) return prev.opacity;
+		var m = h / w;
+		var b = prev.opacity - (m * prev.location);
+		return m * clr.location + b;
+	}
+}
