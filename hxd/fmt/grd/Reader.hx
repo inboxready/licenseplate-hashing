@@ -125,4 +125,20 @@ class Reader {
 		}
 	}
 
-	function crea
+	function createTransparencyStops(list : Array<Dynamic>, out : Array<TransparencyStop>) {
+		for (e in list) {
+			var stop = new TransparencyStop();
+			stop.opacity = e.Opct;
+			stop.location = e.Lctn;
+			stop.midpoint = e.Mdpn;
+			out.push(stop);
+		}
+	}
+
+	function createGradientStops(
+		clrs : Array<ColorStop>,
+		trns : Array<TransparencyStop>,
+		out : Array<GradientStop>) {
+
+		for (clr in clrs) {
+			var stop = new GradientStop(
