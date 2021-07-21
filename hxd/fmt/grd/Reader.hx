@@ -141,4 +141,25 @@ class Reader {
 		out : Array<GradientStop>) {
 
 		for (clr in clrs) {
-			var stop = new GradientStop(
+			var stop = new GradientStop();
+			stop.opacity = getOpacity(clr, trns);
+			stop.colorStop = clr;
+			out.push(stop);
+		}
+	}
+
+	function getOpacity(clr : ColorStop, trns : Array<TransparencyStop>) {
+		var index = -1;
+		for (i in 0...trns.length) {
+			var t = trns[i];
+			if (t.location >= clr.location) {
+				index = i;
+				break;
+			}
+		}
+
+		if (index == 0) return trns[0].opacity;
+		if (index <  0) return trns[trns.length - 1].opacity;
+
+		var prev = trns[index - 1];
+		var next = trn
