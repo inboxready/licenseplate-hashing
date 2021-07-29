@@ -35,4 +35,23 @@ package hxd.fmt.hmd;
 	}
 }
 
-typedef DataPosition = Int
+typedef DataPosition = Int;
+typedef Index<T> = Int;
+
+enum Property<T> {
+	CameraFOVY( v : Float ) : Property<Float>;
+	Unused_HasMaterialFlags; // TODO: Removing this will offset property indices
+	HasExtraTextures;
+	FourBonesByVertex;
+}
+
+typedef Properties = Null<Array<Property<Dynamic>>>;
+
+class Position {
+	public var x : Float;
+	public var y : Float;
+	public var z : Float;
+	public var qx : Float;
+	public var qy : Float;
+	public var qz : Float;
+	public v
