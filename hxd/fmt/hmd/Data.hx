@@ -76,4 +76,25 @@ class Position {
 	public function toMatrix(postScale=false) {
 		var m = new h3d.Matrix();
 		var q = QTMP;
-		loadQuater
+		loadQuaternion(q);
+		q.toMatrix(m);
+		if( postScale ) {
+			m.translate(x, y, z);
+			m.scale(sx, sy, sz);
+		} else {
+			m._11 *= sx; m._12 *= sx; m._13 *= sx;
+			m._21 *= sy; m._22 *= sy; m._23 *= sy;
+			m._31 *= sz; m._32 *= sz; m._33 *= sz;
+			m.translate(x, y, z);
+		}
+		return m;
+	}
+	static var QTMP = new h3d.Quat();
+}
+
+class GeometryFormat {
+	public var name : String;
+	public var format : GeometryDataFormat;
+	public function new(name, format) {
+		this.name = name;
+		this.format = for
