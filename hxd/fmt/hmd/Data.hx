@@ -97,4 +97,22 @@ class GeometryFormat {
 	public var format : GeometryDataFormat;
 	public function new(name, format) {
 		this.name = name;
-		this.format = for
+		this.format = format;
+	}
+}
+
+class Geometry {
+	public var props : Properties;
+	public var vertexCount : Int;
+	public var vertexStride : Int;
+	public var vertexFormat : Array<GeometryFormat>;
+	public var vertexPosition : DataPosition;
+	public var indexCount(get, never) : Int;
+	public var indexCounts : Array<Int>;
+	public var indexPosition : DataPosition;
+	public var bounds : h3d.col.Bounds;
+	public function new() {
+	}
+	function get_indexCount() {
+		var k = 0;
+		for( i in
