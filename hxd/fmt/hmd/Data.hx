@@ -115,4 +115,27 @@ class Geometry {
 	}
 	function get_indexCount() {
 		var k = 0;
-		for( i in
+		for( i in indexCounts ) k += i;
+		return k;
+	}
+}
+
+class Material {
+
+	public var name : String;
+	public var props : Properties;
+	public var diffuseTexture : Null<String>;
+	public var specularTexture : Null<String>;
+	public var normalMap : Null<String>;
+	public var blendMode : h3d.mat.BlendMode;
+
+	public function new() {
+	}
+}
+
+class SkinJoint {
+	public var name : String;
+	public var props : Properties;
+	public var parent : Index<SkinJoint>;
+	public var position : Position;
+	pub
