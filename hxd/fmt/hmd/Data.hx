@@ -162,3 +162,27 @@ class Skin {
 
 class Model {
 	public var name : String;
+	public var props : Properties;
+	public var parent : Index<Model>;
+	public var follow : Null<String>;
+	public var position : Position;
+	public var geometry : Index<Geometry>;
+	public var materials : Null<Array<Index<Material>>>;
+	public var skin : Null<Skin>;
+	public function new() {
+	}
+}
+
+enum AnimationFlag {
+	HasPosition;
+	HasRotation;
+	HasScale;
+	HasUV;
+	HasAlpha;
+	SingleFrame;
+	HasProps;
+	Reserved;
+}
+
+class AnimationObject {
+	public var n
