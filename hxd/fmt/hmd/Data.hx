@@ -138,4 +138,27 @@ class SkinJoint {
 	public var props : Properties;
 	public var parent : Index<SkinJoint>;
 	public var position : Position;
-	pub
+	public var bind : Int;
+	public var transpos : Null<Position>;
+	public function new() {
+	}
+}
+
+class SkinSplit {
+	public var materialIndex : Int;
+	public var joints : Array<Index<SkinJoint>>;
+	public function new() {
+	}
+}
+
+class Skin {
+	public var name : String;
+	public var props : Properties;
+	public var joints : Array<SkinJoint>;
+	public var split : Null<Array<SkinSplit>>;
+	public function new() {
+	}
+}
+
+class Model {
+	public var name : String;
