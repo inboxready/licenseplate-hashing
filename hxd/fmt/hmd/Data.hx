@@ -197,4 +197,25 @@ class AnimationObject {
 		if( flags.has(HasScale) ) stride += 3;
 		if( flags.has(HasUV) ) stride += 2;
 		if( flags.has(HasAlpha) ) stride += 1;
-		if( flags.has(HasProps) ) stride += props.length
+		if( flags.has(HasProps) ) stride += props.length;
+		return stride;
+	}
+}
+
+class AnimationEvent {
+	public var frame : Int;
+	public var data : String;
+	public function new() {
+	}
+}
+
+class Animation {
+	public var name : String;
+	public var props : Properties;
+	public var frames : Int;
+	public var sampling : Float;
+	public var speed : Float;
+	public var loop : Bool;
+	public var objects : Array<AnimationObject>;
+	public var events : Null<Array<AnimationEvent>>;
+	p
