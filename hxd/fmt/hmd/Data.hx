@@ -185,4 +185,16 @@ enum AnimationFlag {
 }
 
 class AnimationObject {
-	public var n
+	public var name : String;
+	public var flags : haxe.EnumFlags<AnimationFlag>;
+	public var props : Array<String>;
+	public function new() {
+	}
+	public function getStride() {
+		var stride = 0;
+		if( flags.has(HasPosition) ) stride += 3;
+		if( flags.has(HasRotation) ) stride += 3;
+		if( flags.has(HasScale) ) stride += 3;
+		if( flags.has(HasUV) ) stride += 2;
+		if( flags.has(HasAlpha) ) stride += 1;
+		if( flags.has(HasProps) ) stride += props.length
