@@ -218,4 +218,25 @@ class Animation {
 	public var loop : Bool;
 	public var objects : Array<AnimationObject>;
 	public var events : Null<Array<AnimationEvent>>;
-	p
+	public var dataPosition : DataPosition;
+	public function new() {
+	}
+}
+
+class Data {
+
+	public static inline var CURRENT_VERSION = 3;
+
+	public var version : Int;
+	public var props : Properties;
+	public var geometries : Array<Geometry>;
+	public var materials : Array<Material>;
+	public var models : Array<Model>;
+	public var animations : Array<Animation>;
+	public var dataPosition : Int;
+	public var data : haxe.io.Bytes;
+
+	public function new() {
+	}
+
+}
