@@ -129,3 +129,109 @@ class Reader {
 	public function readHeader( fast = false ) : Data {
 		var d = new Data();
 		var h = i.readString(3);
+		if( h != "HMD" ) {
+			if( h.charCodeAt(0) == ";".code )
+				throw "FBX was not converted to HMD";
+			throw "Invalid HMD header " + StringTools.urlEncode(h);
+		}
+		version = i.readByte();
+		if( version > Data.CURRENT_VERSION ) throw "Can't read HMD v" + version;
+		d.version = version;
+		d.geometries = [];
+		d.dataPosition = i.readInt32();
+		if( fast )
+			i = new haxe.io.BytesInput(i.read(d.dataPosition-12));
+		d.props = readProps();
+
+		for( k in 0...i.readInt32() ) {
+			var g = new Geometry();
+			g.props = readProps();
+			g.vertexCount = i.readInt32();
+			g.vertexStride = i.readByte();
+			g.vertexFormat = [for( k in 0...i.readByte() ) new GeometryFormat(readCachedName(), GeometryDataFormat.fromInt(i.readByte()))];
+			g.vertexPosition = i.readInt32();
+			var subCount = i.readByte();
+			if( subCount == 0xFF ) subCount = i.readInt32();
+			g.indexCounts = [for( k in 0...subCount ) i.readInt32()];
+			g.indexPosition = i.readInt32();
+			g.bounds = readBounds();
+			d.geometries.push(g);
+		}
+
+		d.materials = [];
+		for( k in 0...i.readInt32() ) {
+			var m = new Material();
+			m.props = readProps();
+			m.name = readName();
+			m.diffuseTexture = readName();
+			m.blendMode = BLEND[i.readByte()];
+			i.readByte(); // old culling = 1
+			i.readFloat(); // old killalpha = 1
+			if( m.props != null && m.props.indexOf(HasExtraTextures) >= 0 ) {
+				m.specularTexture = readName();
+				m.normalMap = readName();
+			}
+			d.materials.push(m);
+		}
+
+		d.models = [];
+		for( k in 0...i.readInt32() ) {
+			var m = new Model();
+			m.props = readProps();
+			m.name = readCachedName();
+			m.parent = i.readInt32() - 1;
+			m.follow = readCachedName();
+			m.position = readPosition();
+			m.geometry = i.readInt32() - 1;
+			d.models.push(m);
+			if( m.geometry < 0 ) continue;
+			m.materials = [];
+			var matCount = i.readByte();
+			if( matCount == 0xFF ) matCount = i.readInt32();
+			for( k in 0...matCount )
+				m.materials.push(i.readInt32());
+			m.skin = readSkin();
+		}
+
+		d.animations = [];
+		for( k in 0...i.readInt32() ) {
+			var a = new Animation();
+			a.props = readProps();
+			a.name = readName();
+			a.frames = i.readInt32();
+			a.sampling = i.readFloat();
+			a.speed = i.readFloat();
+			var flags = i.readByte();
+			a.loop = flags & 1 != 0;
+			a.dataPosition = i.readInt32();
+			a.objects = [];
+			for( k in 0...i.readInt32() ) {
+				var o = new AnimationObject();
+				o.name = readCachedName();
+				o.flags = haxe.EnumFlags.ofInt(i.readByte());
+				a.objects.push(o);
+				if( o.flags.has(HasProps) )
+					o.props = [for( i in 0...i.readByte() ) readName()];
+			}
+			if( flags & 2 != 0 ) {
+				a.events = [];
+				for( k in 0...i.readInt32() ) {
+					var e = new AnimationEvent();
+					e.frame = i.readInt32();
+					e.data = readCachedName();
+					a.events.push(e);
+				}
+			}
+			d.animations.push(a);
+		}
+
+		return d;
+	}
+
+	public function read() : Data {
+		var h = readHeader();
+		h.data = i.read(i.readInt32());
+		return h;
+	}
+
+}
