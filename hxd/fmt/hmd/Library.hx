@@ -472,3 +472,296 @@ class Library {
 		var singleStride = pos;
 		for( b in otherFrames ) {
 			b.dataOffset = pos;
+			pos += b.getStride();
+		}
+
+		var entry = resource.entry;
+		var count = stride * a.frames + singleStride;
+		var data = haxe.io.Bytes.alloc(count * 4);
+		entry.readFull(data,header.dataPosition + a.dataPosition,data.length);
+
+		#if hl
+		b.setData(data, stride);
+		#elseif js
+		b.setData(new hxd.impl.TypedArray.Float32Array(@:privateAccess data.b.buffer), stride);
+		#else
+		var v = new hxd.impl.TypedArray.Float32Array(count);
+		for( i in 0...count )
+			v[i] = data.getFloat(i << 2);
+		b.setData(v, stride);
+		#end
+
+		return b;
+	}
+
+	function makeLinearAnimation( a : Animation ) {
+		var l = new h3d.anim.LinearAnimation(a.name, a.frames, a.sampling);
+
+		var entry = resource.entry;
+		var dataPos = header.dataPosition + a.dataPosition;
+
+		for( o in a.objects ) {
+			var pos = o.flags.has(HasPosition), rot = o.flags.has(HasRotation), scale = o.flags.has(HasScale);
+			if( pos || rot || scale ) {
+				var frameCount = a.frames;
+				if( o.flags.has(SingleFrame) )
+					frameCount = 1;
+				var fl = new haxe.ds.Vector<h3d.anim.LinearAnimation.LinearFrame>(frameCount);
+				var size = ((pos ? 3 : 0) + (rot ? 3 : 0) + (scale?3:0)) * 4 * frameCount;
+				var data = entry.fetchBytes(dataPos, size);
+				dataPos += size;
+				var p = 0;
+				for( i in 0...frameCount ) {
+					var f = new h3d.anim.LinearAnimation.LinearFrame();
+					if( pos ) {
+						f.tx = data.getFloat(p); p += 4;
+						f.ty = data.getFloat(p); p += 4;
+						f.tz = data.getFloat(p); p += 4;
+					} else {
+						f.tx = 0;
+						f.ty = 0;
+						f.tz = 0;
+					}
+					if( rot ) {
+						f.qx = data.getFloat(p); p += 4;
+						f.qy = data.getFloat(p); p += 4;
+						f.qz = data.getFloat(p); p += 4;
+						var qw = 1 - (f.qx * f.qx + f.qy * f.qy + f.qz * f.qz);
+						f.qw = qw < 0 ? -Math.sqrt( -qw) : Math.sqrt(qw);
+					} else {
+						f.qx = 0;
+						f.qy = 0;
+						f.qz = 0;
+						f.qw = 1;
+					}
+					if( scale ) {
+						f.sx = data.getFloat(p); p += 4;
+						f.sy = data.getFloat(p); p += 4;
+						f.sz = data.getFloat(p); p += 4;
+					} else {
+						f.sx = 1;
+						f.sy = 1;
+						f.sz = 1;
+					}
+					fl[i] = f;
+				}
+				l.addCurve(o.name, fl, true, rot, scale);
+			}
+			if( o.flags.has(HasUV) ) {
+				var fl = new haxe.ds.Vector(a.frames*2);
+				var size = 2 * 4 * a.frames;
+				var data = entry.fetchBytes(dataPos, size);
+				dataPos += size;
+				for( i in 0...fl.length )
+					fl[i] = data.getFloat(i * 4);
+				l.addUVCurve(o.name, fl);
+			}
+			if( o.flags.has(HasAlpha) ) {
+				var fl = new haxe.ds.Vector(a.frames);
+				var size = 4 * a.frames;
+				var data = entry.fetchBytes(dataPos, size);
+				dataPos += size;
+				for( i in 0...fl.length )
+					fl[i] = data.getFloat(i * 4);
+				l.addAlphaCurve(o.name, fl);
+			}
+			if( o.flags.has(HasProps) ) {
+				for( p in o.props ) {
+					var fl = new haxe.ds.Vector(a.frames);
+					var size = 4 * a.frames;
+					var data = entry.fetchBytes(dataPos, size);
+					dataPos += size;
+					for( i in 0...fl.length )
+						fl[i] = data.getFloat(i * 4);
+					l.addPropCurve(o.name, p, fl);
+				}
+			}
+		}
+
+		return l;
+	}
+
+	@:allow(h3d.anim.Skin)
+	public function loadSkin( geom : Geometry, skin : h3d.anim.Skin, optimize = true ) {
+		if( skin.vertexWeights != null )
+			return;
+
+		var bonesPerVertex = skin.bonesPerVertex;
+		if( !(bonesPerVertex == 3 || bonesPerVertex == 4) )
+			throw "assert";
+		var use4Bones = bonesPerVertex == 4;
+
+		@:privateAccess skin.vertexCount = geom.vertexCount;
+
+		// Only 3 weights are necessary even in fourBonesByVertex since they sum-up to 1
+		var format = [
+			new hxd.fmt.hmd.Data.GeometryFormat("position",DVec3),
+			new hxd.fmt.hmd.Data.GeometryFormat("weights",DVec3),
+			new hxd.fmt.hmd.Data.GeometryFormat("indexes",DBytes4)];
+		var data = getBuffers(geom, format);
+		var formatStride = 0;
+		for(f in format)
+			formatStride += f.format.getSize();
+
+		skin.vertexWeights = new haxe.ds.Vector(skin.vertexCount * bonesPerVertex);
+		skin.vertexJoints = new haxe.ds.Vector(skin.vertexCount * bonesPerVertex);
+
+		for( j in skin.boundJoints )
+			j.offsets = new h3d.col.Bounds();
+
+		var vbuf = data.vertexes;
+		var idx = 0;
+		var bounds = new h3d.col.Bounds();
+		var out = Math.NaN;
+		var ranges;
+		if( skin.splitJoints == null ) {
+			var jointsByBind = [];
+			for( j in skin.boundJoints )
+				jointsByBind[j.bindIndex] = j;
+			ranges = [{ index : 0, pos : 0, count : data.indexes.length, joints : jointsByBind }];
+		} else {
+			var idx = 0;
+			var triPos = [], pos = 0;
+			for( n in geom.indexCounts ) {
+				triPos.push(pos);
+				pos += n;
+			}
+			ranges = [for( j in skin.splitJoints ) @:privateAccess {
+				index : idx,
+				pos : triPos[idx],
+				count : geom.indexCounts[idx++],
+				joints : j.joints,
+			}];
+		}
+
+
+		// for each joint, calculate the bounds of vertexes skinned to this joint, in absolute position
+		for( r in ranges ) {
+			for( idx in r.pos...r.pos+r.count ) {
+				var vidx = data.indexes[idx];
+				var p = vidx * formatStride;
+				var x = vbuf[p];
+				if( x != x ) {
+					// already processed
+					continue;
+				}
+				vbuf[p++] = out;
+				var y = vbuf[p++];
+				var z = vbuf[p++];
+				var w1 = vbuf[p++];
+				var w2 = vbuf[p++];
+				var w3 = vbuf[p++];
+				var w4 = 0.0;
+
+				var vout = vidx * bonesPerVertex;
+				skin.vertexWeights[vout] = w1;
+				skin.vertexWeights[vout+1] = w2;
+				skin.vertexWeights[vout+2] = w3;
+
+				if(use4Bones) {
+					w4 = 1.0 - w1 - w2 - w3;
+					skin.vertexWeights[vout+3] = w4;
+				}
+
+				var w = (w1 == 0 ? 1 : 0) | (w2 == 0 ? 2 : 0) | (w3 == 0 ? 4 : 0) | (w4 == 0 ? 8 : 0);
+				var idx = haxe.io.FPHelper.floatToI32(vbuf[p++]);
+				bounds.addPos(x,y,z);
+				for( i in 0...bonesPerVertex ) {
+					if( w & (1<<i) != 0 ) {
+						skin.vertexJoints[vout++] = -1;
+						continue;
+					}
+					var idx = (idx >> (i<<3)) & 0xFF;
+					var j = r.joints[idx];
+					j.offsets.addPos(x,y,z);
+					skin.vertexJoints[vout++] = j.bindIndex;
+				}
+			}
+		}
+
+		if( optimize ) {
+			var idx = skin.allJoints.length - 1;
+			var optOut = 0;
+			var refVolume = bounds.getVolume();
+			while( idx >= 0 ) {
+				var j = skin.allJoints[idx--];
+				if( j.offsets == null || j.parent == null || j.parent.offsets == null ) continue;
+				var poff = j.parent.offsets;
+
+				// assume our joints will only rotate
+				var sp = j.offsets.toSphere();
+				if( poff.containsSphere(sp) ) {
+					j.offsets = null;
+					optOut++;
+					continue;
+				}
+
+				var pext = poff.clone();
+				pext.addSphere(sp);
+
+				// heuristic to allow children bounds to be merged within parent
+				// this allow to calculate less joints when getting skin bounds
+				var ratio = Math.sqrt((refVolume * 1.5) / pext.getVolume());
+				var k = pext.getVolume() / poff.getVolume();
+
+				if( k < ratio ) {
+					j.parent.offsets = pext;
+					j.offsets = null;
+					optOut++;
+					continue;
+				}
+			}
+		}
+
+		// transform bounds into two spheres aligned on largest
+		// size. this allows Skin.getBounds to perform two transforms
+		// insteas of height for each bounds corners
+		for( j in skin.allJoints ) {
+			if( j.offsets == null ) {
+				j.offsetRay = -1;
+				continue;
+			}
+			var b = j.offsets;
+			var pt1, pt2, off = b.getCenter(), r;
+			if( b.xSize > b.ySize && b.xSize > b.zSize ) {
+				r = Math.max(b.ySize, b.zSize) * 0.5;
+				pt1 = new h3d.col.Point(b.xMin + r, off.y, off.z);
+				pt2 = new h3d.col.Point(b.xMax - r, off.y, off.z);
+			} else if( b.ySize > b.zSize ) {
+				r = Math.max(b.xSize, b.zSize) * 0.5;
+				pt1 = new h3d.col.Point(off.x, b.yMin + r, off.z);
+				pt2 = new h3d.col.Point(off.x, b.yMax - r, off.z);
+			} else {
+				r = Math.max(b.xSize, b.ySize) * 0.5;
+				pt1 = new h3d.col.Point(off.x, off.y, b.zMin + r);
+				pt2 = new h3d.col.Point(off.x, off.y, b.zMax - r);
+			}
+			b.setMin(pt1);
+			b.setMax(pt2);
+			j.offsetRay = r;
+		}
+	}
+
+	#if hide
+	public dynamic static function setupMaterialLibrary( mat : h3d.mat.Material, lib : hrt.prefab.Resource, name : String ) {
+		var m  = lib.load().getOpt(hrt.prefab.Material,name);
+		if ( m == null )
+			return false;
+		@:privateAccess m.update(mat, m.renderProps(),
+		function loadTexture ( path : String ) {
+			return hxd.res.Loader.currentInstance.load(path).toTexture();
+		});
+		for ( c in m.children ) {
+			var shader = Std.downcast(c, hrt.prefab.Shader);
+			if ( shader == null )
+				continue;
+			shader.clone();
+			var ctx = new hrt.prefab.Context();
+			var s = shader.makeShader(ctx);
+			@:privateAccess shader.applyShader(null, mat, s);
+		}
+		return true;
+	}
+	#end
+
+}
