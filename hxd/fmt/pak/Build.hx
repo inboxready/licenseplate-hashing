@@ -38,4 +38,19 @@ class Build {
 		#if !dataOnly
 		hxd.System.timeoutTick();
 		#end
-		f.name = path.split("
+		f.name = path.split("/").pop();
+		if( sys.FileSystem.isDirectory(dir) ) {
+			var prevPath = nextPath;
+			nextPath = path == "" ? "<root>" : path;
+			f.isDirectory = true;
+			f.content = [];
+			for( name in sys.FileSystem.readDirectory(dir) ) {
+				if( excludedNames.indexOf(name)>=0 )
+					continue;
+				var fpath = path == "" ? name : path+"/"+name;
+				if( name.charCodeAt(0) == ".".code )
+					continue;
+				var s = buildRec(fpath);
+				if( s != null ) f.content.push(s);
+			}
+			nextPath
