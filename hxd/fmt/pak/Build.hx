@@ -53,4 +53,23 @@ class Build {
 				var s = buildRec(fpath);
 				if( s != null ) f.content.push(s);
 			}
-			nextPath
+			nextPath = prevPath;
+			if( f.content.length == 0 && path != "" )
+				return null;
+		} else {
+			var ext = path.split("/").pop().split(".").pop().toLowerCase();
+			if( excludedExt.indexOf(ext) >= 0 )
+				return null;
+
+			if( includePath.length != 0 ) {
+				var found = false;
+				for( p in includePath )
+					if( StringTools.startsWith(path,p) ) {
+						found = true;
+						break;
+					}
+				if( !found ) return null;
+			}
+
+			if( nextPath != null ) {
+				Sys
