@@ -21,4 +21,21 @@ class Build {
 	function new() {
 	}
 
-	function c
+	function command( cmd : String, ?args : Array<String> ) {
+		var ret = Sys.command(cmd, args);
+		if( ret != 0 )
+			throw cmd + " has failed with exit code " + ret;
+	}
+
+	function buildRec( path : String ) {
+
+		if( path != "" ) {
+			if( excludePath.indexOf(path) >= 0 ) return null;
+		}
+
+		var dir = resPath + (path == "" ? "" : "/" + path);
+		var f = new File();
+		#if !dataOnly
+		hxd.System.timeoutTick();
+		#end
+		f.name = path.split("
