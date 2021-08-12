@@ -72,4 +72,19 @@ class Build {
 			}
 
 			if( nextPath != null ) {
-				Sys
+				Sys.println(nextPath);
+				nextPath = null;
+			}
+
+			var entry = try fs.get(path) catch( e : hxd.res.NotFound ) return null;
+			var filePath = fs.getAbsolutePath(entry);
+			var data = sys.io.File.getBytes(filePath);
+
+			switch( ext ) {
+			case "wav", "ogg" if( checkOGG ):
+				var snd = new hxd.snd.OggData(sys.io.File.getBytes(filePath));
+				if( snd.samples == 0 )
+					Sys.println("\t*** ERROR *** " + path + " has 0 samples");
+			}
+
+			f.dataPosition = pakDiff ? out.bytes.length : out.size
