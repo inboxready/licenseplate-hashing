@@ -87,4 +87,19 @@ class Build {
 					Sys.println("\t*** ERROR *** " + path + " has 0 samples");
 			}
 
-			f.dataPosition = pakDiff ? out.bytes.length : out.size
+			f.dataPosition = pakDiff ? out.bytes.length : out.size;
+			f.dataSize = data.length;
+			f.checksum = haxe.crypto.Adler32.make(data);
+			out.bytes.push(data);
+			out.size += data.length;
+		}
+		return f;
+	}
+
+	function filter( root : File, old : File ) {
+		if( root.isDirectory != old.isDirectory )
+			throw "Conflict : new " + root.name+" is a directory while old " + old.name+" is not";
+		if( root.isDirectory ) {
+			var changed = false;
+			for( f in root.content.copy() ) {
+				va
