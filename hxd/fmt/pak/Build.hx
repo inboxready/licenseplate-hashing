@@ -102,4 +102,25 @@ class Build {
 		if( root.isDirectory ) {
 			var changed = false;
 			for( f in root.content.copy() ) {
-				va
+				var f2 = null;
+				for( ff in old.content )
+					if( ff.name == f.name ) {
+						f2 = ff;
+						break;
+					}
+				if( f2 == null )
+					changed = true;
+				else if( filter(f, f2) )
+					root.content.remove(f);
+				else
+					changed = true;
+			}
+			return !changed;
+		}
+		return root.checksum == old.checksum;
+	}
+
+	public static function rebuild( pak : Data, bytes : Array<haxe.io.Bytes> ) {
+		var size = 0;
+		function calcRec(f:File) {
+			if( f.isDirectory
