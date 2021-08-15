@@ -185,4 +185,18 @@ class Build {
 		f.close();
 	}
 
-	
+	public static function make( dir = "res", out = "res", ?pakDiff ) {
+		var b = new Build();
+		b.resPath = dir;
+		b.outPrefix = out;
+		b.pakDiff = pakDiff;
+		b.makePak();
+	}
+
+	static function main() {
+		var args = Sys.args();
+		try sys.FileSystem.deleteFile("hxd.fmt.pak.Build.n") catch( e : Dynamic ) {};
+		try sys.FileSystem.deleteFile("hxd.fmt.pak.Build.hl") catch( e : Dynamic ) {};
+		var b = new Build();
+		while( args.length > 0 ) {
+			var f = args.shift(
