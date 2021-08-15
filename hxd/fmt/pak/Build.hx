@@ -123,4 +123,30 @@ class Build {
 	public static function rebuild( pak : Data, bytes : Array<haxe.io.Bytes> ) {
 		var size = 0;
 		function calcRec(f:File) {
-			if( f.isDirectory
+			if( f.isDirectory ) {
+				for( c in f.content )
+					calcRec(c);
+			} else
+				size += f.dataSize;
+		}
+		calcRec(pak.root);
+		var out = [];
+		var pos = 0.;
+		function writeRec(f:File) {
+			if( f.isDirectory ) {
+				for( c in f.content )
+					writeRec(c);
+			} else {
+				out.push(bytes[Std.int(f.dataPosition)]);
+				f.dataPosition = pos;
+				pos += f.dataSize;
+			}
+		}
+		writeRec(pak.root);
+		return out;
+	}
+
+	function makePak() {
+
+		if( !sys.FileSystem.exists(resPath) )
+			t
