@@ -164,4 +164,25 @@ class Build {
 			while( true ) {
 				var name = outPrefix + (id == 0 ? "" : "" + id) + ".pak";
 				if( !sys.FileSystem.exists(name) ) break;
-				
+				var oldPak = new Reader(sys.io.File.read(name)).readHeader();
+				filter(pak.root, oldPak.root);
+				id++;
+			}
+			if( id > 0 ) {
+				outPrefix += id;
+				if( pak.root.content.length == 0 ) {
+					Sys.println("No changes in resources");
+					return;
+				}
+			}
+			out.bytes = rebuild(pak, out.bytes);
+		}
+
+		var outFile = outPrefix + ".pak";
+		Sys.println("Writing "+outFile);
+		var f = sys.io.File.write(outFile);
+		new Writer(f).write(pak, null, out.bytes);
+		f.close();
+	}
+
+	
