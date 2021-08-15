@@ -149,4 +149,19 @@ class Build {
 	function makePak() {
 
 		if( !sys.FileSystem.exists(resPath) )
-			t
+			throw "'" + resPath + "' resource directory was not found";
+
+		fs = new hxd.fs.LocalFileSystem(resPath, configuration);
+		fs.convert.onConvert = function(c) Sys.println("\tConverting " + c.srcPath);
+
+		var pak = new Data();
+		out = { bytes : [], size : 0 };
+		pak.version = 0;
+		pak.root = buildRec("");
+
+		if( pakDiff ) {
+			var id = 0;
+			while( true ) {
+				var name = outPrefix + (id == 0 ? "" : "" + id) + ".pak";
+				if( !sys.FileSystem.exists(name) ) break;
+				
