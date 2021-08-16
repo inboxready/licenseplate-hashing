@@ -199,4 +199,16 @@ class Build {
 		try sys.FileSystem.deleteFile("hxd.fmt.pak.Build.hl") catch( e : Dynamic ) {};
 		var b = new Build();
 		while( args.length > 0 ) {
-			var f = args.shift(
+			var f = args.shift();
+			var pos = f.indexOf("=");
+			if( pos > 0 ) {
+				args.unshift(f.substr(pos + 1));
+				f = f.substr(0, pos);
+			}
+			switch( f ) {
+			case "-x" if( args.length > 0 ):
+				var pakFile = args.shift();
+				var fs = sys.io.File.read(pakFile);
+				var pak = new hxd.fmt.pak.Reader(fs).readHeader();
+				var baseDir = b.outPrefix == null ? pakFile.substr(0,-4) : b.outPrefix;
+				function extractRec(f:hxd.fmt.pak.Data.File, dir)
