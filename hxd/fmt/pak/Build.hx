@@ -211,4 +211,15 @@ class Build {
 				var fs = sys.io.File.read(pakFile);
 				var pak = new hxd.fmt.pak.Reader(fs).readHeader();
 				var baseDir = b.outPrefix == null ? pakFile.substr(0,-4) : b.outPrefix;
-				function extractRec(f:hxd.fmt.pak.Data.File, dir)
+				function extractRec(f:hxd.fmt.pak.Data.File, dir) {
+					#if !dataOnly
+					hxd.System.timeoutTick();
+					#end
+					if( f.isDirectory ) {
+						var dir = f.name == "" ? dir : dir+"/"+f.name;
+						try sys.FileSystem.createDirectory(dir) catch( e : Dynamic ) {};
+						for( c in f.content )
+							extractRec(c,dir);
+					} else {
+						hxd.fmt.pak.FileSystem.FileSeek.seek(fs,f.dataPosition+pak.headerSize,SeekBegin);
+						sys.io.File.saveBytes(dir+"/"+f.name,fs.read(f.dataSize));
