@@ -223,3 +223,18 @@ class Build {
 					} else {
 						hxd.fmt.pak.FileSystem.FileSeek.seek(fs,f.dataPosition+pak.headerSize,SeekBegin);
 						sys.io.File.saveBytes(dir+"/"+f.name,fs.read(f.dataSize));
+					}
+				}
+				extractRec(pak.root, baseDir);
+				Sys.exit(0);
+			case "-diff":
+				b.pakDiff = true;
+			case "-res" if( args.length > 0 ):
+				b.resPath = args.shift();
+			case "-out" if( args.length > 0 ):
+				b.outPrefix = args.shift();
+			case "-exclude" if( args.length > 0 ):
+				for( ext in args.shift().split(",") )
+					b.excludedExt.push(ext);
+			case "-exclude-names" if( args.length > 0 ):
+				for( ext in ar
