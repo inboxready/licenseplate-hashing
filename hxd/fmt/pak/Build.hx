@@ -250,4 +250,14 @@ class Build {
 			case "-config" if( args.length > 0 ):
 				b.configuration = args.shift();
 			default:
-				throw "Unknown parame
+				throw "Unknown parameter " + f;
+			}
+		}
+		if( b.outPrefix == null ) {
+			b.outPrefix = "res";
+			if( b.configuration != "default" && b.configuration != null ) b.outPrefix += "."+b.configuration;
+		}
+		b.makePak();
+	}
+
+}
