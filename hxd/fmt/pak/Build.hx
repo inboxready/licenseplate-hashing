@@ -237,4 +237,17 @@ class Build {
 				for( ext in args.shift().split(",") )
 					b.excludedExt.push(ext);
 			case "-exclude-names" if( args.length > 0 ):
-				for( ext in ar
+				for( ext in args.shift().split(",") )
+					b.excludedNames.push(ext);
+			case "-exclude-path" if( args.length > 0 ):
+				for( p in args.shift().split(",") )
+					b.excludePath.push(p);
+			case "-include-path" if( args.length > 0 ):
+				for( p in args.shift().split(",") )
+					b.includePath.push(p);
+			case "-check-ogg":
+				b.checkOGG = true;
+			case "-config" if( args.length > 0 ):
+				b.configuration = args.shift();
+			default:
+				throw "Unknown parame
