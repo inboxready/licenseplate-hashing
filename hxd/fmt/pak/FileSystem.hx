@@ -68,4 +68,23 @@ private class PakEntry extends FileEntry {
 
 	override function get_path() {
 		if( relPath != null )
-			retur
+			return relPath;
+		relPath = parent == null ? "<root>" : (parent.parent == null ? name : parent.path + "/" + name);
+		return relPath;
+	}
+
+	override function get_size() {
+		return file.dataSize;
+	}
+
+	override function get_isDirectory() {
+		return file.isDirectory;
+	}
+
+	function setPos() {
+		var pak = fs.getFile(pakFile);
+		FileSeek.seek(pak,file.dataPosition, SeekBegin);
+	}
+
+	override function getBytes() {
+		setPos()
