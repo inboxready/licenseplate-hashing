@@ -48,4 +48,24 @@ class FileSeek {
 
 @:allow(hxd.fmt.pak.FileSystem)
 @:access(hxd.fmt.pak.FileSystem)
-privat
+private class PakEntry extends FileEntry {
+
+	var fs : FileSystem;
+	var parent : PakEntry;
+	var file : Data.File;
+	var pakFile : Int;
+	var subs : Array<PakEntry>;
+	var relPath : String;
+
+	public function new(fs, parent, f, p) {
+		this.fs = fs;
+		this.file = f;
+		this.pakFile = p;
+		this.parent = parent;
+		name = file.name;
+		if( f.isDirectory ) subs = [];
+	}
+
+	override function get_path() {
+		if( relPath != null )
+			retur
