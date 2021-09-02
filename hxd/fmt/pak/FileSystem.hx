@@ -87,4 +87,18 @@ private class PakEntry extends FileEntry {
 	}
 
 	override function getBytes() {
-		setPos()
+		setPos();
+		fs.totalReadBytes += file.dataSize;
+		fs.totalReadCount++;
+		var pak = fs.getFile(pakFile);
+		return pak.read(file.dataSize);
+	}
+
+	override function readBytes( out : haxe.io.Bytes, outPos : Int, pos : Int, len : Int ) : Int {
+		var pak = fs.getFile(pakFile);
+		FileSeek.seek(pak,file.dataPosition + pos, SeekBegin);
+		if( pos + len > file.dataSize )
+			len = file.dataSize - pos;
+		var tot = 0;
+		while( len > 0 ) {
+			var k = pak.readBytes(out, outPos, len
