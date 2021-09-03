@@ -101,4 +101,31 @@ private class PakEntry extends FileEntry {
 			len = file.dataSize - pos;
 		var tot = 0;
 		while( len > 0 ) {
-			var k = pak.readBytes(out, outPos, len
+			var k = pak.readBytes(out, outPos, len);
+			if( k <= 0 ) break;
+			len -= k;
+			outPos += k;
+			tot += k;
+			fs.totalReadBytes += k;
+			fs.totalReadCount++;
+		}
+		return tot;
+	}
+
+	override function exists( name : String ) {
+		if( subs != null )
+			for( c in subs )
+				if( c.name == name )
+					return true;
+		return false;
+	}
+
+	override function get( name : String ) : FileEntry {
+		if( subs != null )
+			for( c in subs )
+				if( c.name == name )
+					return c;
+		return null;
+	}
+
+	override functi
