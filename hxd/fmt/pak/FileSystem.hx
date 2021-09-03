@@ -128,4 +128,17 @@ private class PakEntry extends FileEntry {
 		return null;
 	}
 
-	override functi
+	override function iterator() {
+		return new hxd.impl.ArrayIterator<FileEntry>(cast subs);
+	}
+
+	override function loadBitmap( onLoaded ) {
+		#if flash
+		if( openedBytes != null ) throw "Must close() before loadBitmap";
+		open();
+		var old = openedBytes;
+		var loader = new flash.display.Loader();
+		loader.contentLoaderInfo.addEventListener(flash.events.IOErrorEvent.IO_ERROR, function(e:flash.events.IOErrorEvent) {
+			throw Std.string(e) + " while loading " + path;
+		});
+		loader.conte
