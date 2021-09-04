@@ -155,3 +155,23 @@ private class PakEntry extends FileEntry {
 		loader.loadBytes(openedBytes.getData(), ctx);
 		openedBytes = null;
 		#else
+		super.loadBitmap(onLoaded);
+		#end
+	}
+
+}
+
+class FileSystem implements hxd.fs.FileSystem {
+
+	var root : PakEntry;
+	var dict : Map<String,PakEntry>;
+	#if target.threaded
+	var threadIdentifier : sys.thread.Tls<Null<Int>>;
+	var threadIdCache : Array<Null<Int>>;
+	#end
+	var files : Array<{ path : String, inputs : Array<FileInput> }>;
+	public var totalReadBytes = 0;
+	public var totalReadCount = 0;
+
+	public function new() {
+		dict = new Ma
