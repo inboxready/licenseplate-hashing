@@ -141,4 +141,17 @@ private class PakEntry extends FileEntry {
 		loader.contentLoaderInfo.addEventListener(flash.events.IOErrorEvent.IO_ERROR, function(e:flash.events.IOErrorEvent) {
 			throw Std.string(e) + " while loading " + path;
 		});
-		loader.conte
+		loader.contentLoaderInfo.addEventListener(flash.events.Event.COMPLETE, function(_) {
+			if( openedBytes == null ) {
+				openedBytes = old;
+				close();
+			}
+			var content : flash.display.Bitmap = cast loader.content;
+			onLoaded(new hxd.fs.LoadedBitmap(content.bitmapData));
+			loader.unload();
+		});
+		var ctx = new flash.system.LoaderContext();
+		ctx.imageDecodingPolicy = ON_LOAD;
+		loader.loadBytes(openedBytes.getData(), ctx);
+		openedBytes = null;
+		#else
