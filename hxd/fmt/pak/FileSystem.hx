@@ -193,4 +193,18 @@ class FileSystem implements hxd.fs.FileSystem {
 		var s = getFile(index);
 		var pak = new Reader(s).readHeader();
 		if( pak.root.isDirectory ) {
-			for(
+			for( f in pak.root.content )
+				addRec(root, f.name, f, index, pak.headerSize);
+		} else
+			addRec(root, pak.root.name, pak.root, index, pak.headerSize);
+	}
+
+	/**
+		Add the .pak file directly.
+
+		This method is intended to be used with single-threaded environment such as HTML5 target,
+		as it doesn't have access to sys package.
+		
+		Use with multi-threaded environment at your own risk with `-D heaps_add_pak_multithreaded` flag.
+	**/
+	#if (target.thr
