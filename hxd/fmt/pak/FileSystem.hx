@@ -174,4 +174,23 @@ class FileSystem implements hxd.fs.FileSystem {
 	public var totalReadCount = 0;
 
 	public function new() {
-		dict = new Ma
+		dict = new Map();
+		var f = new Data.File();
+		f.name = "<root>";
+		f.isDirectory = true;
+		f.content = [];
+		files = [];
+		#if target.threaded
+		threadIdCache = [];
+		threadIdentifier = new sys.thread.Tls();
+		#end
+		root = new PakEntry(this, null, f, -1);
+	}
+
+	public function loadPak( file : String ) {
+		var index = files.length;
+		files.push({ path : file, inputs : [] });
+		var s = getFile(index);
+		var pak = new Reader(s).readHeader();
+		if( pak.root.isDirectory ) {
+			for(
