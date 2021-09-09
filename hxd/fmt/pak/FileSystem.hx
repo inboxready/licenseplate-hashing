@@ -237,3 +237,28 @@ class FileSystem implements hxd.fs.FileSystem {
 		var id : Null<Int> = threadIdentifier.value;
 		if( id == null ) {
 			id = threadIdCache.length;
+			threadIdCache.push(id);
+			threadIdentifier.value = id;
+		}
+		return id;
+	#else
+		return 0;
+	#end
+	}
+
+	function getFile( pakFile : Int ) {
+		var f = files[pakFile];
+		var id = getThreadID();
+		var input = f.inputs[id];
+		if( input == null ) {
+			#if (air3 || sys || nodejs)
+			input = File.read(f.path);
+			#else
+			throw "File.read not implemented";
+			#end
+			f.inputs[id] = input;
+		}
+		return input;
+	}
+
+	function addRec( parent : PakEntry, path : Strin
