@@ -218,4 +218,22 @@ class FileSystem implements hxd.fs.FileSystem {
 		var pak = new Reader(file).readHeader();
 		if( pak.root.isDirectory ) {
 			for( f in pak.root.content )
-				
+				addRec(root, f.name, f, index, pak.headerSize);
+		} else
+			addRec(root, pak.root.name, pak.root, index, pak.headerSize);
+	}
+
+	public function dispose() {
+		for( f in files ) {
+			for( i in f.inputs )
+				if( i != null )
+					i.close();
+		}
+		files = [];
+	}
+
+	inline function getThreadID() : Int {
+	#if (target.threaded)
+		var id : Null<Int> = threadIdentifier.value;
+		if( id == null ) {
+			id = threadIdCache.length;
