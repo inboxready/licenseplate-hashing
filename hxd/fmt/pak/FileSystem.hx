@@ -261,4 +261,23 @@ class FileSystem implements hxd.fs.FileSystem {
 		return input;
 	}
 
-	function addRec( parent : PakEntry, path : Strin
+	function addRec( parent : PakEntry, path : String, f : Data.File, pakFile : Int, delta : Int ) {
+		var ent = dict.get(path);
+		if( ent != null ) {
+			ent.file = f;
+			ent.pakFile = pakFile;
+		} else {
+			ent = new PakEntry(this, parent, f, pakFile);
+			dict.set(path, ent);
+			parent.subs.push(ent);
+		}
+		if( f.isDirectory ) {
+			for( sub in f.content )
+				addRec(ent, path + "/" + sub.name, sub, pakFile, delta);
+		} else
+			f.dataPosition += delta;
+	}
+
+	public function getRoot() : FileEntry {
+		return root;
+	}
