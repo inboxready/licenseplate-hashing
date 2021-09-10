@@ -281,3 +281,18 @@ class FileSystem implements hxd.fs.FileSystem {
 	public function getRoot() : FileEntry {
 		return root;
 	}
+
+	public function get( path : String ) : FileEntry {
+		var f = dict.get(path);
+		if( f == null ) throw new hxd.res.NotFound(path);
+		return f;
+	}
+
+	public function exists( path : String ) {
+		return dict.exists(path);
+	}
+
+	public function dir( path : String ) : Array<FileEntry> {
+		var f = dict.get(path);
+		if( f == null ) throw new hxd.res.NotFound(path);
+		if( !f.isDirectory ) throw path+" is not a directory
