@@ -26,3 +26,8 @@ enum MouseMode {
 		During Relative mouse mode the window mouse position is not updated.
 
 		@param callback The callback to which the relative mouse movements are reported.
+		Unless event is cancelled, set `propagate` flag in order to emit an `EMove` event with current window cursor position.
+		Use `Window.setMousePos` to manually update the window cursor position.
+
+		@param restorePos If set, when changing mouse mode to `Absolute`, cursor position would be restored to the position it was on when this mode was enabled.
+		Otherwise mouse position is clipped to window boundaries. Ignored and treated as
