@@ -37,4 +37,7 @@ enum MouseMode {
 		Alternate relative mouse movement mode. In this mode the mouse cursor is hidden, and `EMove` can report mouse positions outside of window boundaries.
 
 		@param restorePos If set, when changing mouse mode to `Absolute`, cursor position would be restored to the position it was on when this mode was enabled.
-		Otherwise mouse position is clipp
+		Otherwise mouse position is clipped to window boundaries. Ignored and treated as `true` on JS.
+	**/
+	AbsoluteUnbound(restorePos : Bool);
+}
