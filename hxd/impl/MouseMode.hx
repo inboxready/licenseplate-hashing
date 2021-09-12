@@ -13,4 +13,16 @@ package hxd.impl;
 	> If mouse is not currently captured, but `mouseMode` is set to either `Relative` or `AbsoluteUnbound`,
 	mouse movement events are ignored and first click on the canvas is used to capture the mouse and hence discarded.
 	
-	@see 
+	@see `hxd.Window.mouseMode`
+**/
+enum MouseMode {
+	/**
+		Default mouse movement mode. Causes `EMove` events in window coordinates.
+	**/
+	Absolute;
+	/**
+		Relative mouse movement mode. In this mode the mouse cursor is hidden and instead of `EMove` event the `callback` is invoked with relative mouse movement.
+
+		During Relative mouse mode the window mouse position is not updated.
+
+		@param callback The callback to which the relative mouse movements are reported.
