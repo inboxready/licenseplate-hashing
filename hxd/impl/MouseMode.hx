@@ -30,4 +30,11 @@ enum MouseMode {
 		Use `Window.setMousePos` to manually update the window cursor position.
 
 		@param restorePos If set, when changing mouse mode to `Absolute`, cursor position would be restored to the position it was on when this mode was enabled.
-		Otherwise mouse position is clipped to window boundaries. Ignored and treated as
+		Otherwise mouse position is clipped to window boundaries. Ignored and treated as `true` on JS.
+	**/
+	Relative(callback : hxd.Event -> Void, restorePos : Bool);
+	/**
+		Alternate relative mouse movement mode. In this mode the mouse cursor is hidden, and `EMove` can report mouse positions outside of window boundaries.
+
+		@param restorePos If set, when changing mouse mode to `Absolute`, cursor position would be restored to the position it was on when this mode was enabled.
+		Otherwise mouse position is clipp
