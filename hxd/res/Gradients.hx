@@ -26,4 +26,20 @@ class Gradients extends Resource {
 		var tile  = h2d.Tile.fromTexture(tex);
 
 		var map = new Map<String, h2d.Tile>();
-		v
+		var y = 1;
+		for (d in grads) {
+			map.set(d.name, tile.sub(0, y, resolution, 1));
+			y += 3;
+		}
+		return map;
+	}
+
+	static function createTexture(grads : Array<Gradient>, twid : Int) {
+		if (!hxd.Math.isPOT(twid)) throw "gradient resolution should be a power of two";
+
+		var ghei = grads.length > 1 ? 3 : 1;
+		var thei = hxd.Math.nextPOT(ghei * grads.length);
+		var tex  = new h3d.mat.Texture(twid, thei);
+
+		function uploadPixels() {
+			var pixels = hxd.
