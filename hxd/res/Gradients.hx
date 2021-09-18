@@ -42,4 +42,22 @@ class Gradients extends Resource {
 		var tex  = new h3d.mat.Texture(twid, thei);
 
 		function uploadPixels() {
-			var pixels = hxd.
+			var pixels = hxd.Pixels.alloc(twid, thei, ARGB);
+			var yoff   = 0;
+			for (g in grads) {
+				appendPixels(pixels, g, tex.width, ghei, yoff);
+				yoff += ghei;
+			}
+			tex.uploadPixels(pixels);
+			pixels.dispose();
+		}
+
+		uploadPixels();
+		tex.realloc = uploadPixels;
+		return tex;
+	}
+
+	static function appendPixels(pixels : hxd.Pixels, dat : Gradient, wid : Int, hei : Int, yoff : Int) {
+		var colors = new Array<{value : h3d.Vector, loc : Int}>();
+
+		{	// preprocess gra
