@@ -69,4 +69,20 @@ class Gradients extends Resource {
 					default : throw "unhandled color type";
 				}
 				color.w = cs.opacity / 100;
-				colors.push({value : color, loc : Std.int((wid-1) * cs.colorStop.location / dat.interpolatio
+				colors.push({value : color, loc : Std.int((wid-1) * cs.colorStop.location / dat.interpolation)});
+			}
+			colors.sort(function(a, b) { return a.loc - b.loc; } );
+
+			if (colors[0].loc > 0)
+				colors.unshift( { value : colors[0].value, loc : 0 } );
+			if (colors[colors.length - 1].loc < wid - 1)
+				colors.push( { value : colors[colors.length-1].value, loc : wid-1 } );
+		}
+
+		{	// create gradient pixels
+			var px = 0;
+			var ci = 0; // color index
+			var tmpCol = new h3d.Vector();
+
+			while (px < wid) {
+				var prevLoc = colors[ci    ]
