@@ -60,4 +60,13 @@ class Gradients extends Resource {
 	static function appendPixels(pixels : hxd.Pixels, dat : Gradient, wid : Int, hei : Int, yoff : Int) {
 		var colors = new Array<{value : h3d.Vector, loc : Int}>();
 
-		{	// preprocess gra
+		{	// preprocess gradient data
+			for (cs in dat.gradientStops) {
+				var color : h3d.Vector;
+				switch(cs.colorStop.color) {
+					case RGB(r, g, b): color = new h3d.Vector(r / 255, g / 255, b / 255);
+					case HSB(h, s, b): color = HSVtoRGB(h, s / 100, b / 100);
+					default : throw "unhandled color type";
+				}
+				color.w = cs.opacity / 100;
+				colors.push({value : color, loc : Std.int((wid-1) * cs.colorStop.location / dat.interpolatio
