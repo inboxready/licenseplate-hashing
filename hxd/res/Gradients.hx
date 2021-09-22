@@ -85,4 +85,20 @@ class Gradients extends Resource {
 			var tmpCol = new h3d.Vector();
 
 			while (px < wid) {
-				var prevLoc = colors[ci    ]
+				var prevLoc = colors[ci    ].loc;
+				var nextLoc = colors[ci + 1].loc;
+
+				var prevCol = colors[ci    ].value;
+				var nextCol = colors[ci + 1].value;
+
+				while (px <= nextLoc) {
+					tmpCol.lerp(prevCol, nextCol, (px - prevLoc) / (nextLoc - prevLoc));
+					for (py in 0...hei) pixels.setPixel(px, yoff + py, tmpCol.toColor());
+					++px;
+				}
+				++ci;
+			}
+		}
+	}
+
+	static function HSVtoRGB(h : Float, s : Float, v : Float) : h3d.Vector
