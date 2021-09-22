@@ -118,4 +118,16 @@ class Gradients extends Resource {
 			case 1 : return new h3d.Vector(q, v, p);
 			case 2 : return new h3d.Vector(p, v, t);
 			case 3 : return new h3d.Vector(p, q, v);
-			case 4 : return new h3d.Ve
+			case 4 : return new h3d.Vector(t, p, v);
+			default: return new h3d.Vector(v, p, q);
+		}
+	}
+
+	function getData() : Data {
+		if (data != null) return data;
+		var fs = entry.open();
+		data = new hxd.fmt.grd.Reader(fs).read();
+		fs.close();
+		return data;
+	}
+}
