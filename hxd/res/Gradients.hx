@@ -102,3 +102,20 @@ class Gradients extends Resource {
 	}
 
 	static function HSVtoRGB(h : Float, s : Float, v : Float) : h3d.Vector
+	{
+		var i : Int;
+		var f : Float; var p : Float; var q : Float; var t : Float;
+		if( s == 0 )
+			return new h3d.Vector(v, v, v);
+		h /= 60;
+		i = Math.floor( h );
+		f = h - i;
+		p = v * ( 1 - s );
+		q = v * ( 1 - s * f );
+		t = v * ( 1 - s * ( 1 - f ) );
+		switch( i ) {
+			case 0 : return new h3d.Vector(v, t, p);
+			case 1 : return new h3d.Vector(q, v, p);
+			case 2 : return new h3d.Vector(p, v, t);
+			case 3 : return new h3d.Vector(p, q, v);
+			case 4 : return new h3d.Ve
