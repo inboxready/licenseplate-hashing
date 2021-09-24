@@ -21,3 +21,11 @@ class LoadingData extends Data {
 			throw "Failed to load data";
 		var d = snd.getData();
 		if( hxd.impl.Api.isOfType(d, LoadingData) ) {
+			waitCount++;
+			haxe.Timer.delay(load.bind(onEnd), 100);
+			return;
+		}
+		d.load(onEnd);
+	}
+
+}
