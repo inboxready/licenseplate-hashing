@@ -52,4 +52,16 @@ class Buffer {
 		lastStop = haxe.Timer.stamp();
 	}
 
-	public function
+	public function dispose() {
+		Manager.get().driver.destroyBuffer(handle);
+	}
+}
+
+class Manager {
+	// Automatically set the channel to streaming mode if its duration exceed this value.
+	public static var STREAM_DURATION            = 5.;
+	public static var STREAM_BUFFER_SAMPLE_COUNT = 44100;
+	public static var BUFFER_QUEUE_LENGTH        = 2;
+	public static var MAX_SOURCES                = 16;
+	public static var SOUND_BUFFER_CACHE_SIZE    = 256;
+	public static var VIRTUAL_VOLUM
