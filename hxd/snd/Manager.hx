@@ -34,4 +34,22 @@ class Source {
 
 @:access(hxd.snd.Manager)
 class Buffer {
-	public var h
+	public var handle   : BufferHandle;
+	public var sound    : hxd.res.Sound;
+	public var isEnd    : Bool;
+	public var isStream : Bool;
+	public var refs     : Int;
+	public var lastStop : Float;
+
+	public var start      : Int;
+	public var end        : Int = 0;
+	public var samples    : Int;
+	public var sampleRate : Int;
+
+	public function new(driver : Driver) {
+		handle = driver.createBuffer();
+		refs = 0;
+		lastStop = haxe.Timer.stamp();
+	}
+
+	public function
