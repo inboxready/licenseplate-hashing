@@ -64,4 +64,21 @@ class Manager {
 	public static var BUFFER_QUEUE_LENGTH        = 2;
 	public static var MAX_SOURCES                = 16;
 	public static var SOUND_BUFFER_CACHE_SIZE    = 256;
-	public static var VIRTUAL_VOLUM
+	public static var VIRTUAL_VOLUME_THRESHOLD   = 1e-5;
+
+	/**
+		Allows to decode big streaming buffers over X split frames. 0 to disable
+	**/
+	public static var BUFFER_STREAM_SPLIT        = 16;
+
+	static var instance : Manager;
+
+	public var masterVolume	: Float;
+	public var masterSoundGroup   (default, null) : SoundGroup;
+	public var masterChannelGroup (default, null) : ChannelGroup;
+	public var listener : Listener;
+	public var timeOffset : Float = 0.;
+
+	var updateEvent   : MainEvent;
+
+	var cachedByt
