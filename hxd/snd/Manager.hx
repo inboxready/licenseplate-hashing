@@ -81,4 +81,21 @@ class Manager {
 
 	var updateEvent   : MainEvent;
 
-	var cachedByt
+	var cachedBytes   : haxe.io.Bytes;
+	var resampleBytes : haxe.io.Bytes;
+
+	var driver   : Driver;
+	var channels : Channel;
+	var sources  : Array<Source>;
+	var now      : Float;
+
+	var soundBufferCount  : Int;
+	var soundBufferMap    : Map<String, Buffer>;
+	var soundBufferKeys	  : Array<String>;
+	var freeStreamBuffers : Array<Buffer>;
+	var effectGC          : Array<Effect>;
+	var hasMasterVolume   : Bool;
+
+	public var suspended : Bool = false;
+
+	private functi
