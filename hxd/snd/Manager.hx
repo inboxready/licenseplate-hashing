@@ -115,3 +115,18 @@ class Manager {
 		hasMasterVolume    = driver == null ? true : driver.hasFeature(MasterVolume);
 		masterSoundGroup   = new SoundGroup  ("master");
 		masterChannelGroup = new ChannelGroup("master");
+		listener           = new Listener();
+		soundBufferMap     = new Map();
+		soundBufferKeys	   = [];
+		freeStreamBuffers  = [];
+		effectGC           = [];
+		soundBufferCount   = 0;
+
+		if (driver != null) {
+			// alloc sources
+			sources = [];
+			for (i in 0...MAX_SOURCES) sources.push(new Source(driver));
+		}
+
+		cachedBytes   = haxe.io.Bytes.alloc(4 * 3 * 2);
+		resampleBytes = haxe.io.Bytes.alloc(STREAM_BUF
