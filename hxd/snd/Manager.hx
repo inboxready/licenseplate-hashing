@@ -98,4 +98,20 @@ class Manager {
 
 	public var suspended : Bool = false;
 
-	private functi
+	private function new() {
+		try {
+			#if usesys
+			driver = new haxe.AudioTypes.SoundDriver();
+			#elseif (js && !useal)
+			driver = new hxd.snd.webaudio.Driver();
+			#else
+			driver = new hxd.snd.openal.Driver();
+			#end
+		} catch(e : String) {
+			driver = null;
+		}
+
+		masterVolume       = 1.0;
+		hasMasterVolume    = driver == null ? true : driver.hasFeature(MasterVolume);
+		masterSoundGroup   = new SoundGroup  ("master");
+		masterChannelGroup = new ChannelGroup("master");
