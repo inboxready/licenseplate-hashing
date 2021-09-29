@@ -169,4 +169,22 @@ class Manager {
 
 	public function stopByName( name : String ) {
 		var c = channels;
-		while( c != nul
+		while( c != null ) {
+			var n = c.next;
+			if( c.soundGroup != null && c.soundGroup.name == name ) c.stop();
+			c = n;
+		}
+	}
+
+	/**
+		Returns iterator with all active instances of a Sound at the call time.
+	**/
+	public function getAll( sound : hxd.res.Sound ) : Iterator<Channel> {
+		var ch = channels;
+		var result = new Array<Channel>();
+		while ( ch != null ) {
+			if ( ch.sound == sound )
+				result.push(ch);
+			ch = ch.next;
+		}
+		return new hxd.imp
