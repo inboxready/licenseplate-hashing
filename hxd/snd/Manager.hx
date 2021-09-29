@@ -147,4 +147,26 @@ class Manager {
 	public static function get() : Manager {
 		if( instance == null ) {
 			instance = new Manager();
-			instance.updateEvent = haxe.MainLoop.add(instan
+			instance.updateEvent = haxe.MainLoop.add(instance.update);
+			#if (haxe_ver >= 4) instance.updateEvent.isBlocking = false; #end
+		}
+		return instance;
+	}
+
+	public function stopAll() {
+		while( channels != null )
+			channels.stop();
+	}
+
+	public function stopAllNotLooping() {
+		var c = channels;
+		while( c != null ) {
+			var n = c.next;
+			if( !c.loop ) c.stop();
+			c = n;
+		}
+	}
+
+	public function stopByName( name : String ) {
+		var c = channels;
+		while( c != nul
