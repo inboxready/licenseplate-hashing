@@ -129,4 +129,22 @@ class Manager {
 		}
 
 		cachedBytes   = haxe.io.Bytes.alloc(4 * 3 * 2);
-		resampleBytes = haxe.io.Bytes.alloc(STREAM_BUF
+		resampleBytes = haxe.io.Bytes.alloc(STREAM_BUFFER_SAMPLE_COUNT * 2);
+	}
+
+	function getTmpBytes(size) {
+		if (cachedBytes.length < size)
+			cachedBytes = haxe.io.Bytes.alloc(size);
+		return cachedBytes;
+	}
+
+	function getResampleBytes(size : Int) {
+		if (resampleBytes.length < size)
+			resampleBytes = haxe.io.Bytes.alloc(size);
+		return resampleBytes;
+	}
+
+	public static function get() : Manager {
+		if( instance == null ) {
+			instance = new Manager();
+			instance.updateEvent = haxe.MainLoop.add(instan
