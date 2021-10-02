@@ -210,4 +210,21 @@ class Manager {
 
 		if (driver != null) {
 			for (s in sources)           s.dispose();
-			for (b in soundBufferMap)    b.di
+			for (b in soundBufferMap)    b.dispose();
+			for (b in freeStreamBuffers) b.dispose();
+			for (e in effectGC)          e.driver.release();
+			driver.dispose();
+		}
+
+		sources           = null;
+		soundBufferMap    = null;
+		soundBufferKeys   = null;
+		freeStreamBuffers = null;
+		effectGC          = null;
+
+		updateEvent.stop();
+		instance = null;
+	}
+
+	public function play(sound : hxd.res.Sound, ?channelGroup : ChannelGroup, ?soundGroup : SoundGroup) {
+		if (soundGroup   == null) soundGro
