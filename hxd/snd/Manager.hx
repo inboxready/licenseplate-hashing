@@ -187,4 +187,27 @@ class Manager {
 				result.push(ch);
 			ch = ch.next;
 		}
-		return new hxd.imp
+		return new hxd.impl.ArrayIterator(result);
+	}
+
+	public function cleanCache() {
+		var i = 0;
+		while (i < soundBufferKeys.length) {
+			var k = soundBufferKeys[i];
+			var b = soundBufferMap.get(k);
+			i++;
+			if (b.refs > 0) continue;
+			soundBufferMap.remove(k);
+			soundBufferKeys.remove(k);
+			i--;
+			b.dispose();
+			--soundBufferCount;
+		}
+	}
+
+	public function dispose() {
+		stopAll();
+
+		if (driver != null) {
+			for (s in sources)           s.dispose();
+			for (b in soundBufferMap)    b.di
