@@ -227,4 +227,18 @@ class Manager {
 	}
 
 	public function play(sound : hxd.res.Sound, ?channelGroup : ChannelGroup, ?soundGroup : SoundGroup) {
-		if (soundGroup   == null) soundGro
+		if (soundGroup   == null) soundGroup   = masterSoundGroup;
+		if (channelGroup == null) channelGroup = masterChannelGroup;
+
+		var sdat = sound.getData();
+		if( sdat.samples == 0 ) throw sound + " has no samples";
+
+		var c = new Channel();
+		c.sound        = sound;
+		c.duration     = sdat.duration;
+		c.manager      = this;
+		c.soundGroup   = soundGroup;
+		c.channelGroup = channelGroup;
+		c.next         = channels;
+		c.isLoading    = sdat.isLoading();
+		c.isVirtual    = dr
