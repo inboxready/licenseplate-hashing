@@ -260,4 +260,25 @@ class Manager {
 			c.lastStamp = now;
 
 			var next = c.next; // save next, since we might release this channel
-			while (c.position >=
+			while (c.position >= c.duration) {
+				c.position -= c.duration;
+				c.onEnd();
+
+				// if we have released the next channel, let's stop here
+				if( next != null && next.manager == null )
+					next = null;
+
+				if (c.queue.length > 0) {
+					c.sound = c.queue.shift();
+					c.duration = c.sound.getData().duration;
+				} else if (!c.loop) {
+					releaseChannel(c);
+					break;
+				}
+			}
+
+			c = next;
+		}
+	}
+
+	public functio
