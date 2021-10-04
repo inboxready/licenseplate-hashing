@@ -281,4 +281,24 @@ class Manager {
 		}
 	}
 
-	public functio
+	public function update() {
+		if( timeOffset != 0 ) {
+			var c = channels;
+			while( c != null ) {
+				c.lastStamp += timeOffset;
+				if( c.currentFade != null ) c.currentFade.start += timeOffset;
+				c = c.next;
+			}
+			for( s in sources )
+				for( b in s.buffers )
+					b.lastStop += timeOffset;
+			timeOffset = 0;
+		}
+		now = haxe.Timer.stamp();
+
+		if (driver == null) {
+			updateVirtualChannels(now);
+			return;
+		}
+
+		// ------------
