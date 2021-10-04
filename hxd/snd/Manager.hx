@@ -241,4 +241,23 @@ class Manager {
 		c.channelGroup = channelGroup;
 		c.next         = channels;
 		c.isLoading    = sdat.isLoading();
-		c.isVirtual    = dr
+		c.isVirtual    = driver == null;
+		c.lastStamp    = haxe.Timer.stamp();
+
+		channels = c;
+		return c;
+	}
+
+	function updateVirtualChannels(now : Float) {
+		var c = channels;
+		while (c != null) {
+			if (c.pause || !c.isVirtual || c.isLoading) {
+				c = c.next;
+				continue;
+			}
+
+			c.position += Math.max(now - c.lastStamp, 0.0);
+			c.lastStamp = now;
+
+			var next = c.next; // save next, since we might release this channel
+			while (c.position >=
