@@ -301,4 +301,20 @@ class Manager {
 			return;
 		}
 
-		// ------------
+		// --------------------------------------------------------------------
+		// (de)queue buffers, sync positions & release ended channels
+		// --------------------------------------------------------------------
+
+		for (s in sources) {
+			var c = s.channel;
+			if (c == null) continue;
+
+			// did the user changed the position?
+			if (c.positionChanged) {
+				releaseSource(s);
+				continue;
+			}
+
+			// process consumed buffers
+			var lastBuffer = null;
+		
