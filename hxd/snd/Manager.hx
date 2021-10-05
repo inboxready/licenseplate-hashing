@@ -317,4 +317,20 @@ class Manager {
 
 			// process consumed buffers
 			var lastBuffer = null;
-		
+			var count = driver.getProcessedBuffers(s.handle);
+			for (i in 0...count) {
+				var b = unqueueBuffer(s);
+				if( b == null ) continue;
+				lastBuffer = b;
+				if (b.isEnd) {
+					c.sound           = b.sound;
+					c.duration        = b.sound.getData().duration;
+					c.position        = c.duration;
+					c.positionChanged = false;
+					c.onEnd();
+					s.start = 0;
+				}
+			}
+
+			// did the source consumed all buffers?
+			if (s.buffers.length == 0) {
