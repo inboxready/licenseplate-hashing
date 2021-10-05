@@ -334,3 +334,21 @@ class Manager {
 
 			// did the source consumed all buffers?
 			if (s.buffers.length == 0) {
+				if (!lastBuffer.isEnd) {
+					c.position = (lastBuffer.start + lastBuffer.samples) / lastBuffer.sampleRate;
+					releaseSource(s);
+				} else if (c.queue.length > 0) {
+					c.sound    = c.queue.shift();
+					c.duration = c.sound.getData().duration;
+					c.position = 0;
+					releaseSource(s);
+				} else if (c.loop) {
+					c.position = 0;
+					releaseSource(s);
+				} else {
+					releaseChannel(c);
+				}
+				continue;
+			}
+
+			// sync channel posit
