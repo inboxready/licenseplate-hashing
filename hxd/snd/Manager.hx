@@ -351,4 +351,19 @@ class Manager {
 				continue;
 			}
 
-			// sync channel posit
+			// sync channel position
+			c.sound    = s.buffers[0].sound;
+			c.duration = c.sound.getData().duration;
+
+			var playedSamples = driver.getPlayedSampleCount(s.handle);
+			if (playedSamples < 0)  {
+				#if debug
+				trace("playedSamples should positive : bug in driver");
+				#end
+				playedSamples = 0;
+			}
+			c.position = s.start / targetRate + playedSamples / s.buffers[0].sampleRate;
+			c.positionChanged = false;
+
+			// enqueue next buffers
+			if (s.buffers.len
