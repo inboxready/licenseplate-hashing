@@ -383,4 +383,13 @@ class Manager {
 			}
 		}
 
-		// --------------------------
+		// --------------------------------------------------------------------
+		// calc audible volume & virtualize inaudible channels
+		// --------------------------------------------------------------------
+
+		var c = channels;
+		while (c != null) {
+			c.calcAudibleVolume(now);
+			if( c.isLoading && !c.sound.getData().isLoading() )
+				c.isLoading = false;
+			c.isVirtual = suspended || c.pause || c.mute || c.channelGroup.mute || (c.allowVirtual && c.audibleVolume < VIRTUAL
