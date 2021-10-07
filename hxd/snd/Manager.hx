@@ -392,4 +392,15 @@ class Manager {
 			c.calcAudibleVolume(now);
 			if( c.isLoading && !c.sound.getData().isLoading() )
 				c.isLoading = false;
-			c.isVirtual = suspended || c.pause || c.mute || c.channelGroup.mute || (c.allowVirtual && c.audibleVolume < VIRTUAL
+			c.isVirtual = suspended || c.pause || c.mute || c.channelGroup.mute || (c.allowVirtual && c.audibleVolume < VIRTUAL_VOLUME_THRESHOLD) || c.isLoading;
+			c = c.next;
+		}
+
+		// --------------------------------------------------------------------
+		// sort channels by priority
+		// --------------------------------------------------------------------
+
+		channels = haxe.ds.ListSort.sortSingleLinked(channels, sortChannel);
+
+		// --------------------------------------------------------------------
+		// virtualize sounds that put
