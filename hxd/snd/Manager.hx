@@ -366,4 +366,21 @@ class Manager {
 			c.positionChanged = false;
 
 			// enqueue next buffers
-			if (s.buffers.len
+			if (s.buffers.length < BUFFER_QUEUE_LENGTH) {
+				var b = s.buffers[s.buffers.length - 1];
+				if (!b.isEnd) {
+					// next stream buffer
+					queueBuffer(s, b.sound, b.start + b.samples);
+				} else if (c.queue.length > 0) {
+					// queue next sound buffer
+					var snd = c.queue[0];
+					if( queueBuffer(s, snd, 0) )
+						c.queue.shift();
+				} else if (c.loop) {
+					// requeue last played sound
+					queueBuffer(s, b.sound, 0);
+				}
+			}
+		}
+
+		// --------------------------
