@@ -413,4 +413,19 @@ class Manager {
 			else if (c.soundGroup.maxAudible >= 0) {
 				if(c.soundGroup.lastUpdate != now) {
 					c.soundGroup.lastUpdate = now;
-					c.soun
+					c.soundGroup.numAudible = 0;
+				}
+				if (++c.soundGroup.numAudible > c.soundGroup.maxAudible) {
+					c.isVirtual = true;
+					--audibleCount;
+				}
+			}
+			c = c.next;
+		}
+
+		// --------------------------------------------------------------------
+		// free sources that points to virtualized channels
+		// --------------------------------------------------------------------
+
+		for (s in sources) {
+			if (s.
