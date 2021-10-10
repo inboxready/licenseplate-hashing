@@ -428,4 +428,21 @@ class Manager {
 		// --------------------------------------------------------------------
 
 		for (s in sources) {
-			if (s.
+			if (s.channel == null || !s.channel.isVirtual) continue;
+			releaseSource(s);
+		}
+
+		// --------------------------------------------------------------------
+		// bind non-virtual channels to sources
+		// --------------------------------------------------------------------
+
+		var c = channels;
+		while (c != null) {
+			if (c.source != null || c.isVirtual) {
+				c = c.next;
+				continue;
+			}
+
+			// look for a free source
+			var s = null;
+			for
