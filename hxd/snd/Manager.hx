@@ -403,4 +403,14 @@ class Manager {
 		channels = haxe.ds.ListSort.sortSingleLinked(channels, sortChannel);
 
 		// --------------------------------------------------------------------
-		// virtualize sounds that put
+		// virtualize sounds that puts the put the audible count over the maximum number of sources
+		// --------------------------------------------------------------------
+
+		var audibleCount = 0;
+		var c = channels;
+		while (c != null && !c.isVirtual) {
+			if (++audibleCount > sources.length) c.isVirtual = true;
+			else if (c.soundGroup.maxAudible >= 0) {
+				if(c.soundGroup.lastUpdate != now) {
+					c.soundGroup.lastUpdate = now;
+					c.soun
