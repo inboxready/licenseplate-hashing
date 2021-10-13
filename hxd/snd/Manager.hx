@@ -478,4 +478,22 @@ class Manager {
 				s.volume = v;
 				driver.setSourceVolume(s.handle, v);
 				#if hlopenal
-				if( v > 1 ) Sys.println("Could not s
+				if( v > 1 ) Sys.println("Could not set volume " + v + " on " + c.sound);
+				#end
+			}
+
+			if (!s.playing) {
+				driver.playSource(s.handle);
+				s.playing = true;
+			}
+
+			// unbind removed effects
+			var i = c.bindedEffects.length;
+			while (--i >= 0) {
+				var e = c.bindedEffects[i];
+				if (c.effects.indexOf(e) < 0 && c.channelGroup.effects.indexOf(e) < 0)
+					unbindEffect(c, s, e);
+			}
+
+			// bind added effects
+			for (e in
