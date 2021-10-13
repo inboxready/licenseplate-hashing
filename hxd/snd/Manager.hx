@@ -463,4 +463,19 @@ class Manager {
 		}
 
 		// --------------------------------------------------------------------
-		// update source par
+		// update source parameters
+		// --------------------------------------------------------------------
+
+		var usedEffects : Effect = null;
+		var volume = hasMasterVolume ? 1. : masterVolume;
+		for (s in sources) {
+			var c = s.channel;
+			if (c == null) continue;
+
+			var v = c.currentVolume * volume;
+			if (s.volume != v) {
+				if (v < 0) v = 0;
+				s.volume = v;
+				driver.setSourceVolume(s.handle, v);
+				#if hlopenal
+				if( v > 1 ) Sys.println("Could not s
