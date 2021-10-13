@@ -445,4 +445,22 @@ class Manager {
 
 			// look for a free source
 			var s = null;
-			for
+			for (s2 in sources) if( s2.channel == null ) {
+				s = s2;
+				break;
+			}
+
+			if (s == null) throw "could not get a source";
+			s.channel = c;
+			c.source = s;
+
+			checkTargetFormat(c.sound.getData(), c.soundGroup.mono);
+			s.start = Math.floor(c.position * targetRate);
+			if( s.start < 0 ) s.start = 0;
+			queueBuffer(s, c.sound, s.start);
+			c.positionChanged = false;
+			c = c.next;
+		}
+
+		// --------------------------------------------------------------------
+		// update source par
