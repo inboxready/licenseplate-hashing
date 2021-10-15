@@ -505,4 +505,25 @@ class Manager {
 
 		// --------------------------------------------------------------------
 		// update effects
-		// -----------------------------------------------------
+		// --------------------------------------------------------------------
+
+		usedEffects = haxe.ds.ListSort.sortSingleLinked(usedEffects, sortEffect);
+		var e = usedEffects;
+		while (e != null) {
+			e.driver.update(e);
+			e = e.next;
+		}
+
+		for (s in sources) {
+			var c = s.channel;
+			if (c == null) continue;
+			for (e in c.bindedEffects) e.driver.apply(e, s.handle);
+		}
+
+		for (e in effectGC) if (now - e.lastStamp > e.retainTime) {
+			e.driver.release();
+			effectGC.remove(e);
+			break;
+		}
+
+		// ---------------------------
