@@ -526,4 +526,17 @@ class Manager {
 			break;
 		}
 
-		// ---------------------------
+		// --------------------------------------------------------------------
+		// update virtual channels
+		// --------------------------------------------------------------------
+
+		updateVirtualChannels(now);
+
+		// --------------------------------------------------------------------
+		// update global driver parameters
+		// --------------------------------------------------------------------
+
+		listener.direction.normalize();
+		listener.up.normalize();
+
+		if( hasMasterVolume ) driver.setMasterVolume(
