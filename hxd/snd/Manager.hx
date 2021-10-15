@@ -496,4 +496,13 @@ class Manager {
 			}
 
 			// bind added effects
-			for (e in
+			for (e in c.channelGroup.effects) if (c.bindedEffects.indexOf(e) < 0) bindEffect(c, s, e);
+			for (e in c.effects) if (c.bindedEffects.indexOf(e) < 0) bindEffect(c, s, e);
+
+			// register used effects
+			for (e in c.bindedEffects) usedEffects = regEffect(usedEffects, e);
+		}
+
+		// --------------------------------------------------------------------
+		// update effects
+		// -----------------------------------------------------
