@@ -569,4 +569,16 @@ class Manager {
 	// internals
 	// ------------------------------------------------------------------------
 
-	function progressiveDec
+	function progressiveDecodeBuffer( s : Source, snd : hxd.res.Sound, start : Int ) {
+		var data = snd.getData();
+		var samples = Math.ceil(STREAM_BUFFER_SAMPLE_COUNT / BUFFER_STREAM_SPLIT);
+		if( s.streamStart != start || s.streamSound != snd ) {
+			s.streamSound = snd;
+			s.streamStart = start;
+			s.streamPos = start;
+		}
+		var end = start + STREAM_BUFFER_SAMPLE_COUNT;
+		if( s.streamPos == end )
+			return true; // already done
+		var bpp = data.getBytesPerSample();
+		var re
