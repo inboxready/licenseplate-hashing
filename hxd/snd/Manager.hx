@@ -539,4 +539,16 @@ class Manager {
 		listener.direction.normalize();
 		listener.up.normalize();
 
-		if( hasMasterVolume ) driver.setMasterVolume(
+		if( hasMasterVolume ) driver.setMasterVolume(masterVolume);
+		driver.setListenerParams(listener.position, listener.direction, listener.up, listener.velocity);
+
+		driver.update();
+
+		// --------------------------------------------------------------------
+		// sound buffer cache GC
+		// --------------------------------------------------------------------
+
+		if (soundBufferCount >= SOUND_BUFFER_CACHE_SIZE) {
+			var now = haxe.Timer.stamp();
+			var i = 0;
+			while (i < soundBufferKeys.length
