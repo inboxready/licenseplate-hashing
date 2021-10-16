@@ -581,4 +581,16 @@ class Manager {
 		if( s.streamPos == end )
 			return true; // already done
 		var bpp = data.getBytesPerSample();
-		var re
+		var reqSize = STREAM_BUFFER_SAMPLE_COUNT * bpp;
+		if( s.streamBuffer == null || s.streamBuffer.length < reqSize ) {
+			s.streamBuffer = haxe.io.Bytes.alloc(reqSize);
+			s.streamPos = start;
+		}
+		var remain = end - s.streamPos;
+		if( remain > samples ) remain = samples;
+		data.decode(s.streamBuffer, (s.streamPos - start) * bpp, s.streamPos, remain);
+		s.streamPos += remain;
+		return s.streamPos == end;
+	}
+
+	function queueBuffer(
