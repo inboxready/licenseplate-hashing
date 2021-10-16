@@ -551,4 +551,22 @@ class Manager {
 		if (soundBufferCount >= SOUND_BUFFER_CACHE_SIZE) {
 			var now = haxe.Timer.stamp();
 			var i = 0;
-			while (i < soundBufferKeys.length
+			while (i < soundBufferKeys.length) {
+				var k = soundBufferKeys[i];
+				var b = soundBufferMap.get(k);
+				i++;
+				if (b.refs > 0 || b.lastStop + 60.0 > now) continue;
+				soundBufferMap.remove(k);
+				soundBufferKeys.remove(k);
+				i--;
+				b.dispose();
+				--soundBufferCount;
+			}
+		}
+	}
+
+	// ------------------------------------------------------------------------
+	// internals
+	// ------------------------------------------------------------------------
+
+	function progressiveDec
