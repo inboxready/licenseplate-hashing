@@ -605,4 +605,18 @@ class Manager {
 		} else {
 
 			// wait until fully decoded
-			if( s.buffers.length > 0 && BUFFER_STREAM_SPLIT > 1 && !progressiveDecodeBuffer(s, snd, st
+			if( s.buffers.length > 0 && BUFFER_STREAM_SPLIT > 1 && !progressiveDecodeBuffer(s, snd, start) )
+				return false;
+
+			// queue stream buffer
+			b = getStreamBuffer(s, snd, sgroup, start);
+			driver.queueBuffer(s.handle, b.handle, 0, b.isEnd);
+		}
+		s.buffers.push(b);
+		return true;
+	}
+
+	function unqueueBuffer(s : Source) {
+		var b = s.buffers.shift();
+		if( b == null ) return null; // some drivers (xbo) might wrongly report ended buffer after source stop, let's ignore
+		driver.unqueueBuffer(s.handle, b.handle);
