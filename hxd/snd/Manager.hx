@@ -593,4 +593,16 @@ class Manager {
 		return s.streamPos == end;
 	}
 
-	function queueBuffer(
+	function queueBuffer(s : Source, snd : hxd.res.Sound, start : Int) {
+		var data   = snd.getData();
+		var sgroup = s.channel.soundGroup;
+
+		var b : Buffer = null;
+		if (data.duration <= STREAM_DURATION) {
+			// queue sound buffer
+			b = getSoundBuffer(snd, sgroup);
+			driver.queueBuffer(s.handle, b.handle, start, true);
+		} else {
+
+			// wait until fully decoded
+			if( s.buffers.length > 0 && BUFFER_STREAM_SPLIT > 1 && !progressiveDecodeBuffer(s, snd, st
