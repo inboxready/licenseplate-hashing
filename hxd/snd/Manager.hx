@@ -637,4 +637,21 @@ class Manager {
 
 	function bindEffect(c : Channel, s : Source, e : Effect) {
 		if (e.refs == 0 && !effectGC.remove(e)) e.driver.acquire();
-		++e.ref
+		++e.refs;
+		e.driver.bind(e, s.handle);
+		c.bindedEffects.push(e);
+	}
+
+	function unbindEffect(c : Channel, s : Source, e : Effect) {
+		e.driver.unbind(e, s.handle);
+		c.bindedEffects.remove(e);
+		if (--e.refs == 0) {
+			e.lastStamp = now;
+			effectGC.push(e);
+		}
+	}
+
+	function releaseSource(s : Source) {
+		if (s.channel != null) {
+			for (e in s.channel.bindedEffects.copy()) unbindEffect(s.channel, s, e);
+			s.channel.bindedEffec
