@@ -620,3 +620,21 @@ class Manager {
 		var b = s.buffers.shift();
 		if( b == null ) return null; // some drivers (xbo) might wrongly report ended buffer after source stop, let's ignore
 		driver.unqueueBuffer(s.handle, b.handle);
+		if (b.isStream) freeStreamBuffers.unshift(b);
+		else if (--b.refs == 0) b.lastStop = haxe.Timer.stamp();
+		return b;
+	}
+
+	static function regEffect(list : Effect, e : Effect) : Effect {
+		var l = list;
+		while (l != null) {
+			if (l == e) return list;
+			l = l.next;
+		}
+		e.next = list;
+		return e;
+	}
+
+	function bindEffect(c : Channel, s : Source, e : Effect) {
+		if (e.refs == 0 && !effectGC.remove(e)) e.driver.acquire();
+		++e.ref
