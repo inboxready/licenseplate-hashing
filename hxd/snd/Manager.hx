@@ -654,4 +654,25 @@ class Manager {
 	function releaseSource(s : Source) {
 		if (s.channel != null) {
 			for (e in s.channel.bindedEffects.copy()) unbindEffect(s.channel, s, e);
-			s.channel.bindedEffec
+			s.channel.bindedEffects = [];
+			s.channel.source = null;
+			s.channel = null;
+		}
+
+		if (s.playing) {
+			s.playing = false;
+			driver.stopSource(s.handle);
+			s.volume = -1.0;
+		}
+
+		while(s.buffers.length > 0) unqueueBuffer(s);
+	}
+
+	var targetRate     : Int;
+	var targetFormat   : Data.SampleFormat;
+	var targetChannels : Int;
+
+	function checkTargetFormat(dat : hxd.snd.Data, forceMono = false) {
+
+		targetRate = dat.samplingRate;
+		#if (!usesys && !hlopen
