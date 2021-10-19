@@ -675,4 +675,21 @@ class Manager {
 	function checkTargetFormat(dat : hxd.snd.Data, forceMono = false) {
 
 		targetRate = dat.samplingRate;
-		#if (!usesys && !hlopen
+		#if (!usesys && !hlopenal && (!js || useal))
+		// perform resampling to nativechannel frequency
+		targetRate = hxd.snd.openal.Emulator.NATIVE_FREQ;
+		#end
+		targetChannels = forceMono || dat.channels == 1 ? 1 : 2;
+		targetFormat   = switch (dat.sampleFormat) {
+			case UI8 : UI8;
+			case I16 : I16;
+			#if js
+			case F32 : F32;
+			#else
+			case F32 : I16;
+			#end
+		}
+		return targetChannels == dat.channels && targetFormat == dat.sampleFormat && targetRate == dat.samplingRate;
+	}
+
+	funct
