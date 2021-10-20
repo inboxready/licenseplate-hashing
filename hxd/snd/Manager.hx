@@ -710,4 +710,17 @@ class Manager {
 			++soundBufferCount;
 		}
 
-		++b.refs
+		++b.refs;
+		return b;
+	}
+
+	function fillSoundBuffer(buf : Buffer, dat : hxd.snd.Data, forceMono = false) {
+		if (!checkTargetFormat(dat, forceMono))
+			dat = dat.resample(targetRate, targetFormat, targetChannels);
+
+		var length = dat.samples * dat.getBytesPerSample();
+		var bytes  = getTmpBytes(length);
+		dat.decode(bytes, 0, 0, dat.samples);
+		driver.setBufferData(buf.handle, bytes, length, targetFormat, targetChannels, targetRate);
+		buf.sampleRate = targetRate;
+		buf.samples    
