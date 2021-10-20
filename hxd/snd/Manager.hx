@@ -692,4 +692,22 @@ class Manager {
 		return targetChannels == dat.channels && targetFormat == dat.sampleFormat && targetRate == dat.samplingRate;
 	}
 
-	funct
+	function getSoundBuffer(snd : hxd.res.Sound, grp : SoundGroup) : Buffer {
+		var data = snd.getData();
+		var mono = grp.mono;
+		var key  = snd.entry.path;
+
+		if (mono && data.channels != 1) key += "mono";
+		var b = soundBufferMap.get(key);
+		if (b == null) {
+			b = new Buffer(driver);
+			b.isStream = false;
+			b.isEnd = true;
+			b.sound = snd;
+			data.load(function() fillSoundBuffer(b, data, mono));
+			soundBufferMap.set(key, b);
+			soundBufferKeys.push(key);
+			++soundBufferCount;
+		}
+
+		++b.refs
