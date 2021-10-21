@@ -740,4 +740,22 @@ class Manager {
 			samples = data.samples - start;
 			b.isEnd = true;
 		} else {
-			b
+			b.isEnd = false;
+		}
+
+		b.sound   = snd;
+		b.samples = samples;
+		b.start   = start;
+
+		var size  = samples * data.getBytesPerSample();
+		var bytes;
+		if( src.streamSound == snd && src.streamStart == start ) {
+			// finish progressive decoding and use progressive buffer
+			while( !progressiveDecodeBuffer(src, snd, start) ) {};
+			bytes = src.streamBuffer;
+		} else {
+			bytes = getTmpBytes(size);
+			data.decode(bytes, 0, start, samples);
+		}
+
+		if (!ch
