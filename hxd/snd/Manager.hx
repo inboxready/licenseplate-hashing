@@ -723,4 +723,21 @@ class Manager {
 		dat.decode(bytes, 0, 0, dat.samples);
 		driver.setBufferData(buf.handle, bytes, length, targetFormat, targetChannels, targetRate);
 		buf.sampleRate = targetRate;
-		buf.samples    
+		buf.samples    = dat.samples;
+	}
+
+	function getStreamBuffer( src : Source, snd : hxd.res.Sound, grp : SoundGroup, start : Int) : Buffer {
+		var data = snd.getData();
+
+		var b = freeStreamBuffers.shift();
+		if (b == null) {
+			b = new Buffer(driver);
+			b.isStream = true;
+		}
+
+		var samples = STREAM_BUFFER_SAMPLE_COUNT;
+		if (start + samples >= data.samples) {
+			samples = data.samples - start;
+			b.isEnd = true;
+		} else {
+			b
