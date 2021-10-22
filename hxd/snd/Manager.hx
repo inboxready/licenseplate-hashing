@@ -806,4 +806,15 @@ class Manager {
 		}
 
 		for (e in c.effects) c.removeEffect(e);
-		if (c.source != null) releaseSou
+		if (c.source != null) releaseSource(c.source);
+		c.next = null;
+		c.manager = null;
+		c.effects = null;
+		c.bindedEffects = null;
+		c.currentFade = null;
+		@:privateAccess {
+			var snd = c.sound;
+			if( snd != null && snd.channel == c ) snd.channel = null;
+		}
+	}
+}
