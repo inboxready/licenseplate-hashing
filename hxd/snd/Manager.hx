@@ -769,3 +769,21 @@ class Manager {
 		b.sampleRate = targetRate;
 		return b;
 	}
+
+	function sortChannel(a : Channel, b : Channel) {
+		if (a.isVirtual != b.isVirtual)
+			return a.isVirtual ? 1 : -1;
+
+		if (a.channelGroup.priority != b.channelGroup.priority)
+			return a.channelGroup.priority < b.channelGroup.priority ? 1 : -1;
+
+		if (a.priority != b.priority)
+			return a.priority < b.priority ? 1 : -1;
+
+		if (a.audibleVolume != b.audibleVolume)
+			return a.audibleVolume < b.audibleVolume ? 1 : -1;
+
+		return a.id < b.id ? 1 : -1;
+	}
+
+	function sortEf
