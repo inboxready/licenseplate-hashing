@@ -758,4 +758,14 @@ class Manager {
 			data.decode(bytes, 0, start, samples);
 		}
 
-		if (!ch
+		if (!checkTargetFormat(data, grp.mono)) {
+			size = Math.ceil(samples * (targetRate / data.samplingRate)) * targetChannels * Data.formatBytes(targetFormat);
+			var resampleBytes = getResampleBytes(size);
+			data.resampleBuffer(resampleBytes, 0, bytes, 0, targetRate, targetFormat, targetChannels, samples);
+			bytes = resampleBytes;
+		}
+
+		driver.setBufferData(b.handle, bytes, size, targetFormat, targetChannels, targetRate);
+		b.sampleRate = targetRate;
+		return b;
+	}
