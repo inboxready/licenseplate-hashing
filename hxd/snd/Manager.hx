@@ -786,4 +786,24 @@ class Manager {
 		return a.id < b.id ? 1 : -1;
 	}
 
-	function sortEf
+	function sortEffect(a : Effect, b : Effect) {
+		return b.priority - a.priority;
+	}
+
+	function releaseChannel(c : Channel) {
+
+		// was already released
+		if( c.manager == null )
+			return;
+
+		if (channels == c) {
+			channels = c.next;
+		} else {
+			var prev = channels;
+			while (prev.next != c)
+				prev = prev.next;
+			prev.next = c.next;
+		}
+
+		for (e in c.effects) c.removeEffect(e);
+		if (c.source != null) releaseSou
