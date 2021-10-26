@@ -197,3 +197,32 @@ class Mp3Data extends Data {
 			currentSample += writeSamples;
 			seekFrame(currentFrame + 1);
 		}
+		// Fill beginning of the frame to the remainder of the buffer.
+		if ( sampleCount > 0 ) {
+			writeSamples = sampleCount;
+			out.blit(outPos, frame, 0, sampleCount * 4 * channels);
+			currentSample += sampleCount;
+		}
+		#else
+		throw "MP3 decoding is not available for this platform";
+		#end
+	}
+
+	#if hl
+
+	inline function seekFrame( to : Int ) {
+		currentFrame = to;
+		mp3_decode_frame(reader, bytes, bytes.length, frameOffsets[to], frame, frame.length, 0);
+	}
+
+	@:hlNative("fmt", "mp3_open") static function mp3_open( bytes : hl.Bytes, size : Int ) : Mp3File {
+		return null;
+	}
+
+	@:hlNative("fmt", "mp3_decode_frame") static function mp3_decode_frame( o : Mp3File, bytes : hl.Bytes, size : Int, position : Int, output : hl.Bytes, outputSize : Int, offset : Int ) : Int {
+		return 0;
+	}
+
+	#end
+
+}
