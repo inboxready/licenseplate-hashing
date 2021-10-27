@@ -50,4 +50,25 @@ private class ALChannel {
 		// AL.sourcef(src,AL.PITCH,1.0);
 		// AL.sourcef(src,AL.GAIN,1.0);
 		fbuf = haxe.io.Bytes.alloc( samples<<3 );
-		ibuf = haxe.io.Bytes.alloc( sampl
+		ibuf = haxe.io.Bytes.alloc( samples<<2 );
+
+		for ( b in buffers )
+			onSample(b);
+		forcePlay();
+		nativeChannels.push(this);
+	}
+
+	public function stop() {
+		if ( src != null ) {
+			nativeChannels.remove(this);
+			driver.stopSource(src);
+			driver.destroySource(src);
+			for (buf in buffers)
+				driver.destroyBuffer(buf);
+			src = null;
+			buffers = null;
+		}
+	}
+
+	@:noDebug function onSample( buf : BufferHandle ) {
+		@:privateAccess native.onSample(haxe.io.Float32Array.
