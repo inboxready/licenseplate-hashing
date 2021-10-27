@@ -34,4 +34,20 @@ private class ALChannel {
 	public function new(samples, native) {
 		if ( nativeUpdate == null ) {
 			nativeUpdate = haxe.MainLoop.add(updateChannels);
-			#if (haxe_ver >= 4) nati
+			#if (haxe_ver >= 4) nativeUpdate.isBlocking = false; #end
+			nativeChannels = [];
+		}
+		this.native = native;
+		this.samples = samples;
+
+		this.manager = Manager.get();
+		this.driver = manager.driver;
+
+		buffers = [driver.createBuffer(), driver.createBuffer()];
+		src = driver.createSource();
+		bufPos = 0;
+
+		// AL.sourcef(src,AL.PITCH,1.0);
+		// AL.sourcef(src,AL.GAIN,1.0);
+		fbuf = haxe.io.Bytes.alloc( samples<<3 );
+		ibuf = haxe.io.Bytes.alloc( sampl
