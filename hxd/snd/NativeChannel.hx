@@ -89,4 +89,24 @@ private class ALChannel {
 
 	function onUpdate(){
 		var cnt = driver.getProcessedBuffers(src);
-		whi
+		while (cnt > 0)
+		{
+			cnt--;
+			var buf = buffers[bufPos];
+			driver.unqueueBuffer(src, buf);
+			onSample(buf);
+			forcePlay();
+			if (++bufPos == buffers.length) bufPos = 0;
+		}
+	}
+}
+
+#end
+class NativeChannel {
+
+	#if flash
+	var snd : flash.media.Sound;
+	var channel : flash.media.SoundChannel;
+	#elseif js
+	// Avoid excessive buffer allocation when playing many sounds.
+	// bufferSamples is constant and never change at runtime, so
