@@ -71,4 +71,22 @@ private class ALChannel {
 	}
 
 	@:noDebug function onSample( buf : BufferHandle ) {
-		@:privateAccess native.onSample(haxe.io.Float32Array.
+		@:privateAccess native.onSample(haxe.io.Float32Array.fromBytes(fbuf));
+
+		// Convert Float32 to Int16
+		for ( i in 0...samples << 1 ) {
+			var v = Std.int(fbuf.getFloat(i << 2) * 0x7FFF);
+			ibuf.set( i<<1, v );
+			ibuf.set( (i<<1) + 1, v>>>8 );
+		}
+		driver.setBufferData(buf, ibuf, ibuf.length, I16, 2, Manager.STREAM_BUFFER_SAMPLE_COUNT);
+		driver.queueBuffer(src, buf, 0, false);
+	}
+
+	inline function forcePlay() {
+		if (!src.playing) driver.playSource(src);
+	}
+
+	function onUpdate(){
+		var cnt = driver.getProcessedBuffers(src);
+		whi
