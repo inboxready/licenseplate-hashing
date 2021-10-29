@@ -118,4 +118,19 @@ class NativeChannel {
 	var queued : js.html.audio.AudioBufferSourceNode;
 	var time : Float; // Mandatory for proper buffer sync, otherwise produces gaps in playback due to innacurate timings.
 	var tmpBuffer : haxe.io.Float32Array;
-	var gain : js.html.au
+	var gain : js.html.audio.GainNode;
+	#elseif hlopenal
+	var channel : ALChannel;
+	#end
+	public var bufferSamples(default, null) : Int;
+
+	public function new( bufferSamples : Int ) {
+		this.bufferSamples = bufferSamples;
+		#if flash
+		snd = new flash.media.Sound();
+		snd.addEventListener(flash.events.SampleDataEvent.SAMPLE_DATA, onFlashSample);
+		channel = snd.play(0, 0x7FFFFFFF);
+		#elseif js
+		var ctx = hxd.snd.webaudio.Context.get();
+
+		var rate = Std.int(ctx.sampleRate);
