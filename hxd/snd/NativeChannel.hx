@@ -109,4 +109,13 @@ class NativeChannel {
 	var channel : flash.media.SoundChannel;
 	#elseif js
 	// Avoid excessive buffer allocation when playing many sounds.
-	// bufferSamples is constant and never change at runtime, so
+	// bufferSamples is constant and never change at runtime, so it's safe to use general pool.
+	static var bufferPool : Array<haxe.io.Float32Array> = new Array();
+
+	var front : js.html.audio.AudioBuffer;
+	var back : js.html.audio.AudioBuffer;
+	var current : js.html.audio.AudioBufferSourceNode;
+	var queued : js.html.audio.AudioBufferSourceNode;
+	var time : Float; // Mandatory for proper buffer sync, otherwise produces gaps in playback due to innacurate timings.
+	var tmpBuffer : haxe.io.Float32Array;
+	var gain : js.html.au
