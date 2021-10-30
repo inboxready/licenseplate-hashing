@@ -134,3 +134,17 @@ class NativeChannel {
 		var ctx = hxd.snd.webaudio.Context.get();
 
 		var rate = Std.int(ctx.sampleRate);
+		front = hxd.snd.webaudio.Context.getBuffer(2, bufferSamples, rate);
+		back = hxd.snd.webaudio.Context.getBuffer(2, bufferSamples, rate);
+
+		if ( bufferPool.length > 0 ) tmpBuffer = bufferPool.pop();
+		else tmpBuffer = new haxe.io.Float32Array(bufferSamples * 2);
+
+		gain = hxd.snd.webaudio.Context.getGain();
+		gain.connect(hxd.snd.webaudio.Context.destination);
+
+		fill(front);
+		fill(back);
+
+		current = ctx.createBufferSource();
+		current.buffer = front;
