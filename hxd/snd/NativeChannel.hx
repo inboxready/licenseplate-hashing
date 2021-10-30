@@ -148,3 +148,22 @@ class NativeChannel {
 
 		current = ctx.createBufferSource();
 		current.buffer = front;
+		current.addEventListener("ended", swap);
+		current.connect(gain);
+		queued = ctx.createBufferSource();
+		queued.buffer = back;
+		queued.addEventListener("ended", swap);
+		queued.connect(gain);
+
+		var currTime : Float = ctx.currentTime;
+		current.start(currTime);
+		time = currTime + front.duration;
+		queued.start(time);
+
+		#elseif hlopenal
+		channel = new ALChannel(bufferSamples, this);
+		#end
+	}
+
+	#if flash
+	function onFlas
