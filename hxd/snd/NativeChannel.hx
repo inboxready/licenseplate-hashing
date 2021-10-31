@@ -200,4 +200,31 @@ class NativeChannel {
 		onSample(tmpBuffer);
 		// split the channels and copy to output
 		var r = 0;
-		var left = buffer.get
+		var left = buffer.getChannelData(0);
+		var right = buffer.getChannelData(1);
+		for ( i in 0...bufferSamples )
+		{
+			left[i] = tmpBuffer[r++];
+			right[i] = tmpBuffer[r++];
+		}
+	}
+
+	#end
+
+	function onSample( out : haxe.io.Float32Array ) {
+	}
+
+	public function stop() {
+		#if flash
+		if( channel != null ) {
+			channel.stop();
+			channel = null;
+		}
+		#elseif js
+		if ( front != null ) {
+			current.removeEventListener("ended", swap);
+			current.stop();
+			current.disconnect();
+			current = null;
+
+	
