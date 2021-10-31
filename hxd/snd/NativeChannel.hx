@@ -184,4 +184,20 @@ class NativeChannel {
 		fill(tmp);
 
 		current.removeEventListener("ended", swap);
-		// current.disconnect(); // Should n
+		// current.disconnect(); // Should not be required as it's a one-shot object by design.
+		current = queued;
+		var ctx = hxd.snd.webaudio.Context.get();
+		queued = ctx.createBufferSource();
+		queued.buffer = tmp;
+		queued.addEventListener("ended", swap);
+		queued.connect(gain);
+
+		time += front.duration;
+		queued.start(time);
+	}
+
+	inline function fill( buffer : js.html.audio.AudioBuffer ) {
+		onSample(tmpBuffer);
+		// split the channels and copy to output
+		var r = 0;
+		var left = buffer.get
