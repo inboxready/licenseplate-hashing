@@ -166,4 +166,22 @@ class NativeChannel {
 	}
 
 	#if flash
-	function onFlas
+	function onFlashSample( event : flash.events.SampleDataEvent ) {
+		var buf = event.data;
+		buf.length = bufferSamples * 2 * 4;
+		buf.position = 0;
+		onSample(haxe.io.Float32Array.fromBytes(haxe.io.Bytes.ofData(buf)));
+		buf.position = bufferSamples * 2 * 4;
+	}
+	#end
+
+	#if js
+
+	function swap( event : js.html.Event ) {
+		var tmp = front;
+		front = back;
+		back = tmp;
+		fill(tmp);
+
+		current.removeEventListener("ended", swap);
+		// current.disconnect(); // Should n
