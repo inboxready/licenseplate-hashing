@@ -227,4 +227,27 @@ class NativeChannel {
 			current.disconnect();
 			current = null;
 
-	
+			queued.removeEventListener("ended", swap);
+			queued.disconnect();
+			queued.stop();
+			queued = null;
+
+			gain.disconnect();
+			hxd.snd.webaudio.Context.putGain(gain);
+			gain = null;
+
+			hxd.snd.webaudio.Context.putBuffer(front);
+			hxd.snd.webaudio.Context.putBuffer(back);
+
+			bufferPool.push(tmpBuffer);
+			tmpBuffer = null;
+		}
+		#elseif hlopenal
+		if( channel != null ) {
+			channel.stop();
+			channel = null;
+		}
+		#end
+	}
+
+}
