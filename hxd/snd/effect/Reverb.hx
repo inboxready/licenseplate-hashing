@@ -17,4 +17,16 @@ class Reverb extends hxd.snd.Effect {
 	public var density           : Float; // [0.0, 100.0] %
 	public var hfReference       : Float; // [20.0, 20000.0]
 
-	pub
+	public function new(?preset : ReverbPreset) {
+		super("reverb");
+		wetDryMix = 100.0;
+		loadPreset(preset != null ? preset : ReverbPreset.DEFAULT);
+	}
+
+	public function loadPreset(preset : ReverbPreset) {
+		room              = preset.room;
+		roomHF            = preset.roomHF;
+		roomRolloffFactor = preset.roomRolloffFactor;
+		decayTime         = preset.decayTime;
+		decayHFRatio      = preset.decayHFRatio;
+		reflections
