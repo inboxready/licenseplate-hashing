@@ -29,4 +29,12 @@ class Reverb extends hxd.snd.Effect {
 		roomRolloffFactor = preset.roomRolloffFactor;
 		decayTime         = preset.decayTime;
 		decayHFRatio      = preset.decayHFRatio;
-		reflections
+		reflections       = preset.reflections;
+		reflectionsDelay  = preset.reflectionsDelay;
+		reverb            = preset.reverb;
+		reverbDelay       = preset.reverbDelay;
+		diffusion         = preset.diffusion;
+		density           = preset.density;
+		hfReference       = preset.hfReference;
+	}
+}
