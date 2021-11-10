@@ -39,4 +39,14 @@ class SourceHandle {
 		return send;
 	}
 
-	pub
+	public function getAuxiliarySend(effect : Effect) : Int {
+		return effectToAuxiliarySend.get(effect);
+	}
+
+	public function releaseAuxiliarySend(effect : Effect) : Int {
+		var send = effectToAuxiliarySend.get(effect);
+		effectToAuxiliarySend.remove(effect);
+		freeAuxiliarySends.push(send);
+		return send;
+	}
+}
