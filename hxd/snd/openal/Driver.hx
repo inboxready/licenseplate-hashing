@@ -38,4 +38,20 @@ class Driver implements hxd.snd.Driver {
 
 	public function hasFeature( f : DriverFeature ) {
 		return switch( f ) {
-		case MasterVolume: #if (hl || js) true #els
+		case MasterVolume: #if (hl || js) true #else false #end ;
+		}
+	}
+
+	public function getTmpBytes(size) {
+		if (tmpBytes.length < size) tmpBytes = haxe.io.Bytes.alloc(size);
+		return tmpBytes;
+	}
+
+	public function setMasterVolume(value : Float) : Void {
+		AL.listenerf(AL.GAIN, value);
+	}
+
+	public function setListenerParams(position : h3d.Vector, direction : h3d.Vector, up : h3d.Vector, ?velocity : h3d.Vector) : Void {
+		AL.listener3f(AL.POSITION, -position.x, position.y, position.z);
+
+		v
