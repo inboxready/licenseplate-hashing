@@ -70,4 +70,19 @@ class Driver implements hxd.snd.Driver {
 			AL.listener3f(AL.VELOCITY, -velocity.x, velocity.y, velocity.z);
 	}
 
-	public function createSource() : Source
+	public function createSource() : SourceHandle {
+		var source = new SourceHandle();
+		var bytes = getTmpBytes(4);
+
+		AL.genSources(1, bytes);
+		if (AL.getError() != AL.NO_ERROR) throw "could not create source";
+		source.inst = Source.ofInt(bytes.getInt32(0));
+		AL.sourcei(source.inst, AL.SOURCE_RELATIVE, AL.TRUE);
+
+		return source;
+	}
+
+	public function destroySource(source : SourceHandle) : Void {
+		AL.sourcei(source.inst, EFX.DIRECT_FILTER, EFX.FILTER_NULL);
+
+		var bytes = 
