@@ -85,4 +85,21 @@ class Driver implements hxd.snd.Driver {
 	public function destroySource(source : SourceHandle) : Void {
 		AL.sourcei(source.inst, EFX.DIRECT_FILTER, EFX.FILTER_NULL);
 
-		var bytes = 
+		var bytes = getTmpBytes(4);
+		bytes.setInt32(0, source.inst.toInt());
+		AL.deleteSources(1, bytes);
+	}
+
+	public function playSource(source : SourceHandle) : Void {
+		AL.sourcePlay(source.inst);
+		source.sampleOffset = 0;
+		source.playing = true;
+	}
+
+	public function stopSource(source : SourceHandle) : Void {
+		AL.sourceStop(source.inst);
+		source.playing = false;
+	}
+
+	public function setSourceVolume(source : SourceHandle, value : Float) : Void {
+		AL.sourcef
