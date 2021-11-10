@@ -54,4 +54,20 @@ class Driver implements hxd.snd.Driver {
 	public function setListenerParams(position : h3d.Vector, direction : h3d.Vector, up : h3d.Vector, ?velocity : h3d.Vector) : Void {
 		AL.listener3f(AL.POSITION, -position.x, position.y, position.z);
 
-		v
+		var bytes = getTmpBytes(24);
+		bytes.setFloat(0,  -direction.x);
+		bytes.setFloat(4,   direction.y);
+		bytes.setFloat(8,   direction.z);
+
+		up.normalize();
+		bytes.setFloat(12, -up.x);
+		bytes.setFloat(16,  up.y);
+		bytes.setFloat(20,  up.z);
+
+		AL.listenerfv(AL.ORIENTATION, tmpBytes);
+
+		if (velocity != null)
+			AL.listener3f(AL.VELOCITY, -velocity.x, velocity.y, velocity.z);
+	}
+
+	public function createSource() : Source
