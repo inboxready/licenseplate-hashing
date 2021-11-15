@@ -102,4 +102,21 @@ class Driver implements hxd.snd.Driver {
 	}
 
 	public function setSourceVolume(source : SourceHandle, value : Float) : Void {
-		AL.sourcef
+		AL.sourcef(source.inst, AL.GAIN, value);
+	}
+
+	public function createBuffer() : BufferHandle {
+		var buffer = new BufferHandle();
+		var bytes = getTmpBytes(4);
+		AL.genBuffers(1, bytes);
+		buffer.inst = Buffer.ofInt(bytes.getInt32(0));
+		return buffer;
+	}
+
+	public function destroyBuffer(buffer : BufferHandle) : Void {
+		var bytes = getTmpBytes(4);
+		bytes.setInt32(0, buffer.inst.toInt());
+		AL.deleteBuffers(1, bytes);
+	}
+
+	public function setBufferData(buffer : Buf
