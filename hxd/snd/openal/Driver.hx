@@ -119,4 +119,11 @@ class Driver implements hxd.snd.Driver {
 		AL.deleteBuffers(1, bytes);
 	}
 
-	public function setBufferData(buffer : Buf
+	public function setBufferData(buffer : BufferHandle, data : haxe.io.Bytes, size : Int, format : Data.SampleFormat, channelCount : Int, samplingRate : Int) : Void {
+		var alFormat = switch (format) {
+			case UI8 : channelCount == 1 ? AL.FORMAT_MONO8  : AL.FORMAT_STEREO8;
+			case I16 : channelCount == 1 ? AL.FORMAT_MONO16 : AL.FORMAT_STEREO16;
+			#if (js)
+			case F32 : channelCount == 1 ? AL.FORMAT_MONOF32 : AL.FORMAT_STEREOF32;
+			#else
+			case F32 : channelCount == 1 ? AL.FORMAT_MONO16 : AL.FOR
