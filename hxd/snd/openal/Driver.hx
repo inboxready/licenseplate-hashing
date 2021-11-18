@@ -126,4 +126,21 @@ class Driver implements hxd.snd.Driver {
 			#if (js)
 			case F32 : channelCount == 1 ? AL.FORMAT_MONOF32 : AL.FORMAT_STEREOF32;
 			#else
-			case F32 : channelCount == 1 ? AL.FORMAT_MONO16 : AL.FOR
+			case F32 : channelCount == 1 ? AL.FORMAT_MONO16 : AL.FORMAT_STEREO16;
+			#end
+		}
+		AL.bufferData(buffer.inst, alFormat, data, size, samplingRate);
+	}
+
+	public function getPlayedSampleCount(source : SourceHandle) : Int {
+		var v = source.sampleOffset + AL.getSourcei(source.inst, AL.SAMPLE_OFFSET);
+		if (v < 0)
+			v = 0;
+		return v;
+	}
+
+	public function getProcessedBuffers(source : SourceHandle) : Int {
+		return AL.getSourcei(source.inst, AL.BUFFERS_PROCESSED);
+	}
+
+	public function
