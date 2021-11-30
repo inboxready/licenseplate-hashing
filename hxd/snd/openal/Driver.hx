@@ -143,4 +143,13 @@ class Driver implements hxd.snd.Driver {
 		return AL.getSourcei(source.inst, AL.BUFFERS_PROCESSED);
 	}
 
-	public function
+	public function queueBuffer(source : SourceHandle, buffer : BufferHandle, sampleStart : Int, endOfStream : Bool) : Void {
+		var bytes = getTmpBytes(4);
+		bytes.setInt32(0, buffer.inst.toInt());
+		AL.sourceQueueBuffers(source.inst, 1, bytes);
+
+		var err = AL.getError();
+		if (err != AL.NO_ERROR)
+			throw "Failed to queue buffers: " + StringTools.hex(err)+" ("+buffer.inst.toInt()+")";
+
+		if (AL.getSourcei(source.inst, AL.SOURCE_STATE)
