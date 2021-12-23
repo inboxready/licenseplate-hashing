@@ -152,4 +152,19 @@ class Driver implements hxd.snd.Driver {
 		if (err != AL.NO_ERROR)
 			throw "Failed to queue buffers: " + StringTools.hex(err)+" ("+buffer.inst.toInt()+")";
 
-		if (AL.getSourcei(source.inst, AL.SOURCE_STATE)
+		if (AL.getSourcei(source.inst, AL.SOURCE_STATE) == AL.STOPPED) {
+			if (sampleStart > 0) {
+				AL.sourcei(source.inst, AL.SAMPLE_OFFSET, sampleStart);
+			} else {
+				AL.sourcei(source.inst, AL.SAMPLE_OFFSET, 0);
+			}
+			if (source.playing)
+				AL.sourcePlay(source.inst);
+		}
+		buffer.isEnd = endOfStream;
+	}
+
+	public function unqueueBuffer(source : SourceHandle, buffer : BufferHandle) : Void {
+		var bytes = getTmpBytes(4);
+		bytes.setInt32(0, buffer.inst.toInt());
+		AL.sourceU
