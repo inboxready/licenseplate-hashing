@@ -374,3 +374,445 @@ class Emulator {
 	}
 
 	// Get Source parameters
+	public static function getSourcef(source : Source, param : Int) : F32 {
+		switch( param ) {
+		case SEC_OFFSET:
+			if( source.buffers.length == 0 )
+				return 0;
+			var now = haxe.Timer.stamp();
+			var t = now - source.playedTime;
+			var maxT = source.duration;
+			if( source.loop ) {
+				while( t > maxT ) {
+					t -= maxT;
+					source.playedTime += maxT;
+				}
+			} else if( t > maxT )
+				t = maxT;
+			return t;
+		default:
+			throw "Unsupported param 0x" + StringTools.hex(param);
+		}
+	}
+	public static function getSourcei(source : Source, param : Int) : Int {
+		switch( param ) {
+		case SOURCE_STATE:
+			return !source.playing || source.buffers.length == 0 || (!source.loop && (haxe.Timer.stamp() - source.playedTime) >= source.duration ) ? STOPPED : PLAYING;
+		case BUFFERS_PROCESSED:
+			if( source.loop )
+				return 0;
+			var count = 0;
+			var cur = source.currentSample;
+			for( b in source.buffers )
+				if( cur >= b.samples ) {
+					cur -= b.samples;
+					count++;
+				} else
+					break;
+			return count;
+		case SAMPLE_OFFSET:
+            return Std.int(getSourcef(source, SEC_OFFSET) * source.frequency);
+		default:
+			throw "Unsupported param 0x" + StringTools.hex(param);
+		}
+	}
+	public static function getSource3f(source : Source, param : Int, values : Array<F32> ) {
+		throw "TODO";
+	}
+	public static function getSourcefv(source : Source, param : Int, values : Bytes) {
+		throw "TODO";
+	}
+	public static function getSource3i(source : Source, param : Int, values : Array<Int> ) {
+		throw "TODO";
+	}
+	public static function getSourceiv(source : Source, param : Int, values : Bytes) {
+		throw "TODO";
+	}
+
+	// Source controls
+	public static function sourcePlayv(n : Int, sources : Bytes) {
+		throw "TODO";
+	}
+	public static function sourceStopv(n : Int, sources : Bytes) {
+		throw "TODO";
+	}
+	public static function sourceRewindv(n : Int, sources : Bytes) {
+		throw "TODO";
+	}
+	public static function sourcePausev(n : Int, sources : Bytes) {
+		throw "TODO";
+	}
+
+	public static function sourcePlay(source : Source) {
+		source.play();
+	}
+
+	public static function sourceStop(source : Source) {
+		source.stop();
+		source.currentSample = 0;
+	}
+
+	public static function sourceRewind(source : Source) {
+		throw "TODO";
+	}
+	public static function sourcePause(source : Source) {
+		throw "TODO";
+	}
+
+	// Queue buffers onto a source
+	public static function sourceQueueBuffers(source : Source, nb : Int, buffers : Bytes) {
+		for( i in 0...nb ) {
+			var b = Buffer.ofInt(buffers.getInt32(i * 4));
+			if( b == null ) throw "assert";
+			source.buffers.push(b);
+		}
+		source.updateDuration();
+	}
+
+	public static function sourceUnqueueBuffers(source : Source, nb : Int, buffers : Bytes) {
+		for( i in 0...nb ) {
+			var b = Buffer.ofInt(buffers.getInt32(i * 4));
+			if( b != source.buffers[0] ) throw "assert";
+			if( source.playing ) {
+				if( source.currentSample < b.samples ) throw "assert";
+				source.buffers.shift();
+				source.currentSample -= b.samples;
+				source.playedTime += b.samples / b.frequency;
+			} else
+				source.buffers.shift();
+			source.updateDuration();
+		}
+	}
+
+	// Buffer management
+	public static function genBuffers(n : Int, buffers : Bytes) {
+		for( i in 0...n )
+			buffers.setInt32(i << 2, new Buffer().toInt());
+	}
+	public static function deleteBuffers(n : Int, buffers : Bytes) {
+		for( i in 0...n )
+			Buffer.ofInt(buffers.getInt32(i << 2)).dispose();
+	}
+	public static function isBuffer(buffer : Buffer) : Bool {
+		return buffer != null;
+	}
+
+	@:noDebug
+	public static function bufferData(buffer : Buffer, format : Int, data : Bytes, size : Int, freq : Int) {
+		if( freq != NATIVE_FREQ )
+			throw "Unsupported frequency value: " + freq +" should be " + NATIVE_FREQ;
+		inline function sext16(v:Int) {
+			return (v & 0x8000) == 0 ? v : v | 0xFFFF0000;
+		}
+		switch( format ) {
+		case FORMAT_MONO8:
+			var bdata = buffer.alloc(size*2);
+			for( i in 0...size ) {
+				var v = data.get(i) / 0xFF;
+				bdata[i << 1] = v;
+				bdata[(i<<1) | 1] = v;
+			}
+		case FORMAT_STEREO8:
+			var bdata = buffer.alloc(size);
+			for( i in 0...size ) {
+				var v = data.get(i) / 0xFF;
+				bdata[i] = v;
+			}
+		case FORMAT_MONO16:
+			var bdata = buffer.alloc(size);
+			for( i in 0...size>>1 ) {
+				var v = sext16(data.getUInt16(i << 1)) / 0x8000;
+				bdata[i << 1] = v;
+				bdata[(i<<1) | 1] = v;
+			}
+		case FORMAT_STEREO16:
+			var bdata = buffer.alloc(size >> 1);
+			for( i in 0...size>>1 ) {
+				var v = sext16(data.getUInt16(i << 1)) / 0x8000;
+				bdata[i] = v;
+			}
+		case FORMAT_MONOF32:
+			var bdata = buffer.alloc(size >> 1);
+			for( i in 0...size >> 2 ) {
+				var f = data.getFloat(i << 2);
+				bdata[i << 1] = f;
+				bdata[(i<<1) | 1] = f;
+			}
+		case FORMAT_STEREOF32:
+			var bdata = buffer.alloc(size >> 2);
+			#if flash
+			flash.Memory.select(data.getData());
+			#end
+			for( i in 0...size>>2 )
+				buffer.data[i] = #if flash flash.Memory.getFloat #else data.getFloat #end(i<<2);
+		default:
+			throw "Format not supported 0x" + StringTools.hex(format);
+		}
+		buffer.samples = buffer.data.length >> 1;
+		buffer.frequency = freq;
+	}
+
+	// Set Buffer parameters
+	public static function bufferf(buffer : Buffer, param : Int, value  : F32) {
+		switch( param ) {
+		default:
+			throw "Unsupported param 0x" + StringTools.hex(param);
+		}
+	}
+	public static function buffer3f(buffer : Buffer, param : Int, value1 : F32, value2 : F32, value3 : F32) {
+		switch( param ) {
+		default:
+			throw "Unsupported param 0x" + StringTools.hex(param);
+		}
+	}
+	public static function bufferfv(buffer : Buffer, param : Int, values : Bytes) {
+		switch( param ) {
+		default:
+			throw "Unsupported param 0x" + StringTools.hex(param);
+		}
+	}
+	public static function bufferi(buffer : Buffer, param : Int, value  : Int) {
+		switch( param ) {
+		default:
+			throw "Unsupported param 0x" + StringTools.hex(param);
+		}
+	}
+	public static function buffer3i(buffer : Buffer, param : Int, value1 : Int, value2 : Int, value3 : Int) {
+		switch( param ) {
+		default:
+			throw "Unsupported param 0x" + StringTools.hex(param);
+		}
+	}
+	public static function bufferiv(buffer : Buffer, param : Int, values : Bytes) {
+		switch( param ) {
+		default:
+			throw "Unsupported param 0x" + StringTools.hex(param);
+		}
+	}
+
+	// Get Buffer parameters
+	public static function getBufferf(buffer : Buffer, param : Int) : F32 {
+		throw "TODO";
+	}
+	public static function getBuffer3f(buffer : Buffer, param : Int, values : Array<F32> ) {
+		throw "TODO";
+	}
+	public static function getBufferfv(buffer : Buffer, param : Int, values : Bytes) {
+		throw "TODO";
+	}
+	public static function getBufferi(buffer : Buffer, param : Int ) : Int {
+		switch( param ) {
+		case SIZE: return buffer.data.length * 4;
+		case BITS: return 32;
+		case CHANNELS : return 2;
+		default:
+			throw "Unsupported param 0x" + StringTools.hex(param);
+		}
+	}
+	public static function getBuffer3i(buffer : Buffer, param : Int, values : Array<Int> ) {
+		throw "TODO";
+	}
+	public static function getBufferiv(buffer : Buffer, param : Int, values : Bytes) {
+		throw "TODO";
+	}
+
+
+	// --- our own float32 extension
+
+	public static inline var FORMAT_MONOF32				= 0x1110;
+	public static inline var FORMAT_STEREOF32			= 0x1111;
+
+	// ------------------------------------------------------------------------
+	// Constants
+	// ------------------------------------------------------------------------
+
+	public static inline var NONE                       = 0;
+	public static inline var FALSE                      = 0;
+	public static inline var TRUE                       = 1;
+
+	public static inline var SOURCE_RELATIVE            = 0x202;
+	public static inline var CONE_INNER_ANGLE           = 0x1001;
+	public static inline var CONE_OUTER_ANGLE           = 0x1002;
+	public static inline var PITCH                      = 0x1003;
+
+	public static inline var POSITION                   = 0x1004;
+	public static inline var DIRECTION                  = 0x1005;
+
+	public static inline var VELOCITY                   = 0x1006;
+	public static inline var LOOPING                    = 0x1007;
+	public static inline var BUFFER                     = 0x1009;
+
+	public static inline var GAIN                       = 0x100A;
+	public static inline var MIN_GAIN                   = 0x100D;
+	public static inline var MAX_GAIN                   = 0x100E;
+	public static inline var ORIENTATION                = 0x100F;
+	public static inline var SOURCE_STATE               = 0x1010;
+
+	// Source state values
+	public static inline var INITIAL                    = 0x1011;
+	public static inline var PLAYING                    = 0x1012;
+	public static inline var PAUSED                     = 0x1013;
+	public static inline var STOPPED                    = 0x1014;
+
+	public static inline var BUFFERS_QUEUED             = 0x1015;
+	public static inline var BUFFERS_PROCESSED          = 0x1016;
+
+	public static inline var REFERENCE_DISTANCE         = 0x1020;
+	public static inline var ROLLOFF_FACTOR             = 0x1021;
+	public static inline var CONE_OUTER_GAIN            = 0x1022;
+	public static inline var MAX_DISTANCE               = 0x1023;
+
+	public static inline var SEC_OFFSET                 = 0x1024;
+	public static inline var SAMPLE_OFFSET              = 0x1025;
+	public static inline var BYTE_OFFSET                = 0x1026;
+	public static inline var SOURCE_TYPE                = 0x1027;
+
+	// Source type value
+	public static inline var STATIC                     = 0x1028;
+	public static inline var STREAMING                  = 0x1029;
+	public static inline var UNDETERMINED               = 0x1030;
+
+	// Buffer format specifier
+	public static inline var FORMAT_MONO8               = 0x1100;
+	public static inline var FORMAT_MONO16              = 0x1101;
+	public static inline var FORMAT_STEREO8             = 0x1102;
+	public static inline var FORMAT_STEREO16            = 0x1103;
+
+	// Buffer query
+	public static inline var FREQUENCY                  = 0x2001;
+	public static inline var BITS                       = 0x2002;
+	public static inline var CHANNELS                   = 0x2003;
+	public static inline var SIZE                       = 0x2004;
+
+	// Buffer state(private)
+	public static inline var UNUSED                     = 0x2010;
+	public static inline var PENDING                    = 0x2011;
+	public static inline var PROCESSED                  = 0x2012;
+
+	// Errors
+	public static inline var NO_ERROR                   = 0;
+	public static inline var INVALID_NAME               = 0xA001;
+	public static inline var INVALID_ENUM               = 0xA002;
+	public static inline var INVALID_VALUE              = 0xA003;
+	public static inline var INVALID_OPERATION          = 0xA004;
+	public static inline var OUT_OF_MEMORY              = 0xA005;
+
+	// Context strings
+	public static inline var VENDOR                     = 0xB001;
+	public static inline var VERSION                    = 0xB002;
+	public static inline var RENDERER                   = 0xB003;
+	public static inline var EXTENSIONS                 = 0xB004;
+
+	// Context values
+	public static inline var DOPPLER_FACTOR            = 0xC000;
+	public static inline var DOPPLER_VELOCITY          = 0xC001;
+	public static inline var SPEED_OF_SOUND            = 0xC003;
+	public static inline var DISTANCE_MODEL            = 0xD000;
+
+	// Distance model values
+	public static inline var INVERSE_DISTANCE          = 0xD001;
+	public static inline var INVERSE_DISTANCE_CLAMPED  = 0xD002;
+	public static inline var LINEAR_DISTANCE           = 0xD003;
+	public static inline var LINEAR_DISTANCE_CLAMPED   = 0xD004;
+	public static inline var EXPONENT_DISTANCE         = 0xD005;
+	public static inline var EXPONENT_DISTANCE_CLAMPED = 0xD006;
+
+}
+
+
+
+
+class Device {
+	public function new() {
+	}
+}
+
+class Context {
+	public var device : Device;
+	public function new(d) {
+		this.device = d;
+	}
+}
+
+class ALC {
+
+	static var ctx : Context = null;
+
+	public static function getError( device : Device ) : Int {
+		return 0;
+	}
+
+	// Context management
+	public static function createContext(device  : Device, attrlist : Bytes) : Context {
+		return new Context(device);
+	}
+
+	public static function makeContextCurrent(context : Context) : Bool {
+		ctx = context;
+		return true;
+	}
+
+	public static function processContext(context : Context) {
+	}
+
+	public static function suspendContext(context : Context) {
+	}
+
+	public static function destroyContext(context : Context) {
+	}
+
+	public static function getCurrentContext() : Context {
+		return ctx;
+	}
+
+	public static function getContextsDevice(context : Context) : Device {
+		return ctx.device;
+	}
+
+	// Device management
+	public static function openDevice(devicename : Bytes) : Device {
+		return new Device();
+	}
+
+	public static function closeDevice(device : Device) : Bool {
+		return true;
+	}
+
+	// Extension support
+	public static function loadExtensions(alDevice : Device) { }
+
+	public static function isExtensionPresent(device : Device, extname : Bytes) : Bool {
+		return false;
+	}
+	public static function getEnumValue(device : Device, enumname : Bytes) : Int {
+		throw "TODO";
+	}
+	// public static function alcGetProcAddress(device : Device, const ALCchar *funcname);
+
+	// Query function
+	public static function getString   (device : Device, param : Int) : Bytes {
+		throw "TODO";
+	}
+	public static function getIntegerv (device : Device, param : Int, size : Int, values : Bytes) {
+		switch (param) {
+			case EFX.MAX_AUXILIARY_SENDS : 0;
+			default : throw "Unsupported param 0x" + StringTools.hex(param);
+		}
+	}
+
+	// Capture function
+	// public static function captureOpenDevice(devicename : hl.Bytes, frequency : Int, format : Int, buffersize : Int) : Device;
+	// public static function captureCloseDevice (device : Device) : Bool;
+	// public static function captureStart       (device : Device) : Void;
+	// public static function captureStop        (device : Device) : Void;
+	// public static function captureSamples     (device : Device, buffer : hl.Bytes, samples : Int) : Void;
+
+	// ------------------------------------------------------------------------
+	// Constants
+	// ------------------------------------------------------------------------
+
+	public static inline var FALSE                            = 0;
+	public static inline var TRUE                             = 1;
+
+	// Context attributes
+	public static inline var FREQUENCY                        = 0x1007;
