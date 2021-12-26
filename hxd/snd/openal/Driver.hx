@@ -194,4 +194,7 @@ class Driver implements hxd.snd.Driver {
 			case "lowpass"        : new LowPassDriver(this);
 			case "reverb"         : new ReverbDriver(this);
 			#end
-			default               : new hxd.snd
+			default               : new hxd.snd.Driver.EffectDriver<Dynamic>();
+		}
+	}
+}
