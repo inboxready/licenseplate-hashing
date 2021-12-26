@@ -182,4 +182,16 @@ class Driver implements hxd.snd.Driver {
 
 	public function dispose() : Void {
 		ALC.makeContextCurrent(null);
-		ALC.destroyContext
+		ALC.destroyContext(context);
+		ALC.closeDevice(device);
+	}
+
+	public function getEffectDriver(type : String) : hxd.snd.Driver.EffectDriver<Dynamic> {
+		return switch(type) {
+			#if hlopenal
+			case "pitch"          : new PitchDriver();
+			case "spatialization" : new SpatializationDriver(this);
+			case "lowpass"        : new LowPassDriver(this);
+			case "reverb"         : new ReverbDriver(this);
+			#end
+			default               : new hxd.snd
