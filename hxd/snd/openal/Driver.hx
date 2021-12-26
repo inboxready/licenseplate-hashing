@@ -167,4 +167,19 @@ class Driver implements hxd.snd.Driver {
 	public function unqueueBuffer(source : SourceHandle, buffer : BufferHandle) : Void {
 		var bytes = getTmpBytes(4);
 		bytes.setInt32(0, buffer.inst.toInt());
-		AL.sourceU
+		AL.sourceUnqueueBuffers(source.inst, 1, bytes);
+
+		var size    = AL.getBufferi(buffer.inst, AL.SIZE);
+		var bps     = AL.getBufferi(buffer.inst, AL.BITS) * AL.getBufferi(buffer.inst, AL.CHANNELS) / 8;
+		var samples = Std.int(size / bps);
+
+		if (buffer.isEnd) source.sampleOffset = 0;
+		else source.sampleOffset += samples;
+	}
+
+	public function update() : Void {
+	}
+
+	public function dispose() : Void {
+		ALC.makeContextCurrent(null);
+		ALC.destroyContext
