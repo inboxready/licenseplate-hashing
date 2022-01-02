@@ -816,3 +816,57 @@ class ALC {
 
 	// Context attributes
 	public static inline var FREQUENCY                        = 0x1007;
+	public static inline var REFRESH                          = 0x1008;
+	public static inline var SYNC                             = 0x1009;
+	public static inline var MONO_SOURCES                     = 0x1010;
+	public static inline var STEREO_SOURCES                   = 0x1011;
+
+	// Errors
+	public static inline var NO_ERROR                         = 0;
+	public static inline var INVALID_DEVICE                   = 0xA001;
+	public static inline var INVALID_CONTEXT                  = 0xA002;
+	public static inline var INVALID_ENUM                     = 0xA003;
+	public static inline var INVALID_VALUE                    = 0xA004;
+	public static inline var OUT_OF_MEMORY                    = 0xA005;
+
+	// Runtime ALC version
+	public static inline var MAJOR_VERSION                    = 0x1000;
+	public static inline var MINOR_VERSION                    = 0x1001;
+
+	// Context attribute list properties
+	public static inline var ATTRIBUTES_SIZE                  = 0x1002;
+	public static inline var ALL_ATTRIBUTES                   = 0x1003;
+
+	// Device strings
+	public static inline var DEFAULT_DEVICE_SPECIFIER         = 0x1004;
+	public static inline var DEVICE_SPECIFIER                 = 0x1005;
+	public static inline var EXTENSIONS                       = 0x1006;
+
+	// Capture extension
+	public static inline var EXT_CAPTURE                      = 1;
+	public static inline var CAPTURE_DEVICE_SPECIFIER         = 0x310;
+	public static inline var CAPTURE_DEFAULT_DEVICE_SPECIFIER = 0x311;
+	public static inline var CAPTURE_SAMPLES                  = 0x312;
+
+	// Enumerate All extension
+	public static inline var ENUMERATE_ALL_EXT                = 1;
+	public static inline var DEFAULT_ALL_DEVICES_SPECIFIER    = 0x1012;
+	public static inline var ALL_DEVICES_SPECIFIER            = 0x1013;
+
+}
+
+class EFX {
+
+	// Device attributes
+	public static inline var EFX_MAJOR_VERSION                     = 0x20001;
+	public static inline var EFX_MINOR_VERSION                     = 0x20002;
+	public static inline var MAX_AUXILIARY_SENDS                   = 0x20003;
+
+	// Listener properties.
+	public static inline var METERS_PER_UNIT                       = 0x20004;
+
+	// Source properties.
+	public static inline var DIRECT_FILTER                         = 0x20005;
+	public static inline var FILTER_NULL                           = 0x0000;
+
+}
