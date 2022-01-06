@@ -27,4 +27,17 @@ class ReverbDriver extends hxd.snd.Driver.EffectDriver<Reverb> {
 		EFX.effecti(inst, EFX.EFFECT_TYPE, EFX.EFFECT_REVERB);
 
 		// create effect slot
-		var bytes =
+		var bytes = driver.getTmpBytes(4);
+		EFX.genAuxiliaryEffectSlots(1, bytes);
+		slot = openal.EFX.EffectSlot.ofInt(bytes.getInt32(0));
+		if (AL.getError() != AL.NO_ERROR) throw "could not create an ALEffectSlot instance";
+
+		dryFilter.driver.acquire();
+		dryFilter.gainHF = 1.0;
+	}
+
+	override function release() : Void {
+		EFX.auxiliaryEffectSloti(slot, EFX.EFFECTSLOT_EFFECT, EFX.EFFECTSLOT_NULL);
+
+		var bytes = driver.getTmpBytes(4);
+		bytes.setIn
