@@ -40,4 +40,19 @@ class ReverbDriver extends hxd.snd.Driver.EffectDriver<Reverb> {
 		EFX.auxiliaryEffectSloti(slot, EFX.EFFECTSLOT_EFFECT, EFX.EFFECTSLOT_NULL);
 
 		var bytes = driver.getTmpBytes(4);
-		bytes.setIn
+		bytes.setInt32(0, slot.toInt());
+		EFX.deleteAuxiliaryEffectSlots(1, bytes);
+
+		var bytes = driver.getTmpBytes(4);
+		bytes.setInt32(0, inst.toInt());
+		EFX.deleteEffects(1, bytes);
+
+		dryFilter.driver.release();
+	}
+
+	override function update(e : Reverb) : Void {
+		// millibels to gain
+		inline function mbToNp(mb : Float) { return Math.pow(10, mb / 100 / 20); }
+
+		EFX.effectf(inst, EFX.REVERB_GAIN,                mbToNp(e.room));
+		EFX.effe
