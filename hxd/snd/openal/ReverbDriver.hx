@@ -55,4 +55,10 @@ class ReverbDriver extends hxd.snd.Driver.EffectDriver<Reverb> {
 		inline function mbToNp(mb : Float) { return Math.pow(10, mb / 100 / 20); }
 
 		EFX.effectf(inst, EFX.REVERB_GAIN,                mbToNp(e.room));
-		EFX.effe
+		EFX.effectf(inst, EFX.REVERB_GAINHF,              mbToNp(e.roomHF));
+		EFX.effectf(inst, EFX.REVERB_ROOM_ROLLOFF_FACTOR, e.roomRolloffFactor);
+		EFX.effectf(inst, EFX.REVERB_DECAY_TIME,          e.decayTime);
+		EFX.effectf(inst, EFX.REVERB_DECAY_HFRATIO,       e.decayHFRatio);
+		EFX.effectf(inst, EFX.REVERB_REFLECTIONS_GAIN,    mbToNp(e.reflections));
+		EFX.effectf(inst, EFX.REVERB_REFLECTIONS_DELAY,   e.reflectionsDelay);
+		EFX.effectf(inst, 
