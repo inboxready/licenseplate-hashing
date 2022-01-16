@@ -113,3 +113,73 @@ class BufferPlayback {
 				while ( i < channels.length ) {
 					channels[i][j] *= fade;
 					i++;
+				}
+				j++;
+				fade += 1 / FADE_SAMPLES;
+				if (fade > 1) fade = 1;
+			}
+		}
+		node = ctx.createBufferSource();
+		node.buffer = buffer.inst;
+		node.addEventListener("ended", onBufferConsumed);
+		node.connect(source.destination);
+		node.playbackRate.value = source.pitch;
+		node.start(time, offset);
+		lastSamples = 0;
+		lastTime = time;
+		starts = time;
+		return ends = time + (buffer.inst.duration - offset) / source.pitch;
+	}
+
+	public function readjust( time : Float, source : SourceHandle ) {
+		if (consumed || node == null) return ends;
+		var ctx = source.driver.ctx;
+		var shiftTime = ctx.currentTime;// + 16 / buffer.inst.sampleRate;
+
+		node.playbackRate.setValueAtTime(source.pitch, shiftTime);
+		var elapsed = shiftTime - starts;
+		if ( elapsed < 0 ) {
+			// Queued node that haven't started yet: Requeue.
+			return start(ctx, source, time == 0 ? shiftTime : time);
+		}
+		// Stretch start position relative to new pitch.
+		starts = shiftTime - (elapsed / source.pitch);
+		return ends = starts + (buffer.inst.duration - offset) / source.pitch;
+	}
+
+	public function restart( source : SourceHandle ) {
+		if ( consumed || node == null ) return;
+		var ctx = hxd.snd.webaudio.Context.get();
+		if ( ctx.currentTime > starts ) {
+			offset += (ctx.currentTime - starts) * source.pitch;
+			start(ctx, source, ctx.currentTime);
+		} else {
+			start(ctx, source, starts);
+		}
+	}
+
+	public function stop( immediate : Bool = true ) {
+		if ( node != null ) {
+			node.removeEventListener("ended", onBufferConsumed);
+			if (immediate) node.disconnect();
+			else node.stop();
+			node = null;
+		}
+	}
+
+	function onBufferConsumed ( e : js.html.Event ) {
+		node.removeEventListener("ended", onBufferConsumed);
+		node.disconnect();
+		node = null;
+		consumed = true;
+	}
+
+	public function clear()
+	{
+		buffer = null;
+		node = null;
+	}
+
+}
+
+#end
