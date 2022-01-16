@@ -68,4 +68,18 @@ class ReverbDriver extends hxd.snd.Driver.EffectDriver<Reverb> {
 		// no hf reference, hope for the best :( should be 5000.0
 
 		EFX.auxiliaryEffectSloti(slot, EFX.EFFECTSLOT_EFFECT, inst.toInt());
-		EFX.auxiliaryEffectSlotf(slot, EFX.EFFECTSLOT_GAIN, e.wetDryM
+		EFX.auxiliaryEffectSlotf(slot, EFX.EFFECTSLOT_GAIN, e.wetDryMix / 100.0);
+
+		@:privateAccess
+		e.retainTime = e.decayTime + e.reflectionsDelay + e.reverbDelay;
+	}
+
+	override function bind(e : Reverb, s : SourceHandle) : Void {
+		var send = s.acquireAuxiliarySend(e);
+		if (send + 1 > driver.maxAuxiliarySends) throw "too many auxiliary sends";
+	}
+
+	override function apply(e : Reverb, s : SourceHandle) : Void {
+		var e = hxd.impl.Api.downcast(e, hxd.snd.effect.Reverb);
+		var send = s.getAuxiliarySend(e);
+		AL.sour
