@@ -82,4 +82,11 @@ class ReverbDriver extends hxd.snd.Driver.EffectDriver<Reverb> {
 	override function apply(e : Reverb, s : SourceHandle) : Void {
 		var e = hxd.impl.Api.downcast(e, hxd.snd.effect.Reverb);
 		var send = s.getAuxiliarySend(e);
-		AL.sour
+		AL.source3i(s.inst, EFX.AUXILIARY_SEND_FILTER, slot.toInt(), send, EFX.FILTER_NULL);
+	}
+
+	override function unbind(e : Reverb, s : SourceHandle) : Void {
+		var send = s.releaseAuxiliarySend(e);
+		AL.source3i(s.inst, EFX.AUXILIARY_SEND_FILTER, EFX.EFFECTSLOT_NULL, send, EFX.FILTER_NULL);
+	}
+}
