@@ -61,4 +61,11 @@ class ReverbDriver extends hxd.snd.Driver.EffectDriver<Reverb> {
 		EFX.effectf(inst, EFX.REVERB_DECAY_HFRATIO,       e.decayHFRatio);
 		EFX.effectf(inst, EFX.REVERB_REFLECTIONS_GAIN,    mbToNp(e.reflections));
 		EFX.effectf(inst, EFX.REVERB_REFLECTIONS_DELAY,   e.reflectionsDelay);
-		EFX.effectf(inst, 
+		EFX.effectf(inst, EFX.REVERB_LATE_REVERB_GAIN,    mbToNp(e.reverb));
+		EFX.effectf(inst, EFX.REVERB_LATE_REVERB_DELAY,   e.reverbDelay);
+		EFX.effectf(inst, EFX.REVERB_DIFFUSION,           e.diffusion / 100.0);
+		EFX.effectf(inst, EFX.REVERB_DENSITY,             e.density   / 100.0);
+		// no hf reference, hope for the best :( should be 5000.0
+
+		EFX.auxiliaryEffectSloti(slot, EFX.EFFECTSLOT_EFFECT, inst.toInt());
+		EFX.auxiliaryEffectSlotf(slot, EFX.EFFECTSLOT_GAIN, e.wetDryM
