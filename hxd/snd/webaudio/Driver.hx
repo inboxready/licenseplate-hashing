@@ -52,4 +52,14 @@ class Driver implements hxd.snd.Driver {
 		}
 	}
 
-	publi
+	public function setMasterVolume (value : Float) : Void {
+		masterGain.gain.value = value;
+	}
+
+	public function setListenerParams (position : h3d.Vector, direction : h3d.Vector, up : h3d.Vector, ?velocity : h3d.Vector) : Void {
+		ctx.listener.setPosition(-position.x, position.y, position.z);
+		ctx.listener.setOrientation(-direction.x, direction.y, direction.z, -up.x, up.y, up.z);
+		// TODO: Velocity
+	}
+
+	public function createSource () : Sourc
