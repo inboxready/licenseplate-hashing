@@ -169,4 +169,21 @@ class Driver implements hxd.snd.Driver {
 						chn[i] = f32[i];
 					}
 				} else {
-					var left = buffer.inst.getChannelData(0
+					var left = buffer.inst.getChannelData(0);
+					var right = buffer.inst.getChannelData(1);
+					// TODO: 3+ channels
+					var r = 0;
+					for ( i in 0...sampleCount ) {
+						left[i] = f32[r];
+						right[i] = f32[r+1];
+						r += channelCount;
+					}
+				}
+		}
+	}
+	public function destroyBuffer (buffer : BufferHandle) : Void {
+		if ( buffer.inst != null ) putBuffer(buffer.inst);
+		buffer.inst = null;
+	}
+
+	public function queueBuffer (sourc
