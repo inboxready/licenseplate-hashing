@@ -138,4 +138,20 @@ class Driver implements hxd.snd.Driver {
 					// TODO: 3+ channels
 					var r = 0;
 					for ( i in 0...sampleCount ) {
-						left[i] = (ui8[r] - 0x80) / 0x80
+						left[i] = (ui8[r] - 0x80) / 0x80;
+						right[i] = (ui8[r+1] - 0x80) / 0x80;
+						r += channelCount;
+					}
+				}
+			case I16:
+				var i16 = new hxd.impl.TypedArray.Int16Array(data.getData());
+				if (channelCount == 1) {
+					var chn = buffer.inst.getChannelData(0);
+					for ( i in 0...sampleCount ) {
+						chn[i] = i16[i] / 0x8000;
+					}
+				} else {
+					var left = buffer.inst.getChannelData(0);
+					var right = buffer.inst.getChannelData(1);
+					// TODO: 3+ channels
+					v
