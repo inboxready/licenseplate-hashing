@@ -98,4 +98,19 @@ class Driver implements hxd.snd.Driver {
 		source.driver = null;
 		putGain(source.gain);
 		source.gain = null;
-		for 
+		for ( b in source.buffers ) {
+			b.stop();
+			b.clear();
+			playbackPool.push(b);
+		}
+		source.buffers = [];
+	}
+
+	public function createBuffer () : BufferHandle {
+		var b = new BufferHandle();
+		b.samples = 0;
+		return b;
+	}
+
+	public function setBufferData (buffer : BufferHandle, data : haxe.io.Bytes, size : Int, format : Data.SampleFormat, channelCount : Int, samplingRate : Int) : Void {
+		var sampleCount = Std.int(size / hxd.s
