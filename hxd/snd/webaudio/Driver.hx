@@ -62,4 +62,21 @@ class Driver implements hxd.snd.Driver {
 		// TODO: Velocity
 	}
 
-	public function createSource () : Sourc
+	public function createSource () : SourceHandle {
+		var s = new SourceHandle();
+		s.driver = this;
+		s.gain = getGain();
+		s.updateDestination();
+		return s;
+	}
+
+	public function playSource (source : SourceHandle) : Void {
+		if ( !source.playing ) {
+			source.playing = true;
+			if ( source.buffers.length != 0 ) {
+				var time = ctx.currentTime;
+				for ( b in source.buffers ) {
+					if ( b.consumed ) continue;
+					time = b.start(ctx, source, time);
+				}
+		
