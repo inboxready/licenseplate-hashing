@@ -113,4 +113,14 @@ class Driver implements hxd.snd.Driver {
 	}
 
 	public function setBufferData (buffer : BufferHandle, data : haxe.io.Bytes, size : Int, format : Data.SampleFormat, channelCount : Int, samplingRate : Int) : Void {
-		var sampleCount = Std.int(size / hxd.s
+		var sampleCount = Std.int(size / hxd.snd.Data.formatBytes(format) / channelCount);
+		buffer.samples = sampleCount;
+		if (sampleCount == 0) return;
+
+		if ( buffer.inst == null ) {
+			buffer.inst = getBuffer(channelCount, sampleCount, samplingRate);
+		} else if ( buffer.inst.sampleRate != samplingRate || buffer.inst.numberOfChannels != channelCount || buffer.inst.length != sampleCount ) {
+			putBuffer(buffer.inst);
+			buffer.inst = getBuffer(channelCount, sampleCount, samplingRate);
+		}
+		switch (for
