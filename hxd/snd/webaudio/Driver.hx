@@ -79,4 +79,23 @@ class Driver implements hxd.snd.Driver {
 					if ( b.consumed ) continue;
 					time = b.start(ctx, source, time);
 				}
-		
+			}
+		}
+	}
+
+	public function stopSource (source : SourceHandle) : Void {
+		source.playing = false;
+		source.sampleOffset = 0;
+	}
+
+	public function setSourceVolume (source : SourceHandle, value : Float) : Void {
+		source.gain.gain.value = value;
+	}
+
+	public function destroySource (source : SourceHandle) : Void {
+		stopSource(source);
+		source.gain.disconnect();
+		source.driver = null;
+		putGain(source.gain);
+		source.gain = null;
+		for 
