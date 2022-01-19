@@ -123,4 +123,19 @@ class Driver implements hxd.snd.Driver {
 			putBuffer(buffer.inst);
 			buffer.inst = getBuffer(channelCount, sampleCount, samplingRate);
 		}
-		switch (for
+		switch (format)
+		{
+			case UI8:
+				var ui8 = new hxd.impl.TypedArray.Uint8Array(data.getData());
+				if (channelCount == 1) {
+					var chn = buffer.inst.getChannelData(0);
+					for ( i in 0...sampleCount ) {
+						chn[i] = (ui8[i] - 0x80) / 0x80;
+					}
+				} else {
+					var left = buffer.inst.getChannelData(0);
+					var right = buffer.inst.getChannelData(1);
+					// TODO: 3+ channels
+					var r = 0;
+					for ( i in 0...sampleCount ) {
+						left[i] = (ui8[r] - 0x80) / 0x80
