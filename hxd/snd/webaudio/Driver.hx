@@ -186,4 +186,12 @@ class Driver implements hxd.snd.Driver {
 		buffer.inst = null;
 	}
 
-	public function queueBuffer (sourc
+	public function queueBuffer (source : SourceHandle, buffer : BufferHandle, sampleStart : Int, endOfStream : Bool) : Void {
+		var buf = playbackPool.length != 0 ? playbackPool.pop() : new BufferPlayback();
+		if (buffer.inst == null) return;
+		buf.set(buffer, (sampleStart / buffer.inst.length) * buffer.inst.duration);
+		buffer.isEnd = endOfStream;
+		source.buffers.push(buf);
+		if ( source.playing ) {
+			if ( source.buffers.length != 1 ) {
+				var t = source.buffers[source.buffe
