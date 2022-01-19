@@ -154,4 +154,19 @@ class Driver implements hxd.snd.Driver {
 					var left = buffer.inst.getChannelData(0);
 					var right = buffer.inst.getChannelData(1);
 					// TODO: 3+ channels
-					v
+					var r = 0;
+					for ( i in 0...sampleCount ) {
+						left[i] = i16[r] / 0x8000;
+						right[i] = i16[r+1] / 0x8000;
+						r += channelCount;
+					}
+				}
+			case F32:
+				var f32 = new hxd.impl.TypedArray.Float32Array(data.getData());
+				if (channelCount == 1) {
+					var chn = buffer.inst.getChannelData(0);
+					for ( i in 0...sampleCount ) {
+						chn[i] = f32[i];
+					}
+				} else {
+					var left = buffer.inst.getChannelData(0
