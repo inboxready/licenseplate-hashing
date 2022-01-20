@@ -207,4 +207,21 @@ class Driver implements hxd.snd.Driver {
 			var b = source.buffers[i];
 			if ( b.buffer == buffer ) {
 				source.buffers.splice(i, 1);
-				b.stop(!buffer.is
+				b.stop(!buffer.isEnd);
+				b.clear();
+				playbackPool.push(b);
+				break;
+			}
+		}
+		if (buffer.isEnd || !source.playing) source.sampleOffset = 0;
+		else source.sampleOffset += buffer.samples;
+	}
+	public function getProcessedBuffers (source : SourceHandle) : Int {
+		var cnt = 0;
+		for (b in source.buffers) if ( b.consumed ) cnt++;
+		return cnt;
+	}
+	public function getPlayedSampleCount (source : SourceHandle) : Int {
+		var consumed:Int = 0;
+		var buf : BufferPlayback = null;
+		for (b in sour
