@@ -194,4 +194,17 @@ class Driver implements hxd.snd.Driver {
 		source.buffers.push(buf);
 		if ( source.playing ) {
 			if ( source.buffers.length != 1 ) {
-				var t = source.buffers[source.buffe
+				var t = source.buffers[source.buffers.length - 2].ends;
+				buf.start(ctx, source, (js.Syntax.code("isFinite({0})", t):Bool) ? hxd.Math.max(t, ctx.currentTime) : ctx.currentTime);
+			} else {
+				buf.start(ctx, source, ctx.currentTime);
+			}
+		}
+	}
+	public function unqueueBuffer (source : SourceHandle, buffer : BufferHandle) : Void {
+		var i = 0;
+		while ( i < source.buffers.length ) {
+			var b = source.buffers[i];
+			if ( b.buffer == buffer ) {
+				source.buffers.splice(i, 1);
+				b.stop(!buffer.is
