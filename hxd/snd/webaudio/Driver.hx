@@ -224,4 +224,24 @@ class Driver implements hxd.snd.Driver {
 	public function getPlayedSampleCount (source : SourceHandle) : Int {
 		var consumed:Int = 0;
 		var buf : BufferPlayback = null;
-		for (b in sour
+		for (b in source.buffers) {
+			if (b.consumed) {
+				consumed += b.buffer.samples;
+			} else if ( b.dirty ) {
+				buf = b;
+				break;
+			}
+		}
+		if ( buf != null ) {
+			return source.sampleOffset + consumed + buf.currentSample;
+		}
+
+		return source.sampleOffset + consumed;
+	}
+
+	public function update () : Void { }
+	public function dispose () : Void {
+		// TODO
+	}
+
+	public function getEffectDriver(type : Stri
