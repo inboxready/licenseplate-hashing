@@ -244,4 +244,15 @@ class Driver implements hxd.snd.Driver {
 		// TODO
 	}
 
-	public function getEffectDriver(type : Stri
+	public function getEffectDriver(type : String) : hxd.snd.Driver.EffectDriver<Dynamic> {
+		return switch(type) {
+			case "pitch"          : new PitchDriver();
+			case "spatialization" : new SpatializationDriver();
+			case "lowpass"        : new LowPassDriver();
+			// case "reverb"         : new ReverbDriver(this);
+			default               : new hxd.snd.Driver.EffectDriver<Dynamic>();
+		}
+	}
+
+	inline function get_masterGain() return Context.masterGain;
+	inline function set_destination(node : AudioNode) return Context.desti
