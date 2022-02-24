@@ -255,4 +255,9 @@ class Driver implements hxd.snd.Driver {
 	}
 
 	inline function get_masterGain() return Context.masterGain;
-	inline function set_destination(node : AudioNode) return Context.desti
+	inline function set_destination(node : AudioNode) return Context.destination = node;
+	inline function get_destination() return Context.destination;
+
+}
+
+#end
