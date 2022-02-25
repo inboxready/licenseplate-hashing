@@ -32,4 +32,16 @@ class LowPassDriver extends EffectDriver<LowPass> {
 		apply(e, source);
 	}
 
-	overr
+	override function apply(e : LowPass, source : SourceHandle) : Void {
+		var min = 40;
+		var max = source.driver.ctx.sampleRate / 2;
+		var octaves = js.lib.Math.log(max / min) / js.lib.Math.LN2;
+		source.lowPass.frequency.value = max * Math.pow(2, octaves * (e.gainHF - 1));
+	}
+
+	override function unbind(e : LowPass, source : SourceHandle) : Void {
+		pool.push(source.lowPass);
+		source.lowPass.disconnect();
+		source.lowPass = null;
+		if ( source.driver != null )
+			sour
