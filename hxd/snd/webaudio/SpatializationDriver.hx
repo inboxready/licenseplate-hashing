@@ -16,4 +16,19 @@ class SpatializationDriver extends EffectDriver<Spatialization> {
 		super();
 	}
 
-	function
+	function get( ctx : AudioContext ) {
+		if ( pool.length != 0 ) {
+			return pool.pop();
+		}
+		var node = ctx.createPanner();
+		return node;
+	}
+
+	override public function bind(e : Spatialization, source: SourceHandle) : Void {
+		source.panner = get(source.driver.ctx);
+		source.updateDestination();
+		apply(e, source);
+	}
+
+	override function apply(e : Spatialization, source : SourceHandle) : Void {
+		source.panner.setPosition(-e.posi
