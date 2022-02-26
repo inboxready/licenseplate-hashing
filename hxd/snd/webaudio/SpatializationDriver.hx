@@ -31,4 +31,15 @@ class SpatializationDriver extends EffectDriver<Spatialization> {
 	}
 
 	override function apply(e : Spatialization, source : SourceHandle) : Void {
-		source.panner.setPosition(-e.posi
+		source.panner.setPosition(-e.position.x, e.position.y, e.position.z);
+		source.panner.setOrientation(-e.direction.x, e.direction.y, e.direction.z);
+		// TODO: Velocity
+		source.panner.rolloffFactor = e.rollOffFactor;
+		source.panner.refDistance = e.referenceDistance;
+		var maxDist : Float = e.maxDistance == null ? 3.40282347e38 : e.maxDistance;
+		source.panner.maxDistance = maxDist;
+	}
+
+	override function unbind(e : Spatialization, source : SourceHandle) : Void {
+		pool.push(source.panner);
+		source.panner.disco
