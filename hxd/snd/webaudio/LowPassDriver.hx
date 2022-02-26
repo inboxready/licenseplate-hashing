@@ -44,4 +44,7 @@ class LowPassDriver extends EffectDriver<LowPass> {
 		source.lowPass.disconnect();
 		source.lowPass = null;
 		if ( source.driver != null )
-			sour
+			source.updateDestination();
+	}
+}
+#end
