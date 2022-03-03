@@ -42,4 +42,10 @@ class SpatializationDriver extends EffectDriver<Spatialization> {
 
 	override function unbind(e : Spatialization, source : SourceHandle) : Void {
 		pool.push(source.panner);
-		source.panner.disco
+		source.panner.disconnect();
+		source.panner = null;
+		if ( source.driver != null )
+			source.updateDestination();
+	}
+}
+#end
