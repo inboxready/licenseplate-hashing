@@ -38,4 +38,19 @@ class AgalOut {
 		for( v in s.data.vars ) {
 			var r : Reg;
 			switch( v.kind ) {
+			case Param, Global:
+				switch( v.type ) {
+				case TArray(TSampler2D | TSamplerCube, SConst(n)):
+					r = new Reg(RTexture, texCount, null);
+					texCount += n;
+				default:
+					r = new Reg(RConst, paramCount, defSwiz(v.type));
+					paramCount += regSize(v.type);
+				}
+			case Var:
+				r = new Reg(RVar, v.id, defSwiz(v.type));
+				varying.push(r);
+			case Output:
+				r = new Reg(ROut, outCount, defSwiz(v.type));
+				outCount += regSize(v.type);
 	
