@@ -67,4 +67,19 @@ class AgalOut {
 
 		// optimize varying
 		// make sure the order is the same in both fragment and vertex shader
-		varying.sort(function(r1, r2) return ((r2.swiz == null ? 4 : r2.swiz.length) - (r
+		varying.sort(function(r1, r2) return ((r2.swiz == null ? 4 : r2.swiz.length) - (r1.swiz == null ? 4 : r1.swiz.length)) * 100000 + (r1.index - r2.index));
+		var valloc : Array<Array<C>> = [];
+		for( r in varying ) {
+			var size = r.swiz == null ? 4 : r.swiz.length;
+			var found = -1;
+			for( i in 0...valloc.length ) {
+				var v = valloc[i];
+				if( v.length < size ) continue;
+				found = i;
+				break;
+			}
+			if( found < 0 ) {
+				found = valloc.length;
+				valloc.push([X, Y, Z, W]);
+			}
+			r.ind
