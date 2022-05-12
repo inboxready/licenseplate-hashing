@@ -82,4 +82,23 @@ class AgalOut {
 				found = valloc.length;
 				valloc.push([X, Y, Z, W]);
 			}
-			r.ind
+			r.index = found;
+			var v = valloc[found];
+			if( size == 4 )
+				valloc[found] = [];
+			else if( size == 1 )
+				r.swiz[0] = v.pop();
+			else {
+				for( i in 0...size )
+					r.swiz[i] = v.shift();
+			}
+		}
+
+		if( s.data.funs.length != 1 ) throw "assert";
+		expr(s.data.funs[0].expr);
+
+		// force write of missing varying components
+		for( vid in 0...valloc.length ) {
+			var v = valloc[vid];
+			if( v.length == 0 ) continue;
+			for( i in 
