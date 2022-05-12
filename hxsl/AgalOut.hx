@@ -53,4 +53,18 @@ class AgalOut {
 			case Output:
 				r = new Reg(ROut, outCount, defSwiz(v.type));
 				outCount += regSize(v.type);
-	
+			case Input:
+				r = new Reg(RAttr, inputCount, defSwiz(v.type));
+				inputCount += regSize(v.type);
+			case Local, Function:
+				continue;
+			}
+			varMap.set(v.id, r);
+			unused.set(v.id, r);
+		}
+		if( paramCount != s.globalsSize + s.paramsSize )
+			throw "assert";
+
+		// optimize varying
+		// make sure the order is the same in both fragment and vertex shader
+		varying.sort(function(r1, r2) return ((r2.swiz == null ? 4 : r2.swiz.length) - (r
