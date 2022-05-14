@@ -101,4 +101,22 @@ class AgalOut {
 		for( vid in 0...valloc.length ) {
 			var v = valloc[vid];
 			if( v.length == 0 ) continue;
-			for( i in 
+			for( i in 0...opcodes.length )
+				switch( opcodes[i] ) {
+				case OMov(dst, val) if( dst.index == vid && dst.t == RVar ):
+					var dst = dst.clone();
+					var val = val.clone();
+					var last = X;
+					val.swiz = [for( i in 0...4 ) { var k = dst.swiz.indexOf(COMPS[i]); if( k >= 0 ) last = val.swiz[k]; last; } ];
+					dst.swiz = null;
+					opcodes[i] = OMov(dst, val);
+					break;
+				default:
+				}
+		}
+
+		// force write of unused inputs
+		for( r in unused )
+			switch( r.t ) {
+			case RAttr:
+			
