@@ -266,4 +266,12 @@ class AgalOut {
 				var delta = 0;
 				// remove ToInt and extract delta when the form is [int(offset) * stride + delta] as produced by Flatten
 				switch( index.e ) {
-				case TBinop(OpAdd, { e : TBinop(OpMult,{ e : TCall({ e : TGlobal(ToI
+				case TBinop(OpAdd, { e : TBinop(OpMult,{ e : TCall({ e : TGlobal(ToInt) },[epos]) },stride) } , { e : TConst(CInt(d)) } ):
+					delta = d;
+					index = { e : TBinop(OpMult, epos, stride), t : TFloat, p : index.p };
+				case TBinop(OpMult,{ e : TCall({ e : TGlobal(ToInt) },[epos]) },stride):
+					index = { e : TBinop(OpMult, epos, stride), t : TFloat, p : index.p };
+				case TBinop(OpAdd, { e : TCall({ e : TGlobal(ToInt) },[epos]) }, { e : TConst(CInt(d)) } ):
+					delta = d;
+					index = epos;
+				case TCall
