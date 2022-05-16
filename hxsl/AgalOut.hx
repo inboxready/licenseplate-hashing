@@ -144,4 +144,18 @@ class AgalOut {
 		opcodes.push(o);
 	}
 
-	inline function 
+	inline function swiz( r : Reg, sw : Array<C> ) : Reg {
+		if( r.access != null ) throw "assert";
+		var sw = sw;
+		if( r.swiz != null )
+			sw = [for( c in sw ) r.swiz[c.getIndex()]];
+		return new Reg(r.t, r.index, sw);
+	}
+
+	inline function offset( r : Reg, k : Int ) : Reg {
+		if( r.access != null ) throw "assert";
+		return new Reg(r.t, r.index + k, r.swiz == null ? null : r.swiz.copy());
+	}
+
+	function getConst( v : Float ) : Reg {
+		for( i in 0...current.co
