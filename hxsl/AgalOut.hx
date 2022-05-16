@@ -219,3 +219,23 @@ class AgalOut {
 				r = expr(e);
 			return r;
 		case TVar(v):
+			var r = reg(v);
+			switch( v.type ) {
+			case TBytes(n):
+				// multiply by 255 on read
+				var ro = allocReg();
+				var c = getConst(255);
+				var sw = [];
+				for( i in 0...n ) {
+					sw.push(COMPS[i]);
+					if( i > 0 ) c.swiz.push(c.swiz[0]);
+				}
+				op(OMul(swiz(ro, sw), swiz(r, sw), c));
+				return ro;
+			default:
+			}
+			return r;
+		case TBinop(bop, e1, e2):
+			return binop(bop, e.t, e1, e2);
+		case TCall(c, args):
+			switch( c.e ) 
