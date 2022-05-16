@@ -238,4 +238,23 @@ class AgalOut {
 		case TBinop(bop, e1, e2):
 			return binop(bop, e.t, e1, e2);
 		case TCall(c, args):
-			switch( c.e ) 
+			switch( c.e ) {
+			case TGlobal(g):
+				return global(g, args, e.t);
+			default:
+				throw "TODO CALL " + e.e;
+			}
+		case TArray(ea, index):
+			switch( index.e ) {
+			case TConst(CInt(v)):
+				var r = expr(ea);
+				var stride = switch( ea.t ) {
+				case TArray(TSampler2D | TSamplerCube, _): 4;
+				case TArray(t, _): Tools.size(t);
+				default: throw "assert " + e.t;
+				};
+				var index = v * stride;
+				var swiz = null;
+				if( stride < 4 ) {
+					swiz = [];
+					for( i in 0...stride )
