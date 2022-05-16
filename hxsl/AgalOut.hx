@@ -158,4 +158,21 @@ class AgalOut {
 	}
 
 	function getConst( v : Float ) : Reg {
-		for( i in 0...current.co
+		for( i in 0...current.consts.length )
+			if( current.consts[i] == v ) {
+				var g = current.globals;
+				while( g != null ) {
+					if( g.path == "__consts__" )
+						break;
+					g = g.next;
+				}
+				var p = g.pos + i;
+				return new Reg(RConst, p >> 2, [COMPS[p & 3]]);
+			}
+		throw "Missing required const "+v;
+	}
+
+	function getConsts( va : Array<Float> ) : Reg {
+		var pad = (va.length - 1) & 3;
+		for( i in 0...current.consts.length - (va.length - 1) ) {
+			if( (i >> 2) != (i + pad)
