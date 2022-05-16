@@ -258,3 +258,12 @@ class AgalOut {
 				if( stride < 4 ) {
 					swiz = [];
 					for( i in 0...stride )
+						swiz.push(COMPS[(i + index) & 3]);
+				} else if( index & 3 != 0 ) throw "assert"; // not register-aligned !
+				return new Reg(r.t, r.index + (index>>2), swiz);
+			default:
+				var r = expr(ea);
+				var delta = 0;
+				// remove ToInt and extract delta when the form is [int(offset) * stride + delta] as produced by Flatten
+				switch( index.e ) {
+				case TBinop(OpAdd, { e : TBinop(OpMult,{ e : TCall({ e : TGlobal(ToI
