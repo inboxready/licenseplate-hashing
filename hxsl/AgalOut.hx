@@ -175,4 +175,22 @@ class AgalOut {
 	function getConsts( va : Array<Float> ) : Reg {
 		var pad = (va.length - 1) & 3;
 		for( i in 0...current.consts.length - (va.length - 1) ) {
-			if( (i >> 2) != (i + pad)
+			if( (i >> 2) != (i + pad) >> 2 ) continue;
+			var found = true;
+			for( j in 0...va.length )
+				if( current.consts[i + j] != va[j] ) {
+					found = false;
+					break;
+				}
+			if( found ) {
+				var g = current.globals;
+				while( g != null ) {
+					if( g.path == "__consts__" )
+						break;
+					g = g.next;
+				}
+				var p = g.pos + i;
+				return new Reg(RConst, p >> 2, defSwiz(TVec(va.length,VFloat)));
+			}
+		}
+		throw "Missing 
