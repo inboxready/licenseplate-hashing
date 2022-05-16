@@ -193,4 +193,29 @@ class AgalOut {
 				return new Reg(RConst, p >> 2, defSwiz(TVec(va.length,VFloat)));
 			}
 		}
-		throw "Missing 
+		throw "Missing required consts "+va;
+	}
+
+	function expr( e : TExpr ) : Reg {
+		switch( e.e ) {
+		case TConst(c):
+			switch( c ) {
+			case CInt(v):
+				return getConst(v);
+			case CFloat(f):
+				return getConst(f);
+			default:
+				throw "assert " + c;
+			}
+		case TParenthesis(e):
+			return expr(e);
+		case TVarDecl(v, init):
+			if( init != null )
+				mov(reg(v), expr(init), v.type);
+			return nullReg;
+		case TBlock(el):
+			var r = nullReg;
+			for( e in el )
+				r = expr(e);
+			return r;
+		case TVar(v):
