@@ -119,4 +119,29 @@ class AgalOut {
 		for( r in unused )
 			switch( r.t ) {
 			case RAttr:
-			
+				var t = allocReg();
+				t.swiz = r.swiz == null ? null : [for( i in 0...r.swiz.length ) COMPS[i]];
+				op(OMov(t, r));
+			default:
+			}
+
+		return {
+			fragmentShader : !current.vertex,
+			version : version,
+			code : opcodes,
+		};
+	}
+
+	function mov(dst, src, t) {
+		var n = regSize(t);
+		op(OMov(dst, src));
+		if( n > 1 )
+			for( i in 1...n )
+				op(OMov(offset(dst, i), offset(src, i)));
+	}
+
+	inline function op(o) {
+		opcodes.push(o);
+	}
+
+	inline function 
