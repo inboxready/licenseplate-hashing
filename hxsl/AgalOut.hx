@@ -274,4 +274,17 @@ class AgalOut {
 				case TBinop(OpAdd, { e : TCall({ e : TGlobal(ToInt) },[epos]) }, { e : TConst(CInt(d)) } ):
 					delta = d;
 					index = epos;
-				case TCall
+				case TCall({ e : TGlobal(ToInt) },[epos]):
+					index = epos;
+				default:
+				}
+				var i = expr(index);
+				if( r.swiz != null || r.access != null ) throw "assert";
+				if( i.swiz == null || i.swiz.length != 1 || i.access != null ) throw "assert";
+				var out = allocReg();
+				op(OMov(out, new Reg(i.t, i.index, null, new RegAccess(r.t, i.swiz[0], r.index + delta))));
+				return out;
+			}
+		case TSwiz(e, regs):
+			var r = expr(e);
+			return swiz(r, [for( r in regs )
