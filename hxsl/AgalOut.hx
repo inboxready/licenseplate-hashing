@@ -408,3 +408,20 @@ class AgalOut {
 				op(ODp4(swiz(r,[Y]), r1, offset(r2,1)));
 				op(ODp4(swiz(r,[Z]), r1, offset(r2,2)));
 				op(ODp4(swiz(r, [W]), r1, offset(r2, 3)));
+			case [TMat4, TMat4]:
+				var tmp = allocReg(TMat4);
+				colsToRows(r1, tmp, TMat4);
+				for( i in 0...4 ) {
+					var b = offset(r2, i);
+					var o = offset(r, i);
+					op(ODp4(swiz(o, [X]), tmp, b));
+					op(ODp4(swiz(o, [Y]), offset(tmp, 1), b));
+					op(ODp4(swiz(o, [Z]), offset(tmp, 2), b));
+					op(ODp4(swiz(o, [W]), offset(tmp, 3), b));
+				}
+			default:
+				throw "assert " + [e1.t, e2.t];
+			}
+			return r;
+		case OpGt:
+			return compare(OSlt,
