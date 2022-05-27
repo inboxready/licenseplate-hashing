@@ -445,4 +445,22 @@ class AgalOut {
 		switch( t ) {
 		case TMat4:
 			for( i in 0...4 ) {
-				var ldst = offset(dst, 
+				var ldst = offset(dst, i);
+				for( j in 0...4 )
+					op(OMov(swiz(ldst, [COMPS[j]]), swiz(offset(src, j), [COMPS[i]])));
+			}
+		default:
+			throw "Can't transpose " + t;
+		}
+	}
+
+
+	function global( g : TGlobal, args : Array<TExpr>, ret : Type ) : Reg {
+		inline function binop(bop) {
+			if( args.length != 2 ) throw "assert";
+			var r = allocReg(ret);
+			op(bop(r, expr(args[0]), expr(args[1])));
+			return r;
+		}
+		inline function unop(uop) {
+			if( args.length != 
