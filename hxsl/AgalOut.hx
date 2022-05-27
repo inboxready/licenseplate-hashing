@@ -394,4 +394,17 @@ class AgalOut {
 				if( r1.t == RTemp ) {
 					var r = allocReg();
 					op(OMov(swiz(r, [X, Y, Z]), r1));
-					op(OMo
+					op(OMov(swiz(r, [W]), getConst(1)));
+					r1 = r;
+				} else {
+					r1 = r1.clone();
+					r1.swiz = null;
+				}
+				op(ODp4(swiz(r,[X]), r1, r2));
+				op(ODp4(swiz(r,[Y]), r1, offset(r2,1)));
+				op(ODp4(swiz(r,[Z]), r1, offset(r2,2)));
+			case [TVec(4, VFloat), TMat4]:
+				op(ODp4(swiz(r,[X]), r1, r2));
+				op(ODp4(swiz(r,[Y]), r1, offset(r2,1)));
+				op(ODp4(swiz(r,[Z]), r1, offset(r2,2)));
+				op(ODp4(swiz(r, [W]), r1, offset(r2, 3)));
