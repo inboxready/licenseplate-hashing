@@ -304,4 +304,26 @@ class AgalOut {
 				throw "Discard cond not supported " + e.e+ " "+e.p;
 			}
 		case TUnop(uop, e):
-			switch( 
+			switch( uop ) {
+			case OpNeg:
+				var r = allocReg(e.t);
+				op(ONeg(r, expr(e)));
+				return r;
+			default:
+			}
+		case TIf(econd, eif, eelse):
+			switch( econd.e ) {
+			case TBinop(bop, e1, e2) if( e1.t == TFloat ):
+				inline function cop(f) {
+					op(f(expr(e1), expr(e2)));
+					expr(eif);
+					if( eelse != null ) {
+						op(OEls);
+						expr(eelse);
+					}
+					op(OEif);
+					return nullReg;
+				}
+				switch( bop ) {
+				case OpEq:
+	
