@@ -344,4 +344,23 @@ class AgalOut {
 		default:
 			throw "Expression '" + Printer.toString(e)+"' not supported in AGAL "+e.p;
 		}
-		return nul
+		return null;
+	}
+
+	function binop( bop, et : Type, e1 : TExpr, e2 : TExpr ) {
+		inline function std(bop) {
+			var r = allocReg(et);
+			op(bop(r, expr(e1), expr(e2)));
+			return r;
+		}
+		inline function compare(bop,e1,e2) {
+			var r = allocReg(et);
+			op(bop(r, expr(e1), expr(e2)));
+			return r;
+		}
+		switch( bop ) {
+		case OpAdd: return std(OAdd);
+		case OpSub: return std(OSub);
+		case OpDiv: return std(ODiv);
+		case OpMod:
+			var tmp =
