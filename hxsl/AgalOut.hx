@@ -326,4 +326,22 @@ class AgalOut {
 				}
 				switch( bop ) {
 				case OpEq:
-	
+					return cop(OIfe);
+				case OpNotEq:
+					return cop(OIfe);
+				case OpGt:
+					return cop(OIfg);
+				case OpLt:
+					return cop(OIfl);
+				default:
+					throw "Conditional operation not supported " + bop+" " + econd.p;
+				}
+			default:
+			}
+			throw "Conditional not supported " + econd.e+" " + econd.p;
+		case TMeta(_, _, e):
+			return expr(e);
+		default:
+			throw "Expression '" + Printer.toString(e)+"' not supported in AGAL "+e.p;
+		}
+		return nul
