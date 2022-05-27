@@ -424,4 +424,25 @@ class AgalOut {
 			}
 			return r;
 		case OpGt:
-			return compare(OSlt,
+			return compare(OSlt, e2, e1);
+		case OpLt:
+			return compare(OSlt, e1, e2);
+		case OpGte:
+			return compare(OSge, e1, e2);
+		case OpLte:
+			return compare(OSlt, e2, e1);
+		case OpEq:
+			return compare(OSeq, e1, e2);
+		case OpNotEq:
+			return compare(OSne, e1, e2);
+		default:
+			throw "TODO " + bop;
+		}
+		return null;
+	}
+
+	function colsToRows( src : Reg, dst : Reg, t : Type ) {
+		switch( t ) {
+		case TMat4:
+			for( i in 0...4 ) {
+				var ldst = offset(dst, 
