@@ -380,4 +380,18 @@ class AgalOut {
 			return r1;
 		case OpMult:
 			var r = allocReg(et);
-			var r1 = expr(e1)
+			var r1 = expr(e1);
+			var r2 = expr(e2);
+			switch( [e1.t, e2.t] ) {
+			case [TFloat | TInt | TVec(_), TFloat | TInt | TVec(_)]:
+				op(OMul(r, r1, r2));
+			case [TVec(3, VFloat), TMat3]:
+				var r2 = swiz(r2,[X,Y,Z]);
+				op(ODp3(swiz(r,[X]), r1, r2));
+				op(ODp3(swiz(r,[Y]), r1, offset(r2,1)));
+				op(ODp3(swiz(r,[Z]), r1, offset(r2,2)));
+			case [TVec(3, VFloat), TMat3x4]:
+				if( r1.t == RTemp ) {
+					var r = allocReg();
+					op(OMov(swiz(r, [X, Y, Z]), r1));
+					op(OMo
