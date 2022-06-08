@@ -463,4 +463,27 @@ class AgalOut {
 			return r;
 		}
 		inline function unop(uop) {
-			if( args.length != 
+			if( args.length != 1 ) throw "assert";
+			var r = allocReg(ret);
+			op(uop(r, expr(args[0])));
+			return r;
+		}
+
+		switch( [g, args] ) {
+		case [ToFloat, [a]]:
+			return expr(a);
+		case [Max, _]:
+			return binop(OMax);
+		case [Min, _]:
+			return binop(OMin);
+		case [Pow, _]:
+			return binop(OPow);
+		case [Sqrt, _]:
+			return unop(OSqt);
+		case [Inversesqrt, _]:
+			return unop(ORsq);
+		case [Abs, _]:
+			return unop(OAbs);
+		case [Sin, _]:
+			return unop(OSin);
+		case [Cos, _]:
