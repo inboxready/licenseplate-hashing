@@ -501,4 +501,25 @@ class AgalOut {
 		case [Exp, [e]]:
 			var r = allocReg(e.t);
 			op(OMul(r, expr(e), getConst(1.4426950408889634))); // log(e)/log(2)
-			op(OExp(r, r
+			op(OExp(r, r));
+			return r;
+		case [Radians, [e]]:
+			var r = allocReg(e.t);
+			op(OMul(r, expr(e), getConst(Math.PI / 180)));
+			return r;
+		case [Degrees, [e]]:
+			var r = allocReg(e.t);
+			op(OMul(r, expr(e), getConst(180 / Math.PI)));
+			return r;
+		case [Cross, [a, b]]:
+			var r = allocReg(a.t);
+			op(OCrs(r, expr(a), expr(b)));
+			return r;
+		case [Length, [e]]:
+			var r = allocReg(TFloat);
+			switch( e.t  ) {
+			case TFloat:
+				op(OAbs(r, expr(e)));
+				return r;
+			case TVec(2, VFloat):
+				var e 
