@@ -522,4 +522,23 @@ class AgalOut {
 				op(OAbs(r, expr(e)));
 				return r;
 			case TVec(2, VFloat):
-				var e 
+				var e = expr(e);
+				var tmp = allocReg(TVec(3,VFloat));
+				op(OMul(swiz(tmp, [X, Y]), e, e));
+				op(OAdd(r, swiz(tmp, [X]), swiz(tmp, [Y])));
+			case TVec(3, VFloat):
+				var e = expr(e);
+				op(ODp3(r, e, e));
+			case TVec(4, VFloat):
+				var e = expr(e);
+				op(ODp4(r, e, e));
+			default:
+				throw "TODO length(" + e.t + ")";
+			}
+			op(OSqt(r, r));
+			return r;
+
+		case [Mix, [a, b, t]]:
+			var ra = allocReg(a.t);
+			var rb = allocReg(b.t);
+			var r 
