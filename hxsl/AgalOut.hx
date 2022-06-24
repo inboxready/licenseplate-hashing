@@ -487,3 +487,18 @@ class AgalOut {
 		case [Sin, _]:
 			return unop(OSin);
 		case [Cos, _]:
+			return unop(OCos);
+		case [Tan | Asin | Acos | Atan | Sign, _]:
+			throw "TODO" + g;
+		case [Log2, _]:
+			return unop(OLog);
+		case [Exp2, _]:
+			return unop(OExp);
+		case [Log, _]:
+			var r = unop(OLog);
+			op(OMul(r, r, getConst(0.6931471805599453))); // log(2)/log(e)
+			return r;
+		case [Exp, [e]]:
+			var r = allocReg(e.t);
+			op(OMul(r, expr(e), getConst(1.4426950408889634))); // log(e)/log(2)
+			op(OExp(r, r
