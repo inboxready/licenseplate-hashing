@@ -541,4 +541,23 @@ class AgalOut {
 		case [Mix, [a, b, t]]:
 			var ra = allocReg(a.t);
 			var rb = allocReg(b.t);
-			var r 
+			var r = allocReg(t.t);
+			op(OMov(r, expr(t)));
+			op(OMul(rb, expr(b), r));
+			op(OSub(r, getConst(1), r));
+			op(OMul(ra, expr(a), r));
+			op(OAdd(ra, ra, rb));
+			return ra;
+
+		case [Fract, _]:
+			return unop(OFrc);
+		case [Saturate, _]:
+			return unop(OSat);
+		case [Floor | ToInt, [a]]:
+			// might not be good for negative values...
+			var r = expr(a);
+			var tmp = allocReg(a.t);
+			op(OFrc(tmp, r));
+			op(OSub(r, r, tmp));
+			return r;
+		ca
