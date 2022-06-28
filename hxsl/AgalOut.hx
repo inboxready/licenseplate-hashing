@@ -578,4 +578,20 @@ class AgalOut {
 					else
 						mov(swiz(r, [COMPS[pos++]]), e, a.t);
 				case TVec(2, VFloat):
-				
+					mov(swiz(r, [COMPS[pos++], COMPS[pos++]]), e, a.t);
+				case TVec(3, VFloat):
+					mov(swiz(r, [COMPS[pos++], COMPS[pos++], COMPS[pos++]]), e, a.t);
+				case TVec(4, VFloat):
+					mov(r, e, a.t);
+				default:
+					throw "assert " + e.t;
+				}
+			}
+			return r;
+		case [Vec3, _]:
+			var r = allocReg(TVec(3,VFloat));
+			var pos = 0;
+			for( a in args ) {
+				var e = expr(a);
+				switch( a.t ) {
+				case TFloat:
