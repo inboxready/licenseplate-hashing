@@ -560,4 +560,22 @@ class AgalOut {
 			op(OFrc(tmp, r));
 			op(OSub(r, r, tmp));
 			return r;
-		ca
+		case [Clamp, [a, min, max]]:
+			var r = allocReg(ret);
+			op(OMax(r, expr(a), expr(min)));
+			var r2 = allocReg(ret);
+			op(OMin(r2, r, expr(max)));
+			return r2;
+		case [Vec4, _]:
+			var r = allocReg();
+			var pos = 0;
+			for( a in args ) {
+				var e = expr(a);
+				switch( a.t ) {
+				case TFloat:
+					if( args.length == 1 )
+						mov(r, swiz(e,[X,X,X,X]), a.t);
+					else
+						mov(swiz(r, [COMPS[pos++]]), e, a.t);
+				case TVec(2, VFloat):
+				
