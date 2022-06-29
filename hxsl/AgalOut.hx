@@ -612,4 +612,24 @@ class AgalOut {
 			var r = allocReg(TVec(2,VFloat));
 			var pos = 0;
 			for( a in args ) {
-				var
+				var e = expr(a);
+				switch( a.t ) {
+				case TFloat:
+					if( args.length == 1 )
+						mov(r, swiz(e,[X,X]), a.t);
+					else
+						mov(swiz(r, [COMPS[pos++]]), e, a.t);
+				case TVec(2, VFloat):
+					mov(r, e, a.t);
+				default:
+					throw "assert " + e.t;
+				}
+			}
+			return r;
+		case [Texture, [et,uv]]:
+			var t = expr(et);
+			var uv = expr(uv);
+			var r = allocReg();
+			if( t.t != RTexture ) throw "assert";
+			var flags = [TIgnoreSampler];
+			if( et.t 
