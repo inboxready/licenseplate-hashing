@@ -648,4 +648,23 @@ class AgalOut {
 				op(OMul(tmp, expr(a), expr(b)));
 				op(OAdd(r, swiz(tmp, [X]), swiz(tmp, [Y])));
 				return r;
-			
+			case TVec(3, _):
+				var r = allocReg(TFloat);
+				op(ODp3(r, expr(a), expr(b)));
+				return r;
+			case TVec(4, _):
+				var r = allocReg(TFloat);
+				op(ODp4(r, expr(a), expr(b)));
+				return r;
+			default:
+			}
+		case [Mat3, _]:
+			return copyToMatrix(args, 3, 3);
+		case [Mat3x4, _]:
+			return copyToMatrix(args, 3, 4);
+		case [Mat4, _]:
+			return copyToMatrix(args, 4, 4);
+		case [Normalize, [e]]:
+			switch( e.t ) {
+			case TVec(3, VFloat):
+	
