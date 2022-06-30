@@ -632,4 +632,20 @@ class AgalOut {
 			var r = allocReg();
 			if( t.t != RTexture ) throw "assert";
 			var flags = [TIgnoreSampler];
-			if( et.t 
+			if( et.t == TSamplerCube )
+				flags.push(TCube);
+			op(OTex(r, uv, { index : t.index, flags : flags }));
+			return r;
+		case [Dot, [a, b]]:
+			switch( a.t ) {
+			case TFloat | TInt:
+				var r = allocReg(TFloat);
+				op(OMul(r, expr(a), expr(b)));
+				return r;
+			case TVec(2, _):
+				var r = allocReg(TFloat);
+				var tmp = allocReg(TVec(2,VFloat));
+				op(OMul(tmp, expr(a), expr(b)));
+				op(OAdd(r, swiz(tmp, [X]), swiz(tmp, [Y])));
+				return r;
+			
