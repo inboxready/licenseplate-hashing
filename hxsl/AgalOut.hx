@@ -667,4 +667,23 @@ class AgalOut {
 		case [Normalize, [e]]:
 			switch( e.t ) {
 			case TVec(3, VFloat):
-	
+				var r = allocReg(e.t);
+				op(ONrm(r, expr(e)));
+				return r;
+			default:
+			}
+		case [LReflect, [a, b]]:
+			var ra = expr(a);
+			var rb = expr(b);
+			var tmp = allocReg(TFloat);
+			switch( a.t ) {
+			case TFloat | TInt:
+				op(OMul(tmp, ra, rb));
+			case TVec(2, _):
+				var r = allocReg(TVec(2,VFloat));
+				op(OMul(r, ra, rb));
+				op(OAdd(tmp, swiz(r, [X]), swiz(r, [Y])));
+			case TVec(3, _):
+				op(ODp3(tmp, ra, rb));
+			case TVec(4, _):
+				op
