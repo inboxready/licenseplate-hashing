@@ -686,4 +686,20 @@ class AgalOut {
 			case TVec(3, _):
 				op(ODp3(tmp, ra, rb));
 			case TVec(4, _):
-				op
+				op(ODp4(tmp, ra, rb));
+			default:
+			}
+			op(OAdd(tmp, tmp, tmp));
+			var o = allocReg(a.t);
+			var sw = defSwiz(a.t);
+			op(OMul(o, swiz(tmp, sw == null ? [X, X, X, X] : [for( _ in sw ) X]), rb));
+			op(OSub(o, ra, o));
+			return o;
+		case [ScreenToUv,[e]]:
+			var r = allocReg();
+			op(OMul(r,expr(e),getConsts([0.5,-0.5])));
+			op(OAdd(r,r,getConsts([0.5,0.5])));
+			return r;
+		case [UvToScreen,[e]]:
+			var r = allocReg();
+			op(OMul(r,e
