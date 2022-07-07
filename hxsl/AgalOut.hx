@@ -729,4 +729,25 @@ class AgalOut {
 			op(OSub(r, swiz(expr(e), [X, Y,Z]) , getConst(0.5) ));
 			op(ONrm(r, r));
 			return r;
-		ca
+		case [Step, [a, b]]:
+			return this.binop(OpGt, ret, a, b);
+		case [DFdx, [v]]:
+			var v = expr(v);
+			var r = allocReg();
+			op(ODdx(r, v));
+			return r;
+		case [DFdy, [v]]:
+			var v = expr(v);
+			var r = allocReg();
+			op(ODdy(r, v));
+			return r;
+		case [Fwidth, [v]]:
+			var v = expr(v);
+			var r = allocReg();
+			op(ODdx(r, v));
+			op(OAbs(r, r));
+			var r2 = allocReg();
+			op(ODdy(r2, v));
+			op(OAbs(r2, r2));
+			op(OAdd(r, r, r2));
+	
