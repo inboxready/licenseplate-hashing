@@ -767,4 +767,21 @@ class AgalOut {
 			//:return x * x * (3 - 2 * x);
 			op(OMul(t, r, getConst(2.0)));
 			op(OMul(r, r, r));
-			op(OSub(t, get
+			op(OSub(t, getConst(3.0), t));
+			op(OMul(r, r, t));
+			return r;
+		default:
+		}
+
+		throw "TODO " + g + ":" + args.length;
+		return null;
+	}
+
+	function copyToMatrix( args : Array<TExpr>, w : Int, h : Int ) {
+		var regs = [for( a in args ) expr(a)];
+		var out = [for( i in 0...w ) allocReg()];
+		var comps = [for( o in out ) for( i in 0...h ) swiz(o, [COMPS[i]])];
+		var defSwiz = [X, Y, Z, W];
+		// copy all regs to output components
+		for( i in 0...args.length ) {
+			var regs = [regs[i]]
