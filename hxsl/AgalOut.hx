@@ -784,4 +784,17 @@ class AgalOut {
 		var defSwiz = [X, Y, Z, W];
 		// copy all regs to output components
 		for( i in 0...args.length ) {
-			var regs = [regs[i]]
+			var regs = [regs[i]];
+			switch( args[i].t ) {
+			case TFloat, TVec(_):
+			case TMat3, TMat3x4:
+				if( args.length != 1 ) throw "assert";
+				regs.push(offset(regs[0], 1));
+				regs.push(offset(regs[0], 2));
+				if( h < 4 ) defSwiz = [X, Y, Z];
+			case TMat4:
+				if( args.length != 1 ) throw "assert";
+				regs.push(offset(regs[0], 1));
+				regs.push(offset(regs[0], 2));
+				if( w == 4 ) regs.push(offset(regs[0], 3));
+				// we all
