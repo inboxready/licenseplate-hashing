@@ -828,4 +828,16 @@ class AgalOut {
 		return switch( t ) {
 		case TInt, TFloat, TVec(_), TBytes(_), TBool: 1;
 		case TMat2: throw "Mat2 is not supported in AGAL";
-		case TMat3, TMat
+		case TMat3, TMat3x4: 3;
+		case TMat4: 4;
+		case TArray(t, SConst(size)), TBuffer(t, SConst(size)): (Tools.size(t) * size + 3) >> 2;
+		case TStruct(vl): throw "TODO";
+		case TVoid, TString, TSampler2D, TSampler2DArray, TSamplerCube, TFun(_), TArray(_), TBuffer(_), TChannel(_): throw "assert "+t;
+		}
+	}
+
+	function defSwiz( t : Type ) {
+		return switch( t ) {
+		case TInt, TFloat: [X];
+		case TVec(2, _), TBytes(2): [X, Y];
+		case TVec(3, _), TByte
