@@ -811,4 +811,21 @@ class AgalOut {
 				var w = comps[0].index;
 				var r = regs[0];
 				var sw = [], sr = [];
-				while( regs[0].swiz.length > 0 && comps[0].index 
+				while( regs[0].swiz.length > 0 && comps[0].index == w ) {
+					sw.push(comps.shift().swiz[0]);
+					sr.push(regs[0].swiz.shift());
+				}
+				if( regs[0].swiz.length == 0 ) regs.shift();
+				var m = OMov( new Reg(RTemp, w, sw), new Reg(r.t, r.index, sr) );
+				op(m);
+			}
+		}
+		if( comps.length != 0 ) throw "assert";
+		return out[0];
+	}
+
+	function regSize( t : Type ) {
+		return switch( t ) {
+		case TInt, TFloat, TVec(_), TBytes(_), TBool: 1;
+		case TMat2: throw "Mat2 is not supported in AGAL";
+		case TMat3, TMat
