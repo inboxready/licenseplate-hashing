@@ -797,4 +797,18 @@ class AgalOut {
 				regs.push(offset(regs[0], 1));
 				regs.push(offset(regs[0], 2));
 				if( w == 4 ) regs.push(offset(regs[0], 3));
-				// we all
+				// we allow to reduce the size of the output matrix
+				if( h < 4 ) defSwiz = [X, Y, Z];
+			default:
+				throw "assert " + args[i].t;
+			}
+			for( i in 0...regs.length ) {
+				regs[i] = regs[i].clone();
+				if( regs[i].swiz == null ) regs[i].swiz = defSwiz.copy();
+				if( regs[i].access != null ) throw "assert";
+			}
+			while( regs.length > 0 ) {
+				var w = comps[0].index;
+				var r = regs[0];
+				var sw = [], sr = [];
+				while( regs[0].swiz.length > 0 && comps[0].index 
