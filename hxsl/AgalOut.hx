@@ -840,4 +840,26 @@ class AgalOut {
 		return switch( t ) {
 		case TInt, TFloat: [X];
 		case TVec(2, _), TBytes(2): [X, Y];
-		case TVec(3, _), TByte
+		case TVec(3, _), TBytes(3): [X, Y, Z];
+		default: null;
+		}
+	}
+
+	function reg( v : TVar ) : Reg {
+		var r = varMap.get(v.id);
+		if( r != null ) {
+			unused.remove(v.id);
+			return r;
+		}
+		if( v.kind != Local ) throw "assert " + v;
+		r = allocReg(v.type);
+		varMap.set(v.id, r);
+		return r;
+	}
+
+	function allocReg( ?t : Type ) : Reg {
+		var r = new Reg(RTemp, tmpCount, t == null ? null : defSwiz(t));
+		tmpCount += t == null ? 1 : regSize(t);
+		return r;
+	}
+
