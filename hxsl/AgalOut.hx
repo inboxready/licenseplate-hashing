@@ -863,3 +863,9 @@ class AgalOut {
 		return r;
 	}
 
+	public static function toAgal( shader, version ) {
+		var a = new AgalOut();
+		return a.compile(shader, version);
+	}
+
+}
