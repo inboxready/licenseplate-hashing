@@ -38,4 +38,23 @@ class Samplers {
 					idx = count++;
 					named.set(names[i], idx);
 				}
-				
+				arr.push(idx);
+			}
+		}
+		return arr;
+	}
+
+}
+
+class HlslOut {
+
+	static var KWD_LIST = [
+		"s_input", "s_output", "_in", "_out", "in", "out", "mul", "matrix", "vector", "export", "half", "float", "double", "line", "linear", "point", "precise",
+		"sample" // pssl
+	];
+	static var KWDS = [for( k in KWD_LIST ) k => true];
+	static var GLOBALS = {
+		var m = new Map();
+		for( g in hxsl.Ast.TGlobal.createAll() ) {
+			var n = "" + g;
+			n = n.ch
