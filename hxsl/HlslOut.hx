@@ -74,4 +74,20 @@ class HlslOut {
 		m.set(InstanceID,"_in.instanceID");
 		m.set(IVec2, "int2");
 		m.set(IVec3, "int3");
-		m
+		m.set(IVec4, "int3");
+		m.set(BVec2, "bool2");
+		m.set(BVec3, "bool3");
+		m.set(BVec4, "bool4");
+		m.set(FragCoord,"_in.__pos__");
+		m.set(FrontFacing, "_in.isFrontFace");
+		for( g in m )
+			KWDS.set(g, true);
+		m;
+	};
+
+	var SV_POSITION = "SV_POSITION";
+	var SV_TARGET = "SV_TARGET";
+	var SV_VertexID = "SV_VertexID";
+	var SV_InstanceID = "SV_InstanceID";
+	var SV_IsFrontFace = "SV_IsFrontFace";
+	var STATIC = "stati
