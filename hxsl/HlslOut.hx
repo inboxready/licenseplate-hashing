@@ -57,4 +57,21 @@ class HlslOut {
 		var m = new Map();
 		for( g in hxsl.Ast.TGlobal.createAll() ) {
 			var n = "" + g;
-			n = n.ch
+			n = n.charAt(0).toLowerCase() + n.substr(1);
+			m.set(g, n);
+		}
+		m.set(ToInt, "(int)");
+		m.set(ToFloat, "(float)");
+		m.set(ToBool, "(bool)");
+		m.set(Vec2, "float2");
+		m.set(Vec3, "float3");
+		m.set(Vec4, "float4");
+		m.set(LReflect, "reflect");
+		m.set(Fract, "frac");
+		m.set(Mix, "lerp");
+		m.set(Inversesqrt, "rsqrt");
+		m.set(VertexID,"_in.vertexID");
+		m.set(InstanceID,"_in.instanceID");
+		m.set(IVec2, "int2");
+		m.set(IVec3, "int3");
+		m
