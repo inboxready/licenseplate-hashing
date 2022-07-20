@@ -109,4 +109,34 @@ class HlslOut {
 		allNames = new Map();
 	}
 
-	inline function add( v : Dynamic 
+	inline function add( v : Dynamic ) {
+		buf.add(v);
+	}
+
+	inline function ident( v : TVar ) {
+		add(varName(v));
+	}
+
+	function decl( s : String ) {
+		for( d in decls )
+			if( d == s ) return;
+		if( s.charCodeAt(0) == '#'.code )
+			decls.unshift(s);
+		else
+			decls.push(s);
+	}
+
+	function addType( t : Type ) {
+		switch( t ) {
+		case TVoid:
+			add("void");
+		case TInt:
+			add("int");
+		case TBytes(n):
+			add("uint"+n);
+		case TBool:
+			add("bool");
+		case TFloat:
+			add("float");
+		case TString:
+			ad
