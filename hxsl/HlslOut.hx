@@ -90,4 +90,23 @@ class HlslOut {
 	var SV_VertexID = "SV_VertexID";
 	var SV_InstanceID = "SV_InstanceID";
 	var SV_IsFrontFace = "SV_IsFrontFace";
-	var STATIC = "stati
+	var STATIC = "static ";
+	var buf : StringBuf;
+	var exprIds = 0;
+	var exprValues : Array<String>;
+	var locals : Map<Int,TVar>;
+	var decls : Array<String>;
+	var isVertex : Bool;
+	var allNames : Map<String, Int>;
+	var samplers : Map<Int, Array<Int>>;
+	public var varNames : Map<Int,String>;
+	public var baseRegister : Int = 0;
+
+	var varAccess : Map<Int,String>;
+
+	public function new() {
+		varNames = new Map();
+		allNames = new Map();
+	}
+
+	inline function add( v : Dynamic 
