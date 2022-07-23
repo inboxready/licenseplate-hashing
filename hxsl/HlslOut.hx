@@ -139,4 +139,25 @@ class HlslOut {
 		case TFloat:
 			add("float");
 		case TString:
-			ad
+			add("string");
+		case TVec(size, k):
+			switch( k ) {
+			case VFloat: add("float");
+			case VInt: add("int");
+			case VBool: add("bool");
+			}
+			add(size);
+		case TMat2:
+			add("float2x2");
+		case TMat3:
+			add("float3x3");
+		case TMat4:
+			add("float4x4");
+		case TMat3x4:
+			add("float4x3");
+		case TSampler2D:
+			add("Texture2D");
+		case TSamplerCube:
+			add("TextureCube");
+		case TSampler2DArray:
+			add("Texture2DArray")
