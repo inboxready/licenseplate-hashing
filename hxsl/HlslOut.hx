@@ -160,4 +160,33 @@ class HlslOut {
 		case TSamplerCube:
 			add("TextureCube");
 		case TSampler2DArray:
-			add("Texture2DArray")
+			add("Texture2DArray");
+		case TStruct(vl):
+			add("struct { ");
+			for( v in vl ) {
+				addVar(v);
+				add(";");
+			}
+			add(" }");
+		case TFun(_):
+			add("function");
+		case TArray(t, size), TBuffer(t,size):
+			addType(t);
+			add("[");
+			switch( size ) {
+			case SVar(v):
+				ident(v);
+			case SConst(v):
+				add(v);
+			}
+			add("]");
+		case TChannel(n):
+			add("channel" + n);
+		}
+	}
+
+	function addArraySize( size ) {
+		add("[");
+		switch( size ) {
+		case SVar(v): ident(v);
+		case SConst(n): 
