@@ -189,4 +189,31 @@ class HlslOut {
 		add("[");
 		switch( size ) {
 		case SVar(v): ident(v);
-		case SConst(n): 
+		case SConst(n): add(n);
+		}
+		add("]");
+	}
+
+	function addVar( v : TVar ) {
+		switch( v.type ) {
+		case TArray(t, size), TBuffer(t,size):
+			addVar({
+				id : v.id,
+				name : v.name,
+				type : t,
+				kind : v.kind,
+			});
+			addArraySize(size);
+		default:
+			addType(v.type);
+			add(" ");
+			ident(v);
+		}
+	}
+
+	function addValue( e : TExpr, tabs : String ) {
+		switch( e.e ) {
+		case TBlock(el):
+			var name = "val" + (exprIds++);
+			var tmp = buf;
+			buf = new StringBuf
