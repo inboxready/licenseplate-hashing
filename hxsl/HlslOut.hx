@@ -235,4 +235,26 @@ class HlslOut {
 			add(name);
 			add("()");
 		case TIf(econd, eif, eelse):
-			add("( "
+			add("( ");
+			addValue(econd, tabs);
+			add(" ) ? ");
+			addValue(eif, tabs);
+			add(" : ");
+			addValue(eelse, tabs);
+		case TMeta(m,args,e):
+			handleMeta(m, args, addValue, e, tabs);
+		default:
+			addExpr(e, tabs);
+		}
+	}
+
+	function handleMeta( m, args : Array<Ast.Const>, callb, e, tabs ) {
+		switch( [m, args] ) {
+		default:
+			callb(e,tabs);
+		}
+	}
+
+	function addBlock( e : TExpr, tabs ) {
+		if( e.e.match(TBlock(_)) )
+			addExpr(e,ta
