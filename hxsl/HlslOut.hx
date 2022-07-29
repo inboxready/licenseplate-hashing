@@ -216,4 +216,23 @@ class HlslOut {
 		case TBlock(el):
 			var name = "val" + (exprIds++);
 			var tmp = buf;
-			buf = new StringBuf
+			buf = new StringBuf();
+			addType(e.t);
+			add(" ");
+			add(name);
+			add("(void)");
+			var el2 = el.copy();
+			var last = el2[el2.length - 1];
+			el2[el2.length - 1] = { e : TReturn(last), t : e.t, p : last.p };
+			var e2 = {
+				t : TVoid,
+				e : TBlock(el2),
+				p : e.p,
+			};
+			addExpr(e2, "");
+			exprValues.push(buf.toString());
+			buf = tmp;
+			add(name);
+			add("()");
+		case TIf(econd, eif, eelse):
+			add("( "
