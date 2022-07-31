@@ -257,4 +257,19 @@ class HlslOut {
 
 	function addBlock( e : TExpr, tabs ) {
 		if( e.e.match(TBlock(_)) )
-			addExpr(e,ta
+			addExpr(e,tabs);
+		else {
+			add("{");
+			addExpr(e,tabs);
+			if( !isBlock(e) )
+				add(";");
+			add("}");
+		}
+	}
+
+	function declMods() {
+		// unsigned mod like GLSL
+		decl("float mod(float x, float y) { return x - y * floor(x/y); }");
+		decl("float2 mod(float2 x, float2 y) { return x - y * floor(x/y); }");
+		decl("float3 mod(float3 x, float3 y) { return x - y * floor(x/y); }");
+		decl("float4 mod(float4 x, float4 y
