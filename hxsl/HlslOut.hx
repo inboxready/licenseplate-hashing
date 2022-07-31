@@ -272,4 +272,23 @@ class HlslOut {
 		decl("float mod(float x, float y) { return x - y * floor(x/y); }");
 		decl("float2 mod(float2 x, float2 y) { return x - y * floor(x/y); }");
 		decl("float3 mod(float3 x, float3 y) { return x - y * floor(x/y); }");
-		decl("float4 mod(float4 x, float4 y
+		decl("float4 mod(float4 x, float4 y) { return x - y * floor(x/y); }");
+	}
+
+	function addExpr( e : TExpr, tabs : String ) {
+		switch( e.e ) {
+		case TConst(c):
+			switch( c ) {
+			case CInt(v): add(v);
+			case CFloat(f):
+				var str = "" + f;
+				add(str);
+				if( str.indexOf(".") == -1 && str.indexOf("e") == -1 )
+					add(".");
+			case CString(v): add('"' + v + '"');
+			case CNull: add("null");
+			case CBool(b): add(b);
+			}
+		case TVar(v):
+			var acc = varAccess.get(v.id);
+			if( 
