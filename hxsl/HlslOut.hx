@@ -306,4 +306,19 @@ class HlslOut {
 			var offset = 0;
 			var expr = switch( args[0].e ) {
 			case TArray(e,{ e : TConst(CInt(i)) }): offset = i; e;
-			case TArray(e,{ e : TBinop(OpAdd,{e
+			case TArray(e,{ e : TBinop(OpAdd,{e:TVar(_)},{e:TConst(CInt(_))}) }): throw "Offset in texture access: need loop unroll?";
+			default: args[0];
+			}
+			switch( expr.e ) {
+			case TVar(v):
+				var samplers = samplers.get(v.id);
+				if( samplers == null ) throw "assert";
+				add('__Samplers[${samplers[offset]}]');
+			default: throw "assert";
+			}
+			for( i in 1...args.length ) {
+				add(",");
+				addValue(args[i],tabs);
+			}
+			if( g == Texture && isVertex )
+				add(",0");
