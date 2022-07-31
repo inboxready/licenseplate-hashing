@@ -291,4 +291,19 @@ class HlslOut {
 			}
 		case TVar(v):
 			var acc = varAccess.get(v.id);
-			if( 
+			if( acc != null ) add(acc);
+			ident(v);
+		case TCall({ e : TGlobal(g = (Texture | TextureLod)) }, args):
+			addValue(args[0], tabs);
+			switch( g ) {
+			case Texture:
+				add(isVertex ? ".SampleLevel(" : ".Sample(");
+			case TextureLod:
+				add(".SampleLevel(");
+			default:
+				throw "assert";
+			}
+			var offset = 0;
+			var expr = switch( args[0].e ) {
+			case TArray(e,{ e : TConst(CInt(i)) }): offset = i; e;
+			case TArray(e,{ e : TBinop(OpAdd,{e
