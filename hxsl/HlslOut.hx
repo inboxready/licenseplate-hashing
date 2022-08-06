@@ -346,4 +346,18 @@ class HlslOut {
 		case TCall({ e : TGlobal(g = (TextureSize)) }, args):
 			decl("float2 textureSize(Texture2D tex, int lod) { float w; float h; float levels; tex.GetDimensions((uint)lod,w,h,levels); return float2(w, h); }");
 			decl("float3 textureSize(Texture2DArray tex, int lod) { float w; float h; float els; float levels; tex.GetDimensions((uint)lod,w,h,els,levels); return float3(w, h, els); }");
-			decl("float2 textureSize(TextureCube tex, int lod) { float w; float h; float levels; t
+			decl("float2 textureSize(TextureCube tex, int lod) { float w; float h; float levels; tex.GetDimensions((uint)lod,w,h,levels); return float2(w, h); }");
+			add("textureSize(");
+			addValue(args[0], tabs);
+			if (args.length != 1) {
+				// With LOD argument
+				add(", ");
+				addValue(args[1],tabs);
+			} else {
+				add(", 0");
+			}
+			add(")");
+		case TCall(e = { e : TGlobal(g) }, args):
+			switch( [g,args.length] ) {
+			case [Vec2, 1] if( args[0].t == TFloat ):
+				decl("float2 vec2( float 
