@@ -322,3 +322,25 @@ class HlslOut {
 			}
 			if( g == Texture && isVertex )
 				add(",0");
+			add(")");
+		case TCall({ e : TGlobal(g = (Texel)) }, args):
+			addValue(args[0], tabs);
+			add(".Load(");
+			switch ( args[1].t ) {
+				case TSampler2D:
+					add("int3(");
+				case TSampler2DArray:
+					add("int4(");
+				default:
+					throw "assert";
+			}
+			addValue(args[1],tabs);
+			if ( args.length != 2 ) {
+				// with LOD argument
+				add(", ");
+				addValue(args[2], tabs);
+			} else {
+				add(", 0");
+			}
+			add("))");
+		case TCall({ e : TGlobal(g = (Texture
