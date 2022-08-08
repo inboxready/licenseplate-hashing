@@ -374,4 +374,13 @@ class HlslOut {
 			add("(");
 			var first = true;
 			for( e in args ) {
-				if( first ) first = false else add(",
+				if( first ) first = false else add(", ");
+				addValue(e, tabs);
+			}
+			add(")");
+		case TGlobal(g):
+			switch( g ) {
+			case Mat3x4:
+				// float4x3 constructor uses row-order, we want column order here
+				decl("float4x3 mat3x4( float4 a, float4 b, float4 c ) { float4x3 m; m._m00_m10_m20_m30 = a; m._m01_m11_m21_m31 = b; m._m02_m12_m22_m32 = c; return m; }");
+				decl("float4x3 mat3x4( float4x4 m ) { float4x3 m2; m2._m00_m10_m20_m30 = m._m00_m10_m20_m30; m2._m01_m11_m21_m31 = m._m01_m11_m21_m31; m2._m02_m12_m22_
