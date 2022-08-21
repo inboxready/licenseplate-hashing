@@ -409,4 +409,13 @@ class HlslOut {
 			case PackNormal:
 				decl("float4 packNormal( float3 n ) { return float4((n + 1.) * 0.5,1.); }");
 			case UnpackNormal:
-				decl(
+				decl("float3 unpackNormal( float4 p ) { return normalize(p.xyz * 2. - 1.); }");
+			case Atan:
+				decl("float atan( float y, float x ) { return atan2(y,x); }");
+			case ScreenToUv:
+				decl("float2 screenToUv( float2 v ) { return v * float2(0.5, -0.5) + float2(0.5,0.5); }");
+			case UvToScreen:
+				decl("float2 uvToScreen( float2 v ) { return v * float2(2.,-2.) + float2(-1., 1.); }");
+			case DFdx:
+				decl("float dFdx( float v ) { return ddx(v); }");
+				decl("float2 dFdx( float2 v ) 
