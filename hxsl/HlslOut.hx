@@ -435,4 +435,24 @@ class HlslOut {
 			add("{\n");
 			var t2 = tabs + "\t";
 			for( e in el ) {
-	
+				add(t2);
+				addExpr(e, t2);
+				newLine(e);
+			}
+			add(tabs);
+			add("}");
+		case TVarDecl(v, { e : TArrayDecl(el) }):
+			locals.set(v.id, v);
+			for( i in 0...el.length ) {
+				ident(v);
+				add("[");
+				add(i);
+				add("] = ");
+				addExpr(el[i], tabs);
+				newLine(el[i]);
+			}
+		case TBinop(OpAssign,evar = { e : TVar(_) },{ e : TArrayDecl(el) }):
+			for( i in 0...el.length ) {
+				addExpr(evar, tabs);
+				add("[");
+			
