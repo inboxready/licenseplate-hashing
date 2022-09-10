@@ -512,3 +512,23 @@ class HlslOut {
 			default:
 				addValue(e1, tabs);
 				add(" ");
+				add(Printer.opStr(op));
+				add(" ");
+				addValue(e2, tabs);
+			}
+		case TUnop(op, e1):
+			add(switch(op) {
+			case OpNot: "!";
+			case OpNeg: "-";
+			case OpIncrement: "++";
+			case OpDecrement: "--";
+			case OpNegBits: "~";
+			default: throw "assert"; // OpSpread for Haxe4.2+
+			});
+			addValue(e1, tabs);
+		case TVarDecl(v, init):
+			locals.set(v.id, v);
+			if( init != null ) {
+				ident(v);
+				add(" = ");
+				addValue(init, ta
