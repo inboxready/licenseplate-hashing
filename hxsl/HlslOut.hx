@@ -578,4 +578,24 @@ class HlslOut {
 			case TBinop(OpInterval, e1, e2):
 				add("[loop] for(");
 				add(v.name+"=");
-		
+				addValue(e1,tabs);
+				add(";"+v.name+"<");
+				addValue(e2,tabs);
+				add(";" + v.name+"++) ");
+				addBlock(loop, tabs);
+			default:
+				throw "assert";
+			}
+		case TWhile(e, loop, false):
+			var old = tabs;
+			tabs += "\t";
+			add("[loop] do ");
+			addBlock(loop,tabs);
+			add(" while( ");
+			addValue(e,tabs);
+			add(" )");
+		case TWhile(e, loop, _):
+			add("[loop] while( ");
+			addValue(e, tabs);
+			add(" ) ");
+			addBlock(loop,tabs
