@@ -531,4 +531,29 @@ class HlslOut {
 			if( init != null ) {
 				ident(v);
 				add(" = ");
-				addValue(init, ta
+				addValue(init, tabs);
+			} else {
+				add("/*var*/");
+			}
+		case TCall(e, args):
+			addValue(e, tabs);
+			add("(");
+			var first = true;
+			for( e in args ) {
+				if( first ) first = false else add(", ");
+				addValue(e, tabs);
+			}
+			add(")");
+		case TSwiz(e, regs):
+			addValue(e, tabs);
+			add(".");
+			for( r in regs )
+				add(switch(r) {
+				case X: "x";
+				case Y: "y";
+				case Z: "z";
+				case W: "w";
+				});
+		case TIf(econd, eif, eelse):
+			add("if( ");
+			
