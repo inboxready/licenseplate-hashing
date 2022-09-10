@@ -455,4 +455,26 @@ class HlslOut {
 			for( i in 0...el.length ) {
 				addExpr(evar, tabs);
 				add("[");
-			
+				add(i);
+				add("] = ");
+				addExpr(el[i], tabs);
+			}
+		case TArrayDecl(el):
+			add("{");
+			var first = true;
+			for( e in el ) {
+				if( first ) first = false else add(", ");
+				addValue(e,tabs);
+			}
+			add("}");
+		case TBinop(op, e1, e2):
+			switch( [op, e1.t, e2.t] ) {
+			case [OpAssignOp(OpMod) | OpMod, _, _]:
+				if( op.match(OpAssignOp(_)) ) {
+					addValue(e1, tabs);
+					add(" = ");
+				}
+				declMods();
+				add("mod(");
+				addValue(e1, tabs);
+				add(",");
