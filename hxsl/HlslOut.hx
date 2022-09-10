@@ -478,3 +478,20 @@ class HlslOut {
 				add("mod(");
 				addValue(e1, tabs);
 				add(",");
+				addValue(e2, tabs);
+				add(")");
+			case [OpAssignOp(op), TVec(_), TMat3x4 | TMat3 | TMat4]:
+				addValue(e1, tabs);
+				add(" = ");
+				addValue({ e : TBinop(op, e1, e2), t : e.t, p : e.p }, tabs);
+			case [OpMult, TVec(_), TMat3x4]:
+				add("mul(float4(");
+				addValue(e1, tabs);
+				add(",1.),");
+				addValue(e2, tabs);
+				add(")");
+			case [OpMult, TVec(_), TMat2 | TMat3 | TMat4]:
+				add("mul(");
+				addValue(e1, tabs);
+				add(",");
+				a
