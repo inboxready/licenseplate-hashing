@@ -556,4 +556,26 @@ class HlslOut {
 				});
 		case TIf(econd, eif, eelse):
 			add("if( ");
-			
+			addValue(econd, tabs);
+			add(") ");
+			addBlock(eif, tabs);
+			if( eelse != null ) {
+				add(" else ");
+				addBlock(eelse, tabs);
+			}
+		case TDiscard:
+			add("discard");
+		case TReturn(e):
+			if( e == null )
+				add("return _out");
+			else {
+				add("return ");
+				addValue(e, tabs);
+			}
+		case TFor(v, it, loop):
+			locals.set(v.id, v);
+			switch( it.e ) {
+			case TBinop(OpInterval, e1, e2):
+				add("[loop] for(");
+				add(v.name+"=");
+		
