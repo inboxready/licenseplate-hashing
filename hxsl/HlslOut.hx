@@ -598,4 +598,18 @@ class HlslOut {
 			add("[loop] while( ");
 			addValue(e, tabs);
 			add(" ) ");
-			addBlock(loop,tabs
+			addBlock(loop,tabs);
+		case TSwitch(_):
+			add("switch(...)");
+		case TContinue:
+			add("continue");
+		case TBreak:
+			add("break");
+		case TArray(e, index):
+			switch( e.t ) {
+			case TMat2, TMat3, TMat3x4, TMat4:
+				switch( e.t ) {
+				case TMat2:
+					decl("float2 _matarr( float2x2 m, int idx ) { return float2(m[0][idx],m[1][idx]); }");
+				case TMat3:
+					decl("float3 _matarr( float3x3 m, int idx ) { return float3(m[0][idx],m[1][idx],m[2][idx]); }");
