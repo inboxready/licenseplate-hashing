@@ -654,4 +654,25 @@ class HlslOut {
 		return n;
 	}
 
-	func
+	function newLine( e : TExpr ) {
+		if( isBlock(e) )
+			add("\n");
+		else
+			add(";\n");
+	}
+
+	function isBlock( e : TExpr ) {
+		switch( e.e ) {
+		case TFor(_, _, loop), TWhile(_,loop,true):
+			return isBlock(loop);
+		case TIf(_,eif,eelse):
+			return isBlock(eelse == null ? eif : eelse);
+		case TBlock(_):
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	function collectGlobals( m : Map<TGlobal,Bool>, e : TExpr ) {
+		switch( e.e 
