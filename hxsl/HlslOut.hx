@@ -627,4 +627,31 @@ class HlslOut {
 			default:
 				addValue(e, tabs);
 				add("[");
-				addValue(index
+				addValue(index, tabs);
+				add("]");
+			}
+		case TMeta(m, args, e):
+			handleMeta(m, args, addExpr, e, tabs);
+		}
+	}
+
+	function varName( v : TVar ) {
+		var n = varNames.get(v.id);
+		if( n != null )
+			return n;
+		n = v.name;
+		while( KWDS.exists(n) )
+			n = "_" + n;
+		if( allNames.exists(n) ) {
+			var k = 2;
+			n += "_";
+			while( allNames.exists(n + k) )
+				k++;
+			n += k;
+		}
+		varNames.set(v.id, n);
+		allNames.set(n, v.id);
+		return n;
+	}
+
+	func
