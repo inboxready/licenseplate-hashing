@@ -695,4 +695,16 @@ class HlslOut {
 		}
 
 		var foundGlobals = new Map();
-		for( f in 
+		for( f in s.funs )
+			collectGlobals(foundGlobals, f.expr);
+
+		add("struct s_input {\n");
+		if( !isVertex )
+			add("\tfloat4 __pos__ : "+SV_POSITION+";\n");
+		for( v in s.vars )
+			if( v.kind == Input || (v.kind == Var && !isVertex) )
+				declVar("_in.", v);
+		if( foundGlobals.exists(VertexID) )
+			add("\tuint vertexID : "+SV_VertexID+";\n");
+		if( foundGlobals.exists(InstanceID) )
+			add("\tuint instanceID : "+SV_InstanceID+
