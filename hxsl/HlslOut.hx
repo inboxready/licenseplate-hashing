@@ -707,4 +707,21 @@ class HlslOut {
 		if( foundGlobals.exists(VertexID) )
 			add("\tuint vertexID : "+SV_VertexID+";\n");
 		if( foundGlobals.exists(InstanceID) )
-			add("\tuint instanceID : "+SV_InstanceID+
+			add("\tuint instanceID : "+SV_InstanceID+";\n");
+		if( foundGlobals.exists(FrontFacing) )
+			add("\tbool isFrontFace : "+SV_IsFrontFace+";\n");
+		add("};\n\n");
+
+		add("struct s_output {\n");
+		for( v in s.vars )
+			if( v.kind == Output )
+				declVar("_out.", v);
+		for( v in s.vars )
+			if( v.kind == Var && isVertex )
+				declVar("_out.", v);
+		add("};\n\n");
+	}
+
+	function initGlobals( s : ShaderData ) {
+		add('cbuffer _globals : register(b$baseRegister) {\n');
+		for( 
