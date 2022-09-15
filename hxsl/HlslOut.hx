@@ -675,4 +675,24 @@ class HlslOut {
 	}
 
 	function collectGlobals( m : Map<TGlobal,Bool>, e : TExpr ) {
-		switch( e.e 
+		switch( e.e )  {
+		case TGlobal(g): m.set(g,true);
+		default: e.iter(collectGlobals.bind(m));
+		}
+	}
+
+	function initVars( s : ShaderData ) {
+		var index = 0;
+		function declVar(prefix:String, v : TVar ) {
+			add("\t");
+			addVar(v);
+			if( v.kind == Output )
+				add(" : " + (isVertex ? SV_POSITION : SV_TARGET + (index++)));
+			else
+				add(" : " + semanticName(v.name));
+			add(";\n");
+			varAccess.set(v.id, prefix);
+		}
+
+		var foundGlobals = new Map();
+		for( f in 
