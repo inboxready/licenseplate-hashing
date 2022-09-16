@@ -724,4 +724,25 @@ class HlslOut {
 
 	function initGlobals( s : ShaderData ) {
 		add('cbuffer _globals : register(b$baseRegister) {\n');
-		for( 
+		for( v in s.vars )
+			if( v.kind == Global ) {
+				add("\t");
+				addVar(v);
+				add(";\n");
+			}
+		add("};\n\n");
+	}
+
+	function initParams( s : ShaderData ) {
+		var textures = [];
+		var buffers = [];
+		add('cbuffer _params : register(b${baseRegister+1}) {\n');
+		for( v in s.vars )
+			if( v.kind == Param ) {
+				switch( v.type ) {
+				case TArray(t, _) if( t.isSampler() ):
+					textures.push(v);
+					continue;
+				case TBuffer(_):
+					buffers.push(v);
+					c
