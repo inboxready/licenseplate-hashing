@@ -745,4 +745,28 @@ class HlslOut {
 					continue;
 				case TBuffer(_):
 					buffers.push(v);
-					c
+					continue;
+				default:
+					if( v.type.isSampler() ) {
+						textures.push(v);
+						continue;
+					}
+				}
+				add("\t");
+				addVar(v);
+				add(";\n");
+			}
+		add("};\n\n");
+
+		var bufCount = 0;
+		for( b in buffers ) {
+			add('cbuffer _buffer$bufCount : register(b${bufCount+baseRegister+2}) { ');
+			addVar(b);
+			add("; };\n");
+			bufCount++;
+		}
+		if( bufCount > 0 ) add("\n");
+
+		var ctx = new Samplers();
+		var texCount = 0;
+		for( v in textures 
