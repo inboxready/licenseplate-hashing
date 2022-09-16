@@ -789,4 +789,30 @@ class HlslOut {
 
 		add("\n");
 		for( v in s.vars )
-			if( v.kind 
+			if( v.kind == Local ) {
+				add(STATIC);
+				addVar(v);
+				add(";\n");
+			}
+		add("\n");
+	}
+
+	function emitMain( expr : TExpr ) {
+		add("s_output main( s_input __in ) {\n");
+		add("\t_in = __in;\n");
+		switch( expr.e ) {
+		case TBlock(el):
+			for( e in el ) {
+				add("\t");
+				addExpr(e, "\t");
+				newLine(e);
+			}
+		default:
+			addExpr(expr, "");
+		}
+		add("\treturn _out;\n");
+		add("}");
+	}
+
+	function initLocals() {
+		var locals = Lambda.ar
