@@ -769,4 +769,24 @@ class HlslOut {
 
 		var ctx = new Samplers();
 		var texCount = 0;
-		for( v in textures 
+		for( v in textures ) {
+			addVar(v);
+			add(' : register(t${texCount});\n');
+			switch( v.type ) {
+			case TArray(_,SConst(n)): texCount += n;
+			default: texCount++;
+			}
+			samplers.set(v.id, ctx.make(v, []));
+		}
+
+		if( ctx.count > 0 )
+			add('SamplerState __Samplers[${ctx.count}] : register(s0);\n');
+	}
+
+	function initStatics( s : ShaderData ) {
+		add(STATIC + "s_input _in;\n");
+		add(STATIC + "s_output _out;\n");
+
+		add("\n");
+		for( v in s.vars )
+			if( v.kind 
