@@ -837,4 +837,28 @@ class HlslOut {
 		exprValues = [];
 
 		if( s.funs.length != 1 ) throw "assert";
-		var 
+		var f = s.funs[0];
+		isVertex = f.kind == Vertex;
+
+		varAccess = new Map();
+		samplers = new Map();
+		initVars(s);
+		initGlobals(s);
+		initParams(s);
+		initStatics(s);
+
+		var tmp = buf;
+		buf = new StringBuf();
+		emitMain(f.expr);
+		exprValues.push(buf.toString());
+		buf = tmp;
+
+		initLocals();
+
+		decls.push(buf.toString());
+		buf = null;
+		return decls.join("\n");
+	}
+
+	public static function semanticName( name : String ) {
+		if( na
