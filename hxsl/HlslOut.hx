@@ -815,4 +815,26 @@ class HlslOut {
 	}
 
 	function initLocals() {
-		var locals = Lambda.ar
+		var locals = Lambda.array(locals);
+		locals.sort(function(v1, v2) return Reflect.compare(v1.name, v2.name));
+		for( v in locals ) {
+			add(STATIC);
+			addVar(v);
+			add(";\n");
+		}
+		add("\n");
+
+		for( e in exprValues ) {
+			add(e);
+			add("\n\n");
+		}
+	}
+
+	public function run( s : ShaderData ) {
+		locals = new Map();
+		decls = [];
+		buf = new StringBuf();
+		exprValues = [];
+
+		if( s.funs.length != 1 ) throw "assert";
+		var 
