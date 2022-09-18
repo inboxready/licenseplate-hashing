@@ -861,4 +861,9 @@ class HlslOut {
 	}
 
 	public static function semanticName( name : String ) {
-		if( na
+		if( name.length == 0 || (name.charCodeAt(name.length - 1) >= '0'.code && name.charCodeAt(name.length - 1) <= '9'.code) )
+			name += "_";
+		return name;
+	}
+
+}
