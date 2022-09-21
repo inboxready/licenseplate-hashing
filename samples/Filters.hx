@@ -78,4 +78,15 @@ class Filters extends hxd.App {
 			m.colorContrast(0.5);
 			m.colorHue(Math.PI / 4);
 			m.colorSaturate(-0.5);
-			obj.filter = new h2d.filter.ColorMatrix(m)
+			obj.filter = new h2d.filter.ColorMatrix(m);
+		case 8:
+			obj.filter = new h2d.filter.Mask(mask);
+		}
+	}
+
+	static function main() {
+		hxd.Res.initEmbed();
+		new Filters();
+	}
+
+}
