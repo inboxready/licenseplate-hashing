@@ -16,4 +16,21 @@ class Filters extends hxd.App {
 		mask.x = s2d.width*0.5-20;
 		mask.y = s2d.height*0.5-50;
 
-		obj = new h2d.Ob
+		obj = new h2d.Object(s2d);
+		obj.x = s2d.width * 0.5;
+		obj.y = s2d.height * 0.5;
+
+		bmp = new h2d.Bitmap(hxd.Res.hxlogo.toTile(), obj);
+		bmp.colorKey = 0xFFFFFF;
+
+		disp = hxd.Res.normalmap.toTile();
+		setFilters(6);
+
+		var help = new h2d.Text(hxd.Res.customFont.toFont(), s2d);
+		help.x = help.y = 5;
+		help.text = "0:Disable 1:Blur 2:Glow 3:DropShadow 4:Displacement 5:Glow(Knockout) 6:Mix 7:ColorMatrix 8:Mask +/-:Scale";
+	}
+
+	override function update(dt:Float) {
+		for( i in 0...10 )
+			
