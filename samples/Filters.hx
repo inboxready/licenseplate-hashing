@@ -33,4 +33,20 @@ class Filters extends hxd.App {
 
 	override function update(dt:Float) {
 		for( i in 0...10 )
-			
+			if( K.isPressed(K.NUMBER_0 + i) || K.isPressed(K.NUMPAD_0+i) )
+				setFilters(i);
+		if( K.isPressed(K.NUMPAD_ADD) ) {
+			obj.scale(1.25);
+			bmp.scale(1 / 1.25);
+		}
+		if( K.isPressed(K.NUMPAD_SUB) ) {
+			obj.scale(1 / 1.25);
+			bmp.scale(1.25);
+			if( obj.scaleX < 1 ) {
+				obj.setScale(1);
+				bmp.setScale(1);
+			}
+		}
+		bmp.x = -bmp.tile.width * 0.5 * bmp.scaleX;
+		bmp.y = -bmp.tile.height * 0.5 * bmp.scaleY;
+		disp.scroll
