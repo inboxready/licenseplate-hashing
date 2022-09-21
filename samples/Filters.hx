@@ -49,4 +49,21 @@ class Filters extends hxd.App {
 		}
 		bmp.x = -bmp.tile.width * 0.5 * bmp.scaleX;
 		bmp.y = -bmp.tile.height * 0.5 * bmp.scaleY;
-		disp.scroll
+		disp.scrollDiscrete(1.2 * dt, 2.4 * dt);
+	}
+
+	function setFilters(i) {
+		switch( i ) {
+		case 0:
+			obj.filter = null;
+		case 1:
+			obj.filter = new h2d.filter.Blur(5);
+		case 2:
+			obj.filter = new h2d.filter.Glow(0xFFFFFF, 100, 5);
+		case 3:
+			obj.filter = new h2d.filter.DropShadow(8,Math.PI/4);
+		case 4:
+			obj.filter = new h2d.filter.Displacement(disp,4,4);
+		case 5:
+			var g = new h2d.filter.Glow(0xFFFFFF, 100, 2);
+			g.knockout = 
