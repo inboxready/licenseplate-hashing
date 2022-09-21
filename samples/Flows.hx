@@ -11,4 +11,17 @@ class Flows extends hxd.App {
 	var vAligns = [FlowAlign.Top, FlowAlign.Middle, FlowAlign.Bottom];
 
 	var movingFlow : Flow;
-	var reversedFlow : Array<Flow> =
+	var reversedFlow : Array<Flow> = [];
+	var vAlignChildFlow : Array<Flow> = [];
+	var hAlignChildFlow : Array<Flow> = [];
+
+	// for screens
+	var idxFctDisplayed = 9; // also the first screen displayed
+	var fctGenerationScreen : Array<Void -> Void> = []; // list of functions generating screen
+	var currentFlows : Array<Flow> = []; // removed when switching screen
+
+	var event = new hxd.WaitEvent();
+
+	override function init() {
+
+		var font = hxd.res.Defaul
