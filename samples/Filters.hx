@@ -66,4 +66,16 @@ class Filters extends hxd.App {
 			obj.filter = new h2d.filter.Displacement(disp,4,4);
 		case 5:
 			var g = new h2d.filter.Glow(0xFFFFFF, 100, 2);
-			g.knockout = 
+			g.knockout = true;
+			obj.filter = g;
+		case 6:
+			var g = new h2d.filter.Glow(0xFFA500, 50, 2);
+			g.knockout = true;
+			obj.filter = new h2d.filter.Group([g, new h2d.filter.Displacement(disp, 3, 3), new h2d.filter.Blur(3), new h2d.filter.DropShadow(8, Math.PI / 4)]);
+		case 7:
+			var m = new h3d.Matrix();
+			m.identity();
+			m.colorContrast(0.5);
+			m.colorHue(Math.PI / 4);
+			m.colorSaturate(-0.5);
+			obj.filter = new h2d.filter.ColorMatrix(m)
