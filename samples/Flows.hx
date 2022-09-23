@@ -37,4 +37,22 @@ class Flows extends hxd.App {
 			flow.backgroundTile = Tile.fromColor(colors[color]);
 			flow.padding = 5;
 			flow.horizontalSpacing = 15;
-			flow.verticalSpacing 
+			flow.verticalSpacing = 15;
+
+			var tf = new h2d.Text(font, flow);
+			tf.textColor = 0x000000;
+			tf.textAlign = Align.Left;
+			tf.text = text;
+
+			currentFlows.push(flow);
+			return flow;
+		}
+
+		function createTitle(text : String) {
+			return createText(s2d, 11, text + " - Use LEFT and RIGHT ARROWS to switch screen");
+		}
+
+		function createFlowSimple(parent:Object, x : Float, y : Float, size = 75) {
+			var flow = new Flow(parent);
+			flow.debug = true;
+			flow.horizo
