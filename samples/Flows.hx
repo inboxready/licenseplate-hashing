@@ -55,4 +55,20 @@ class Flows extends hxd.App {
 		function createFlowSimple(parent:Object, x : Float, y : Float, size = 75) {
 			var flow = new Flow(parent);
 			flow.debug = true;
-			flow.horizo
+			flow.horizontalSpacing = 15;
+			flow.verticalSpacing = 15;
+			flow.padding = 10;
+			flow.minHeight = Math.ceil(.5 * size);
+			flow.minWidth = size;
+			flow.backgroundTile = Tile.fromColor(0xaaaaaa);
+
+			flow.x = x;
+			flow.y = y;
+
+			return flow;
+		}
+
+		function createFlow(parent:Object, color : Int, text : String, vAlign:FlowAlign, hAlign:FlowAlign, size = 100) {
+			var flow = new Flow(parent);
+			flow.debug = true;
+			flow.horizontalAlign = hAlign;
