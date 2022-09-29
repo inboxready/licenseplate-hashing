@@ -88,4 +88,24 @@ class Flows extends hxd.App {
 
 		function createFlowWithText(parent:Object, size : Int, vAlign: FlowAlign, hAlign : FlowAlign, text : String) {
 			var flow = new Flow(parent);
-			f
+			flow.debug = true;
+			flow.verticalAlign = vAlign;
+			flow.horizontalAlign = hAlign;
+			flow.horizontalSpacing = 15;
+			flow.verticalSpacing = 15;
+			flow.padding = 10;
+			flow.minHeight = Math.ceil(.5 * size);
+			flow.minWidth = size;
+
+			flow.backgroundTile = Tile.fromColor(0x888888);
+
+			var tf = new h2d.Text(font, flow);
+			tf.textColor = 0x000000;
+			tf.textAlign = Align.Left;
+			tf.text = text;
+
+			return flow;
+		}
+
+		function screen0() : Void {
+			var title = c
