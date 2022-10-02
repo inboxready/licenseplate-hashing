@@ -108,4 +108,17 @@ class Flows extends hxd.App {
 		}
 
 		function screen0() : Void {
-			var title = c
+			var title = createTitle("0°) 9 flows with text inline");
+			var yoffset = title.getBounds().height + spaceY;
+			var xoffset = spaceX;
+
+			var flow;
+
+			flow = createFlowSimple(s2d, xoffset, yoffset);
+
+			createFlow(flow, 1, "TopLeft", FlowAlign.Top, FlowAlign.Left);
+			createFlow(flow, 2, "TopMiddle", FlowAlign.Top, FlowAlign.Middle);
+			createFlow(flow, 3, "TopRight", FlowAlign.Top, FlowAlign.Right);
+
+			createFlow(flow, 4, "CentLeft", FlowAlign.Middle, FlowAlign.Left);
+		
