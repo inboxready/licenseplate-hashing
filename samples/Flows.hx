@@ -121,4 +121,14 @@ class Flows extends hxd.App {
 			createFlow(flow, 3, "TopRight", FlowAlign.Top, FlowAlign.Right);
 
 			createFlow(flow, 4, "CentLeft", FlowAlign.Middle, FlowAlign.Left);
-		
+			createFlow(flow, 5, "CentMiddle", FlowAlign.Middle, FlowAlign.Middle);
+			createFlow(flow, 6, "CentRight", FlowAlign.Middle, FlowAlign.Right);
+
+			createFlow(flow, 7, "BotLeft", FlowAlign.Bottom, FlowAlign.Left);
+			createFlow(flow, 8, "BotMiddle", FlowAlign.Bottom, FlowAlign.Middle);
+			createFlow(flow, 9, "BotRight", FlowAlign.Bottom, FlowAlign.Right);
+
+			currentFlows.push(flow);
+		}
+
+		function scree
