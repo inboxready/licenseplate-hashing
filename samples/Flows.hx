@@ -131,4 +131,17 @@ class Flows extends hxd.App {
 			currentFlows.push(flow);
 		}
 
-		function scree
+		function screen1() : Void {
+			var title = createTitle("1°) 3 flows with text inline in 3 flows inline");
+			var yoffset = title.getBounds().height + spaceY;
+			var xoffset = spaceX;
+
+			var flow;
+			var subFlow;
+
+			flow = createFlowSimple(s2d, xoffset, yoffset);
+
+			subFlow = createFlowSimple(flow, 0, 0);
+			createFlow(subFlow, 1, "TopLeft", FlowAlign.Top, FlowAlign.Left);
+			createFlow(subFlow, 2, "TopMiddle", FlowAlign.Top, FlowAlign.Middle);
+			createFlow(subFlow
