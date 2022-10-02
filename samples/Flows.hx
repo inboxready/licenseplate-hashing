@@ -176,4 +176,22 @@ class Flows extends hxd.App {
 			subFlow.minWidth = 200;
 			subFlow.verticalAlign = FlowAlign.Top;
 			subFlow.horizontalAlign = FlowAlign.Left;
-			movingFlow = createFlow(subFlow, 1, "Text", FlowAlign.Top, Flow
+			movingFlow = createFlow(subFlow, 1, "Text", FlowAlign.Top, FlowAlign.Left);
+
+			currentFlows.push(flow);
+		}
+
+		function screen3() : Void {
+			var title = createTitle("3°) 3 flows with text inline inside 3 flows in column");
+			var yoffset = title.getBounds().height + spaceY;
+			var xoffset = spaceX;
+
+			var flow;
+			var subFlow;
+
+			flow = createFlowSimple(s2d, xoffset, yoffset);
+			flow.layout = Vertical;
+
+			subFlow = createFlowSimple(flow, 0, 0);
+			createFlow(subFlow, 1, "TopLeft", FlowAlign.Top, FlowAlign.Left);
+			createFlow(subFl
