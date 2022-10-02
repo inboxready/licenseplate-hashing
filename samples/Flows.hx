@@ -153,4 +153,15 @@ class Flows extends hxd.App {
 
 			subFlow = createFlowSimple(flow, 0, 0);
 			createFlow(subFlow, 1, "BotLeft", FlowAlign.Bottom, FlowAlign.Left);
-		
+			createFlow(subFlow, 2, "BotMiddle", FlowAlign.Bottom, FlowAlign.Middle);
+			createFlow(subFlow, 3, "BotRight", FlowAlign.Bottom, FlowAlign.Right);
+
+			currentFlows.push(flow);
+		}
+
+		function screen2() : Void {
+			var title = createTitle("2°) 1 flow with text in 1 flow in 1 flow : all alignments");
+			var yoffset = title.getBounds().height + spaceY;
+			var xoffset = spaceX;
+
+			var flow = createFlowSim
