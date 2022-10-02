@@ -164,4 +164,16 @@ class Flows extends hxd.App {
 			var yoffset = title.getBounds().height + spaceY;
 			var xoffset = spaceX;
 
-			var flow = createFlowSim
+			var flow = createFlowSimple(s2d, xoffset, yoffset);
+			flow.minHeight = 200;
+			flow.minWidth = 400;
+			flow.verticalAlign = FlowAlign.Top;
+			flow.horizontalAlign = FlowAlign.Left;
+			flow.layout = Vertical;
+
+			var subFlow = createFlowSimple(flow, 0, 0);
+			subFlow.minHeight = 100;
+			subFlow.minWidth = 200;
+			subFlow.verticalAlign = FlowAlign.Top;
+			subFlow.horizontalAlign = FlowAlign.Left;
+			movingFlow = createFlow(subFlow, 1, "Text", FlowAlign.Top, Flow
