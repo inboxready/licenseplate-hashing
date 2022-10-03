@@ -255,4 +255,18 @@ class Flows extends hxd.App {
 			flow = generateFlowsWithThreeFlowsWithThreeChilds(Top, Horizontal);
 
 			yoffset += flow.getBounds().height + spaceY;
-			flow = generateFlowsWithThreeFlowsWithThreeChilds(Middle,
+			flow = generateFlowsWithThreeFlowsWithThreeChilds(Middle, Horizontal);
+
+			yoffset += flow.getBounds().height + spaceY;
+			flow = generateFlowsWithThreeFlowsWithThreeChilds(Bottom, Horizontal);
+
+			// Are Vertical
+			yoffset += flow.getBounds().height + spaceY;
+			xoffset = spaceX;
+			flow = generateFlowsWithThreeFlowsWithThreeChilds(Top, Vertical);
+
+			yoffset += flow.getBounds().height + spaceY;
+			flow = generateFlowsWithThreeFlowsWithThreeChilds(Middle, Vertical);
+
+			yoffset += flow.getBounds().height + spaceY;
+		
