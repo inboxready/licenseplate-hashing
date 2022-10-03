@@ -226,4 +226,18 @@ class Flows extends hxd.App {
 					flow.layout = layout;
 					createFlow(flow, 0, "A", FlowAlign.Middle, FlowAlign.Middle, 50);
 					createFlow(flow, 3, "B", FlowAlign.Middle, FlowAlign.Middle, 50);
-					createFlow(flow, 8, "C", FlowAli
+					createFlow(flow, 8, "C", FlowAlign.Middle, FlowAlign.Middle, 50);
+
+					flow.minHeight = Math.ceil(flow.innerHeight + spaceY*5);
+					flow.minWidth = Math.ceil(flow.innerWidth + spaceX*5);
+					return flow;
+				}
+				while (reversedFlow.pop() != null) {};
+
+				var flow = generateFlowThreeChilds(FlowAlign.Left);
+				reversedFlow.push(flow);
+				currentFlows.push(flow);
+
+				xoffset += flow.getBounds().width + spaceX;
+				flow = generateFlowThreeChilds(FlowAlign.Middle);
+				rev
