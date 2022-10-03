@@ -269,4 +269,17 @@ class Flows extends hxd.App {
 			flow = generateFlowsWithThreeFlowsWithThreeChilds(Middle, Vertical);
 
 			yoffset += flow.getBounds().height + spaceY;
-		
+			flow = generateFlowsWithThreeFlowsWithThreeChilds(Bottom, Vertical);
+		}
+
+		function screen5() : Void {
+			var title = createTitle("5°) Multiline + MaxWidth reached | Multiline + MaxHeight reached");
+			var yoffset = title.getBounds().height + spaceY;
+			var xoffset = spaceX;
+
+			var flow = createFlowSimple(s2d, xoffset, yoffset);
+			flow.maxWidth = 400;
+			flow.multiline = true;
+
+			createFlow(flow, 1, "A", FlowAlign.Middle, FlowAlign.Middle);
+			createFlow(f
