@@ -240,4 +240,19 @@ class Flows extends hxd.App {
 
 				xoffset += flow.getBounds().width + spaceX;
 				flow = generateFlowThreeChilds(FlowAlign.Middle);
-				rev
+				reversedFlow.push(flow);
+				currentFlows.push(flow);
+
+				xoffset += flow.getBounds().width + spaceX;
+				flow = generateFlowThreeChilds(FlowAlign.Right);
+				reversedFlow.push(flow);
+				currentFlows.push(flow);
+
+				return flow;
+			}
+
+			// Are Not Vertical
+			flow = generateFlowsWithThreeFlowsWithThreeChilds(Top, Horizontal);
+
+			yoffset += flow.getBounds().height + spaceY;
+			flow = generateFlowsWithThreeFlowsWithThreeChilds(Middle,
