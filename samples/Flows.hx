@@ -217,4 +217,13 @@ class Flows extends hxd.App {
 
 			var flow;
 
-			function generateFlowsWithThreeFlo
+			function generateFlowsWithThreeFlowsWithThreeChilds(vAlign : FlowAlign, layout) {
+
+				function generateFlowThreeChilds(hAlign: FlowAlign) : Flow {
+					var flow = createFlowSimple(s2d, xoffset, yoffset);
+					flow.verticalAlign = vAlign;
+					flow.horizontalAlign = hAlign;
+					flow.layout = layout;
+					createFlow(flow, 0, "A", FlowAlign.Middle, FlowAlign.Middle, 50);
+					createFlow(flow, 3, "B", FlowAlign.Middle, FlowAlign.Middle, 50);
+					createFlow(flow, 8, "C", FlowAli
