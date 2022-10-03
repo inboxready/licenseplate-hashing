@@ -194,4 +194,12 @@ class Flows extends hxd.App {
 
 			subFlow = createFlowSimple(flow, 0, 0);
 			createFlow(subFlow, 1, "TopLeft", FlowAlign.Top, FlowAlign.Left);
-			createFlow(subFl
+			createFlow(subFlow, 2, "TopMiddle", FlowAlign.Top, FlowAlign.Middle);
+			createFlow(subFlow, 3, "TopRight", FlowAlign.Top, FlowAlign.Right);
+
+			subFlow = createFlowSimple(flow, 0, 0);
+			createFlow(subFlow, 4, "CentLeft", FlowAlign.Middle, FlowAlign.Left);
+			createFlow(subFlow, 5, "CentMiddle", FlowAlign.Middle, FlowAlign.Middle);
+			createFlow(subFlow, 6, "CentRight", FlowAlign.Middle, FlowAlign.Right);
+
+			subFlow = createFlowSimple(flow, 0, 0);
