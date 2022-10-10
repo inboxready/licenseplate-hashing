@@ -282,4 +282,12 @@ class Flows extends hxd.App {
 			flow.multiline = true;
 
 			createFlow(flow, 1, "A", FlowAlign.Middle, FlowAlign.Middle);
-			createFlow(f
+			createFlow(flow, 2, "B", FlowAlign.Middle, FlowAlign.Middle);
+			createFlow(flow, 3, "C", FlowAlign.Middle, FlowAlign.Middle);
+			createFlow(flow, 4, "D", FlowAlign.Middle, FlowAlign.Middle);
+			createFlow(flow, 5, "E", FlowAlign.Middle, FlowAlign.Middle);
+			createFlow(flow, 6, "F", FlowAlign.Middle, FlowAlign.Middle);
+			createFlow(flow, 7, "G", FlowAlign.Middle, FlowAlign.Middle);
+			createFlow(flow, 8, "H", FlowAlign.Middle, FlowAlign.Middle);
+
+			currentFlows.push
