@@ -290,4 +290,17 @@ class Flows extends hxd.App {
 			createFlow(flow, 7, "G", FlowAlign.Middle, FlowAlign.Middle);
 			createFlow(flow, 8, "H", FlowAlign.Middle, FlowAlign.Middle);
 
-			currentFlows.push
+			currentFlows.push(flow);
+
+			xoffset += flow.getSize().width + spaceX;
+
+			flow = createFlowSimple(s2d, xoffset, yoffset);
+			flow.maxHeight = 200;
+			flow.layout = Vertical;
+			flow.multiline = true;
+
+			createFlow(flow, 1, "A", FlowAlign.Middle, FlowAlign.Middle);
+			createFlow(flow, 2, "B", FlowAlign.Middle, FlowAlign.Middle);
+			createFlow(flow, 3, "C", FlowAlign.Middle, FlowAlign.Middle);
+			createFlow(flow, 4, "D", FlowAlign.Middle, FlowAlign.Middle);
+			createFlow(flow, 5, "E", FlowAl
