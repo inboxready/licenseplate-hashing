@@ -316,4 +316,14 @@ class Flows extends hxd.App {
 			var yoffset = title.getBounds().height + spaceY;
 			var xoffset = spaceX;
 
-			var
+			var flow = createFlowSimple(s2d, xoffset, yoffset);
+			flow.minHeight = 150;
+			currentFlows.push(flow);
+
+			while (vAlignChildFlow.pop() != null) {};
+
+			vAlignChildFlow.push(createFlowWithText(flow, 1, FlowAlign.Middle, null, "v"));
+			vAlignChildFlow.push(createFlowWithText(flow, 1, FlowAlign.Middle, null, "v"));
+			vAlignChildFlow.push(createFlowWithText(flow, 1, FlowAlign.Middle, null, "v"));
+
+			flow.getProperties(vAlignChild
