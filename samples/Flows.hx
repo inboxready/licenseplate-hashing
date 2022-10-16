@@ -326,4 +326,17 @@ class Flows extends hxd.App {
 			vAlignChildFlow.push(createFlowWithText(flow, 1, FlowAlign.Middle, null, "v"));
 			vAlignChildFlow.push(createFlowWithText(flow, 1, FlowAlign.Middle, null, "v"));
 
-			flow.getProperties(vAlignChild
+			flow.getProperties(vAlignChildFlow[0]).verticalAlign = Top;
+			flow.getProperties(vAlignChildFlow[1]).verticalAlign = Middle;
+			flow.getProperties(vAlignChildFlow[2]).verticalAlign = Bottom;
+
+			xoffset += flow.getSize().width + 15*spaceX;
+
+			flow = createFlowSimple(s2d, xoffset, yoffset);
+			flow.minWidth = 150;
+			flow.layout = Vertical;
+			currentFlows.push(flow);
+
+			while (hAlignChildFlow.pop() != null) {};
+
+			hAlignChildFlow.
