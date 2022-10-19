@@ -339,4 +339,13 @@ class Flows extends hxd.App {
 
 			while (hAlignChildFlow.pop() != null) {};
 
-			hAlignChildFlow.
+			hAlignChildFlow.push(createFlowWithText(flow, 1, FlowAlign.Middle, null, ">"));
+			hAlignChildFlow.push(createFlowWithText(flow, 1, FlowAlign.Middle, null, ">"));
+			hAlignChildFlow.push(createFlowWithText(flow, 1, FlowAlign.Middle, null, ">"));
+
+			flow.getProperties(hAlignChildFlow[0]).horizontalAlign = Left;
+			flow.getProperties(hAlignChildFlow[1]).horizontalAlign = Middle;
+			flow.getProperties(hAlignChildFlow[2]).horizontalAlign = Right;
+		}
+
+		function s
