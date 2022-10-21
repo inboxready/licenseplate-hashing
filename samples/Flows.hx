@@ -348,4 +348,18 @@ class Flows extends hxd.App {
 			flow.getProperties(hAlignChildFlow[2]).horizontalAlign = Right;
 		}
 
-		function s
+		function screen7() : Void {
+			var title = createTitle("7°) Stack layout");
+			var yoffset = title.getBounds().height + spaceY;
+			var xoffset = spaceX;
+
+			var flow = createFlowSimple(s2d, xoffset, yoffset);
+			flow.minHeight = 350;
+			flow.minWidth = 350;
+			flow.layout = Stack;
+			currentFlows.push(flow);
+
+			var subFlow;
+
+			subFlow = createFlowWithText(flow, 1, FlowAlign.Middle, null, "S");
+			flow
