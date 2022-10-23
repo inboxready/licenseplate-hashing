@@ -379,4 +379,14 @@ class Flows extends hxd.App {
 
 			subFlow = createFlowWithText(flow, 1, FlowAlign.Middle, null, "NE");
 			flow.getProperties(subFlow).verticalAlign = FlowAlign.Top;
-			flow.getProperties(subF
+			flow.getProperties(subFlow).horizontalAlign = FlowAlign.Right;
+
+			subFlow = createFlowWithText(flow, 1, FlowAlign.Middle, null, "O");
+			flow.getProperties(subFlow).verticalAlign = FlowAlign.Middle;
+			flow.getProperties(subFlow).horizontalAlign = FlowAlign.Left;
+
+			subFlow = createFlowWithText(flow, 1, FlowAlign.Middle, null, "x");
+			flow.getProperties(subFlow).verticalAlign = FlowAlign.Middle;
+			flow.getProperties(subFlow).horizontalAlign = FlowAlign.Middle;
+
+			su
