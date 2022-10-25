@@ -400,4 +400,22 @@ class Flows extends hxd.App {
 		}
 
 		function screen8() : Void {
-			var title = create
+			var title = createTitle("8°) Flow + text resize");
+			var yoffset = title.getBounds().height + spaceY;
+			var xoffset = spaceX;
+
+			var flow = createFlowSimple(s2d, xoffset, yoffset);
+			flow.minHeight = 350;
+			flow.minWidth = 350;
+			flow.layout = Stack;
+			currentFlows.push(flow);
+
+			var sub = new h2d.Flow(flow);
+			sub.layout = Stack;
+			sub.fillWidth = true;
+			sub.fillHeight = true;
+			sub.debug = true;
+
+			var tf = new h2d.Text(font, sub);
+			tf.textColor = 0x000000;
+			tf.text = 
