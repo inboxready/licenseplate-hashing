@@ -418,4 +418,18 @@ class Flows extends hxd.App {
 
 			var tf = new h2d.Text(font, sub);
 			tf.textColor = 0x000000;
-			tf.text = 
+			tf.text = "Example text";
+			sub.getProperties(tf).align(Top, Middle);
+
+			event.waitUntil(function (dt) {
+				flow.minWidth = flow.maxWidth = 140 + Math.floor(Math.sin(hxd.Timer.lastTimeStamp) * 130);
+				return idxFctDisplayed != 8;
+			});
+		}
+
+		function screen9() : Void {
+			var title = createTitle("9°) Overflow");
+			var yoffset = title.getBounds().height + spaceY;
+			var xoffset = spaceX;
+
+			var flow = createFlowSimple(s2d, xoffse
