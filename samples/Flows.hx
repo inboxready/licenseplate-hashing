@@ -459,4 +459,20 @@ class Flows extends hxd.App {
 
 			event.waitUntil(function (dt) {
 				flow.minWidth = flow.maxWidth = 180 + Math.floor(Math.sin(hxd.Timer.lastTimeStamp) * 130);
-				return idxFctDi
+				return idxFctDisplayed != 9;
+			});
+		}
+
+
+		fctGenerationScreen.push(screen0);
+		fctGenerationScreen.push(screen1);
+		fctGenerationScreen.push(screen2);
+		fctGenerationScreen.push(screen3);
+		fctGenerationScreen.push(screen4);
+		fctGenerationScreen.push(screen5);
+		fctGenerationScreen.push(screen6);
+		fctGenerationScreen.push(screen7);
+		fctGenerationScreen.push(screen8);
+		fctGenerationScreen.push(screen9);
+
+		fctGenerationScreen[idxFctDisplayed]();
