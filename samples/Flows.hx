@@ -432,4 +432,18 @@ class Flows extends hxd.App {
 			var yoffset = title.getBounds().height + spaceY;
 			var xoffset = spaceX;
 
-			var flow = createFlowSimple(s2d, xoffse
+			var flow = createFlowSimple(s2d, xoffset, yoffset);
+			flow.maxWidth = 350;
+			flow.minHeight = flow.maxHeight = 350;
+			flow.layout = Stack;
+			flow.overflow = Limit;
+			currentFlows.push(flow);
+
+			var sub = new h2d.Flow(flow);
+			flow.getProperties(sub).align(Top, Left);
+			sub.minHeight = 500;
+			sub.minWidth = 10;
+			sub.backgroundTile = Tile.fromColor(0x00ff00);
+
+			var sub = new h2d.Flow(flow);
+			flow.getProperties(sub).align(Bottom, Right);
