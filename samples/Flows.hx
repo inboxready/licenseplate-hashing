@@ -476,3 +476,25 @@ class Flows extends hxd.App {
 		fctGenerationScreen.push(screen9);
 
 		fctGenerationScreen[idxFctDisplayed]();
+
+		onResize();
+	}
+
+	var lastUpdate = 0.5;
+	override function update(dt:Float) {
+
+		event.update(dt);
+
+		var screenSwitched = false;
+		if (Key.isPressed(Key.LEFT)) {
+			idxFctDisplayed -= 1;
+			screenSwitched = true;
+		}
+		if (Key.isPressed(Key.RIGHT)) {
+			idxFctDisplayed += 1;
+			screenSwitched = true;
+		}
+		if (screenSwitched) {
+			if (idxFctDisplayed < 0) {
+				idxFctDisplayed = fctGenerationScreen.length-1;
+			}
