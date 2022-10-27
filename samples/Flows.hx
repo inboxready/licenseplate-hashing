@@ -447,3 +447,16 @@ class Flows extends hxd.App {
 
 			var sub = new h2d.Flow(flow);
 			flow.getProperties(sub).align(Bottom, Right);
+			sub.minHeight = 10;
+			sub.minWidth = 10;
+			sub.backgroundTile = Tile.fromColor(0xff0000);
+
+			// var tf = new h2d.Text(font, sub);
+			// tf.textColor = 0x000000;
+			// tf.textAlign = Center;
+			// tf.text = "Long long long long long long overflowing text";
+			// sub.getProperties(tf).align(Top, Middle);
+
+			event.waitUntil(function (dt) {
+				flow.minWidth = flow.maxWidth = 180 + Math.floor(Math.sin(hxd.Timer.lastTimeStamp) * 130);
+				return idxFctDi
