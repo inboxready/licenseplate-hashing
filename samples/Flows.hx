@@ -497,4 +497,20 @@ class Flows extends hxd.App {
 		if (screenSwitched) {
 			if (idxFctDisplayed < 0) {
 				idxFctDisplayed = fctGenerationScreen.length-1;
+			} else {
+				idxFctDisplayed = idxFctDisplayed%(fctGenerationScreen.length);
 			}
+			for (f in currentFlows) {
+				f.remove();
+			}
+			while (currentFlows.pop() != null) {};
+			fctGenerationScreen[idxFctDisplayed]();
+		}
+
+		lastUpdate -= dt;
+		switch (idxFctDisplayed) {
+			case 2:
+				if (lastUpdate < 0) {
+					lastUpdate = .2;
+					movingFlow.horizontalAlign = hAligns[(hAligns.indexOf(movingFlow.horizontalAlign)+1)%3];
+					if (movingFlow.horizontalAlign == hAligns[0
