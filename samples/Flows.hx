@@ -513,4 +513,12 @@ class Flows extends hxd.App {
 				if (lastUpdate < 0) {
 					lastUpdate = .2;
 					movingFlow.horizontalAlign = hAligns[(hAligns.indexOf(movingFlow.horizontalAlign)+1)%3];
-					if (movingFlow.horizontalAlign == hAligns[0
+					if (movingFlow.horizontalAlign == hAligns[0]) {
+						movingFlow.verticalAlign = vAligns[(vAligns.indexOf(movingFlow.verticalAlign)+1)%3];
+
+						if (movingFlow.verticalAlign == vAligns[0]) {
+							var parent = hxd.impl.Api.downcast(movingFlow.parent, Flow);
+
+							parent.horizontalAlign = hAligns[(hAligns.indexOf(parent.horizontalAlign)+1)%3];
+							if (parent.horizontalAlign == hAligns[0]) {
+								parent.verticalAlign = vAligns[(vAligns.indexOf(parent.verticalAl
