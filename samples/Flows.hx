@@ -539,3 +539,18 @@ class Flows extends hxd.App {
 
 			case 4:
 				if (lastUpdate < 0) {
+					lastUpdate = 0.5;
+					for (f in reversedFlow) {
+						f.reverse = !f.reverse;
+					}
+				}
+			case 6 :
+				if (lastUpdate < 0) {
+					lastUpdate = 0.5;
+					for (f in vAlignChildFlow) {
+						var prop = currentFlows[1].getProperties(f);
+						prop.verticalAlign = vAligns[(vAligns.indexOf(prop.verticalAlign)+1)%3];
+					}
+					for (f in hAlignChildFlow) {
+						var prop = currentFlows[2].getProperties(f);
+						prop.horizontalAlign = hAligns[(h
