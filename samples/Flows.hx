@@ -553,4 +553,16 @@ class Flows extends hxd.App {
 					}
 					for (f in hAlignChildFlow) {
 						var prop = currentFlows[2].getProperties(f);
-						prop.horizontalAlign = hAligns[(h
+						prop.horizontalAlign = hAligns[(hAligns.indexOf(prop.horizontalAlign)+1)%3];
+					}
+				}
+			default:
+		}
+	}
+
+	static function main() {
+		hxd.Res.initEmbed();
+		new Flows();
+	}
+
+}
