@@ -33,4 +33,8 @@ class GpuParticles extends SampleApp {
 		g.lifeRand = 0.5;
 		g.nparts = 10000;
 
-		addSlider("
+		addSlider("Amount", function() return parts.amount, function(v) parts.amount = v);
+		addSlider("Speed", function() return g.speed, function(v) g.speed = v, 0, 10);
+		addSlider("Gravity", function() return g.gravity, function(v) g.gravity = v, 0, 5);
+		addCheck("Sort", function() return g.sortMode == Dynamic, function(v) g.sortMode = v ? Dynamic : None);
+		addCheck("Loop", function() return g.emitLoop, function(v) 
