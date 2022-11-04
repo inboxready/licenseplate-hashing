@@ -37,4 +37,16 @@ class GpuParticles extends SampleApp {
 		addSlider("Speed", function() return g.speed, function(v) g.speed = v, 0, 10);
 		addSlider("Gravity", function() return g.gravity, function(v) g.gravity = v, 0, 5);
 		addCheck("Sort", function() return g.sortMode == Dynamic, function(v) g.sortMode = v ? Dynamic : None);
-		addCheck("Loop", function() return g.emitLoop, function(v) 
+		addCheck("Loop", function() return g.emitLoop, function(v) { g.emitLoop = v; if( !v ) parts.currentTime = 0; });
+		addCheck("Move", function() return moving, function(v) moving = v);
+		addCheck("Relative", function() return g.isRelative, function(v) g.isRelative = v);
+
+		parts.onEnd = function() {
+			engine.backgroundColor = 0xFF000080;
+			parts.currentTime = 0;
+		};
+		parts.addGroup(g);
+		group = g;
+
+		new h3d.scene.CameraController(20, s3d);
+		box = new h3d.scene.Box(0x804040
