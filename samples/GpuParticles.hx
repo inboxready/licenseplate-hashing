@@ -49,4 +49,28 @@ class GpuParticles extends SampleApp {
 		group = g;
 
 		new h3d.scene.CameraController(20, s3d);
-		box = new h3d.scene.Box(0x804040
+		box = new h3d.scene.Box(0x80404050, parts.bounds, parts);
+
+		tf = addText();
+	}
+
+
+
+	override function update(dt:Float) {
+
+		if( moving ) {
+			time += dt * 0.6;
+			parts.x = Math.cos(time) * 5;
+			parts.y = Math.sin(time) * 5;
+		}
+
+		if( engine.backgroundColor&0xFFFFFF > 0 )
+			engine.backgroundColor -= 8;
+
+		var cur = @:privateAccess group.currentParts;
+		tf.text = ("cur=" + Std.int(cur * 100 / group.nparts) + "%");
+		if( parts.uploadedCount > 0 )
+			tf.text += " U="+parts.uploadedCount;
+	}
+
+	static function main
