@@ -73,4 +73,8 @@ class GpuParticles extends SampleApp {
 			tf.text += " U="+parts.uploadedCount;
 	}
 
-	static function main
+	static function main() {
+		new GpuParticles();
+	}
+
+}
