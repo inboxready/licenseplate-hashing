@@ -35,4 +35,22 @@ class Helpers extends hxd.App {
 		dirLight.enableSpecular = true;
 
 		var pointLightColors =  [0xEB304D,0x7FC309,0x288DF9];
-		for( i in 0.
+		for( i in 0...pointLightColors.length ) {
+			var l = new PointLight( s3d );
+			l.enableSpecular = true;
+			l.color.setColor( pointLightColors[i] );
+			pointLights.push( l );
+			new PointLightHelper( l );
+		}
+
+		new CameraController(s3d).loadFromCamera();
+	}
+
+	override function update( dt : Float ) {
+
+		time += dt;
+
+		cube.rotate( 0.01, 0.02, 0.03 );
+
+		pointLights[0].x = Math.sin( time ) * 3;
+		pointLights[1].y = Math.sin( time )
