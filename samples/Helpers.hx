@@ -53,4 +53,24 @@ class Helpers extends hxd.App {
 		cube.rotate( 0.01, 0.02, 0.03 );
 
 		pointLights[0].x = Math.sin( time ) * 3;
-		pointLights[1].y = Math.sin( time )
+		pointLights[1].y = Math.sin( time ) * 3;
+		pointLights[2].z = Math.sin( time ) * 3;
+	}
+
+	static function main() {
+		Res.initEmbed();
+		new Helpers();
+	}
+}
+
+class AxesHelper extends h3d.scene.Graphics {
+
+	public function new( ?parent : h3d.scene.Object, size = 2.0, colorX = 0xEB304D, colorY = 0x7FC309, colorZ = 0x288DF9, lineWidth = 2.0 ) {
+
+		super( parent );
+
+		material.props = h3d.mat.MaterialSetup.current.getDefaults( "ui" );
+
+		lineShader.width = lineWidth;
+
+		set
