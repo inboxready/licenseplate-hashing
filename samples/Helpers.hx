@@ -73,4 +73,23 @@ class AxesHelper extends h3d.scene.Graphics {
 
 		lineShader.width = lineWidth;
 
-		set
+		setColor( colorX );
+		lineTo( size, 0, 0 );
+
+		setColor( colorY );
+		moveTo( 0, 0, 0 );
+		lineTo( 0, size, 0 );
+
+		setColor( colorZ );
+		moveTo( 0, 0, 0 );
+		lineTo( 0, 0, size );
+	}
+}
+
+class GridHelper extends h3d.scene.Graphics {
+
+	public function new( ?parent : Object, size = 10.0, divisions = 10, color1 = 0x444444, color2 = 0x888888, lineWidth = 1.0 ) {
+
+		super( parent );
+
+		material.props = h3d.mat.MaterialSetup.current.ge
