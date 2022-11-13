@@ -92,4 +92,18 @@ class GridHelper extends h3d.scene.Graphics {
 
 		super( parent );
 
-		material.props = h3d.mat.MaterialSetup.current.ge
+		material.props = h3d.mat.MaterialSetup.current.getDefaults( "ui" );
+
+		lineShader.width = lineWidth;
+
+		var hsize = size / 2;
+		var csize = size / divisions;
+		var center = divisions / 2;
+		for( i in 0...divisions+1 ) {
+			var p = i * csize;
+			setColor( ( i!=0 && i!=divisions && i%center==0 ) ? color2 : color1 );
+			moveTo( -hsize + p, -hsize, 0 );
+			lineTo( -hsize + p, -hsize + size, 0 );
+			moveTo( -hsize, -hsize + p, 0 );
+			lineTo( -hsize + size, -hsize + p, 0 );
+		}
