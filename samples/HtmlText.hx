@@ -133,3 +133,103 @@ class HtmlText extends hxd.App {
 			tf.maxWidth = 150;
 			return tf;
 		}
+
+		function createFlow(parent:Object) {
+			var flow = new Flow(parent);
+			flow.debug = true;
+			flow.horizontalSpacing = 5;
+			flow.verticalSpacing = 5;
+			flow.padding = 5;
+			return flow;
+		}
+
+
+		yoffset = 0;
+		var flow = createFlow(s2d);
+		flow.verticalAlign = FlowAlign.Middle;
+		createText(flow, singleText, Align.Left);
+		createText(flow, multilineText, Align.Left);
+
+		yoffset += flow.getBounds().height + 10;
+
+		var flow = createFlow(s2d);
+		flow.y = yoffset;
+		flow.multiline = false;
+		flow.verticalAlign = FlowAlign.Middle;
+		createText(flow, multilineText, Align.Center);
+		createText(flow, multilineText, Align.Right);
+
+		yoffset += flow.getBounds().height + 10;
+
+		var flow = createFlow(s2d);
+		flow.y = yoffset;
+		flow.verticalAlign = FlowAlign.Middle;
+		flow.maxWidth = 150;
+		createText(flow, singleText, Align.Left);
+		createText(flow, multilineText, Align.Center);
+
+		yoffset += flow.getBounds().height + 10;
+
+		var flow = createFlow(s2d);
+		flow.y = yoffset;
+		flow.horizontalAlign = FlowAlign.Middle;
+		flow.maxWidth = 150;
+		flow.layout = Vertical;
+		createText(flow, singleText, Align.Left);
+		createText(flow, multilineText, Align.Right);
+
+		yoffset += flow.getBounds().height + 10;
+
+		{
+			var flow = createFlow(s2d);
+			flow.y = yoffset;
+			flow.horizontalAlign = FlowAlign.Left;
+			flow.maxWidth = 360;
+			flow.horizontalSpacing = 8;
+			flow.layout = Horizontal;
+			var f = createText(flow, "short text", Align.Right);
+			createText(flow, singleText, Align.Left);
+			yoffset += flow.getBounds().height + 10;
+		}
+
+
+		var flow = createFlow(s2d);
+		flow.y = yoffset;
+		flow.x = 100;
+		flow.horizontalAlign = FlowAlign.Middle;
+		flow.layout = Vertical;
+		{
+			var f1 = createFlow(flow);
+			createText(f1, multilineText, Align.Left);
+			var f2 = createFlow(flow);
+			createText(f2, multilineText, Align.Left);
+		}
+		yoffset += flow.getBounds().height + 10;
+
+		var tagShowcase = "HtmlText supports next tags:" +
+		"<p>&lt;p&gt; tag:<p align='center'>Forces line breaks before and after.</p><p align='right'>It also supports `align` property.</p></p>" +
+		"<p>&lt;br/&gt; tag: Makes a<br/>line break</p>" +
+		"<p>&lt;font&gt; tag: Allows to control <font color='#ff00ff'>color</font>, <font opacity='0.8'>op</font><font opacity='0.6'>ac</font><font opacity='0.4'>it</font><font opacity='0.2'>y</font> and <font face='myFontFace'>face</font> properties.</p>" +
+		"<p>&lt;img src='...'/&gt; tag: Allows to insert a Tile <img src='logo'/> into html text</p>";
+		var flow = createFlow(s2d);
+		flow.y = yoffset;
+		flow.maxWidth = 360;
+		var text = createText(flow, tagShowcase, Align.Left);
+		text.maxWidth = 360;
+
+		onResize();
+	}
+
+
+	override function update(dt:Float) {
+		for (w in resizeWidgets) {
+			w.setMaxWidth(Std.int(300 + Math.sin(haxe.Timer.stamp() * 0.2) * 100.0));
+		}
+	}
+
+	static function main() {
+		hxd.Res.initEmbed();
+		new HtmlText();
+	}
+
+}
