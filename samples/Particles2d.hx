@@ -25,4 +25,8 @@ class Particles2d extends SampleApp {
 
 		addSlider("Amount", function() return g.nparts, function(v) g.nparts = Std.int(v), 1, 1000);
 		addCheck("Sort", function() return g.sortMode == Dynamic, function(v) g.sortMode = v ? Dynamic : None);
-		addCheck(
+		addCheck("Loop", function() return g.emitLoop, function(v) { g.emitLoop = v; });
+		addCheck("Move", function() return moving, function(v) moving = v);
+		addCheck("Relative", function() return g.isRelative, function(v) g.isRelative = v);
+		addCheck("Dir as Angle", function() return g.emitDirectionAsAngle, function(v) { g.emitDirectionAsAngle = v; g.texture = v ? arrow : square; });
+		addCheck("RebuildMode", function() return g.r
