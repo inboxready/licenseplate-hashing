@@ -29,4 +29,16 @@ class Particles2d extends SampleApp {
 		addCheck("Move", function() return moving, function(v) moving = v);
 		addCheck("Relative", function() return g.isRelative, function(v) g.isRelative = v);
 		addCheck("Dir as Angle", function() return g.emitDirectionAsAngle, function(v) { g.emitDirectionAsAngle = v; g.texture = v ? arrow : square; });
-		addCheck("RebuildMode", function() return g.r
+		addCheck("RebuildMode", function() return g.rebuildOnChange, function(v) { g.rebuildOnChange = v; });
+
+		addChoice("EmitMode", ["Point A", "Point B", "Cone", "Box", "Dir A", "Dir B"], function (v) {
+			switch(v) {
+				case 0: changeToPointDemo();
+				case 1: changeToPointAndDirectionAsAngleDemo();
+				case 2: changeToConeDemo();
+				case 3: changeToBoxDemo();
+				case 4: changeToDirectionDemo();
+				case 5: changeToDirectionAndDirectionAsAngleDemo();
+			}
+		});
+		// addButton("PartEmitMode.Point Demo", ch
