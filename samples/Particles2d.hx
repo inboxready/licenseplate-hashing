@@ -51,4 +51,28 @@ class Particles2d extends SampleApp {
 		changeToPointDemo();
 	}
 
-	functio
+	function changeToPointDemo() {
+		// clear();
+		reset();
+
+		// g = new ParticleGroup(particles);
+		g.sizeRand = .2;
+		g.life = 1;
+		g.speed = 100;
+		g.speedRand = 3;
+		g.rotSpeed = 2;
+		g.emitMode = PartEmitMode.Point;
+		g.emitDist = 0;
+		g.fadeIn = 0;
+		g.fadeOut = 0;
+		g.dx = cast s2d.width / 2;
+		g.dy = cast s2d.height / 2;
+
+		// particles.addGroup(g);
+	}
+
+	function changeToPointAndDirectionAsAngleDemo() {
+		// clear();
+		reset();
+
+		// g = new ParticleGroup(particles);
