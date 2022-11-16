@@ -41,4 +41,14 @@ class Particles2d extends SampleApp {
 				case 5: changeToDirectionAndDirectionAsAngleDemo();
 			}
 		});
-		// addButton("PartEmitMode.Point Demo", ch
+		// addButton("PartEmitMode.Point Demo", changeToPointDemo);
+		// addButton("PartEmitMode.Point + emitDirectionAsAngle Demo", changeToPointAndDirectionAsAngleDemo);
+		// addButton("PartEmitMode.Cone Demo", changeToConeDemo);
+		// addButton("PartEmitMode.Box Demo", changeToBoxDemo);
+		// addButton("PartEmitMode.Direction Demo", changeToDirectionDemo);
+		// addButton("PartEmitMode.Direction + emitDirectionAsAngle Demo", changeToDirectionAndDirectionAsAngleDemo);
+
+		changeToPointDemo();
+	}
+
+	functio
