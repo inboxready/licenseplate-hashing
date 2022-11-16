@@ -76,3 +76,27 @@ class Particles2d extends SampleApp {
 		reset();
 
 		// g = new ParticleGroup(particles);
+		g.size = .8;
+		g.sizeRand = .2;
+		g.life = .5;
+		g.speed = 100;
+		g.speedRand = 3;
+		g.emitMode = PartEmitMode.Point;
+		g.emitDist = 0;
+		g.fadeIn = 0;
+		g.fadeOut = 0;
+		g.dx = cast s2d.width / 2;
+		g.dy = cast s2d.height / 2;
+
+		// particles.addGroup(g);
+	}
+
+	function changeToConeDemo() {
+		// clear();
+		reset();
+
+		// g = new ParticleGroup(particles);
+		g.size = .2;
+		g.gravity = 1;
+		g.life = 5;
+		g.speed = 
