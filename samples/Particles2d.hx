@@ -200,4 +200,29 @@ class Particles2d extends SampleApp {
 		g.gravity = 0;
 		g.gravityAngle = 0;
 
-		g.rotInit
+		g.rotInit = 0;
+		g.rotSpeed = 0;
+		g.rotSpeedRand = 0;
+		g.rotAuto = false;
+
+		g.fadeIn = .2;
+		g.fadeOut = .8;
+		g.fadePower = 1;
+
+		particles.x = 0;
+		particles.y = 0;
+	}
+
+	function clear():Void {
+		time = 0;
+		if (movableParticleGroup != null) movableParticleGroup = null;
+		if (g != null) particles.removeGroup(g);
+	}
+
+	override function update(dt:Float) {
+		super.update(dt);
+
+		if( moving ) {
+			time += dt * 0.6;
+			particles.x = Math.cos(time) * (s2d.width / 4);
+			particles.y = Mat
