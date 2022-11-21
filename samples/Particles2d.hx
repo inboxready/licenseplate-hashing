@@ -225,4 +225,14 @@ class Particles2d extends SampleApp {
 		if( moving ) {
 			time += dt * 0.6;
 			particles.x = Math.cos(time) * (s2d.width / 4);
-			particles.y = Mat
+			particles.y = Math.sin(time) * (s2d.height / 4);
+		}
+
+		// if (movableParticleGroup != null)
+		// {
+		// 	time += dt * 0.01;
+		// 	movableParticleGroup.dx = cast s2d.width / 2 + Math.cos(time) * 200;
+		// 	movableParticleGroup.dy = cast s2d.height / 2 + Math.sin(time) * 200;
+		// }
+	}
+}
