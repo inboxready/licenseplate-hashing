@@ -121,4 +121,26 @@ class Particles2d extends SampleApp {
 		g.size = .2;
 		g.gravity = 1;
 		g.life = 5;
-		g.speed = 
+		g.speed = 100;
+		g.speedRand = 3;
+		g.emitMode = PartEmitMode.Box;
+		g.emitAngle = Math.PI;
+		g.emitDist = s2d.width;
+		g.emitDistY = s2d.height;
+		g.dx = cast s2d.width / 2;
+
+		// particles.addGroup(g);
+	}
+
+	function changeToDirectionDemo() {
+		// clear();
+		reset();
+
+		// g = new ParticleGroup(particles);
+		g.size = .2;
+		g.gravity = 1;
+		g.life = 5;
+		g.speed = 100;
+		g.speedRand = 3;
+		g.emitMode = PartEmitMode.Direction;
+		g.emitDist = s2d
