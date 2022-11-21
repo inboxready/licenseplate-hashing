@@ -170,4 +170,34 @@ class Particles2d extends SampleApp {
 		// particles.addGroup(g);
 	}
 
-	static funct
+	static function main() {
+		Res.initEmbed();
+		new Particles2d();
+	}
+
+	function reset() {
+		g.dx = 0;
+		g.dy = 0;
+		g.emitDist = 50.;
+		g.emitDistY = 50.;
+		g.emitAngle = -.5;
+		g.emitSync = 0;
+		g.emitDelay = 0;
+		g.emitStartDist = 0.;
+
+		g.life = 1;
+		g.lifeRand = 0;
+
+		g.sizeIncr = 0;
+		g.incrX = true;
+		g.incrY = true;
+		g.size = 1;
+		g.sizeRand = 0;
+
+		g.speed = 50.;
+		g.speedRand = 0;
+		g.speedIncr = 0;
+		g.gravity = 0;
+		g.gravityAngle = 0;
+
+		g.rotInit
