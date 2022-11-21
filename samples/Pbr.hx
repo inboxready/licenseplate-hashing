@@ -25,4 +25,21 @@ class Pbr extends SampleApp {
 		return;
 		#end
 
-		#if j
+		#if js
+		if( !engine.driver.hasFeature(ShaderModel3) ) {
+			new h2d.Text(getFont(), s2d).text = "WebGL 2.0 support required and not available on this browser.";
+			return;
+		}
+		#end
+
+		var sp = new h3d.prim.Sphere(1, 128, 128);
+		sp.addNormals();
+		sp.addUVs();
+
+		var bg = new h3d.scene.Mesh(sp, s3d);
+		bg.scale(10);
+		bg.material.mainPass.culling = Front;
+		bg.material.mainPass.setPassName("overlay");
+
+		fui = new h2d.Flow(s2d);
+		fui
