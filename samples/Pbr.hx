@@ -42,4 +42,21 @@ class Pbr extends SampleApp {
 		bg.material.mainPass.setPassName("overlay");
 
 		fui = new h2d.Flow(s2d);
-		fui
+		fui.y = 5;
+		fui.verticalSpacing = 5;
+		fui.layout = Vertical;
+
+		var envMap = new h3d.mat.Texture(512, 512, [Cube]);
+		inline function set(face:Int, res:hxd.res.Image) {
+			var pix = res.getPixels();
+			envMap.uploadPixels(pix, 0, face);
+		}
+		set(0, hxd.Res.front);
+		set(1, hxd.Res.back);
+		set(2, hxd.Res.right);
+		set(3, hxd.Res.left);
+		set(4, hxd.Res.top);
+		set(5, hxd.Res.bottom);
+
+		var axis = new h3d.scene.Graphics(s3d);
+		axis.lineStyle(2, 0xF
