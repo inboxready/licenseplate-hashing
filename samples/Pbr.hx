@@ -59,4 +59,20 @@ class Pbr extends SampleApp {
 		set(5, hxd.Res.bottom);
 
 		var axis = new h3d.scene.Graphics(s3d);
-		axis.lineStyle(2, 0xF
+		axis.lineStyle(2, 0xFF0000);
+		axis.lineTo(2, 0, 0);
+		axis.lineStyle(2, 0x00FF00);
+		axis.moveTo(0, 0, 0);
+		axis.lineTo(0, 2, 0);
+		axis.lineStyle(2, 0x0000FF);
+		axis.moveTo(0, 0, 0);
+		axis.lineTo(0, 0, 2);
+
+		axis.material.props = h3d.mat.MaterialSetup.current.getDefaults("ui");
+		axis.visible = false;
+		axis.material.mainPass.depthWrite = true;
+
+		env = new h3d.scene.pbr.Environment(envMap);
+		env.compute();
+
+		renderer = cast(s3d.renderer, h3d.scene.pbr.Renderer)
