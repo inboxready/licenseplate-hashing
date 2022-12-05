@@ -75,4 +75,20 @@ class Pbr extends SampleApp {
 		env = new h3d.scene.pbr.Environment(envMap);
 		env.compute();
 
-		renderer = cast(s3d.renderer, h3d.scene.pbr.Renderer)
+		renderer = cast(s3d.renderer, h3d.scene.pbr.Renderer);
+		renderer.env = env;
+
+		var cubeShader = bg.material.mainPass.addShader(new h3d.shader.pbr.CubeLod(env.env));
+		var light = new h3d.scene.pbr.PointLight(s3d);
+		light.setPosition(30, 10, 40);
+		light.range = 100;
+		light.power = 2;
+
+		var pbrValues = new h3d.shader.pbr.PropsValues(0.2,0.5);
+		hue = 0;
+		saturation = 0;
+		brightness = 0.2;
+
+		function addSphere(x,y) {
+			var sphere = new h3d.scene.Mesh(sp, s3d);
+			sphere.x =
