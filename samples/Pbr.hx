@@ -108,4 +108,14 @@ class Pbr extends SampleApp {
 				s.scale(0.4);
 				s.material.mainPass.addShader(new h3d.shader.pbr.PropsValues( 1 - x / (max - 1), 1 - y / (max - 1) ));
 			}
-		grid.visible = fa
+		grid.visible = false;
+
+		// camera
+		addSlider("Exposure", function() return renderer.exposure, function(v) renderer.exposure = v, -3, 3);
+		addSlider("Sky", function() return env.power, function(v) env.power = v, 0, 3);
+		addSlider("Light", function() return light.power, function(v) light.power = v, 0, 10);
+
+		// material color
+		color = new h2d.Bitmap(h2d.Tile.fromColor(0xFFFFFF, 30, 30), fui);
+		fui.getProperties(color).paddingLeft = 150;
+		addSlider("Hue", functi
