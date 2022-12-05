@@ -91,4 +91,21 @@ class Pbr extends SampleApp {
 
 		function addSphere(x,y) {
 			var sphere = new h3d.scene.Mesh(sp, s3d);
-			sphere.x =
+			sphere.x = x;
+			sphere.y = y;
+			return sphere;
+		}
+
+		sphere = addSphere(0, 0);
+		sphere.material.mainPass.addShader(pbrValues);
+
+		grid = new h3d.scene.Object(s3d);
+		var max = 8;
+		for( x in 0...max )
+			for( y in 0...max ) {
+				var s = addSphere(x - (max - 1) * 0.5, y - (max - 1) * 0.5);
+				grid.addChild(s);
+				s.scale(0.4);
+				s.material.mainPass.addShader(new h3d.shader.pbr.PropsValues( 1 - x / (max - 1), 1 - y / (max - 1) ));
+			}
+		grid.visible = fa
