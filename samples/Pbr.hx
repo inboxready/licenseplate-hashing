@@ -118,4 +118,12 @@ class Pbr extends SampleApp {
 		// material color
 		color = new h2d.Bitmap(h2d.Tile.fromColor(0xFFFFFF, 30, 30), fui);
 		fui.getProperties(color).paddingLeft = 150;
-		addSlider("Hue", functi
+		addSlider("Hue", function() return hue, function(v) hue = v, 0, Math.PI*2);
+		addSlider("Saturation", function() return saturation, function(v) saturation = v);
+		addSlider("Brightness", function() return brightness, function(v) brightness = v, -1, 1);
+
+		addSlider("Metalness", function() return pbrValues.metalnessValue, function(v) pbrValues.metalnessValue = v);
+		addSlider("Roughness", function() return pbrValues.roughnessValue, function(v) pbrValues.roughnessValue = v);
+
+		// debug
+		a
