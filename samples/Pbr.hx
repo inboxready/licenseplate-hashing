@@ -126,4 +126,16 @@ class Pbr extends SampleApp {
 		addSlider("Roughness", function() return pbrValues.roughnessValue, function(v) pbrValues.roughnessValue = v);
 
 		// debug
-		a
+		addCheck("Axis", function() return axis.visible, function(b) axis.visible = b);
+		addCheck("Grid", function() return grid.visible, function(b) {
+			grid.visible = !grid.visible;
+			sphere.visible = !sphere.visible;
+		});
+
+		var r = Math.sqrt(2);
+		var cube = new h3d.prim.Cube(r,r,r);
+		cube.unindex();
+		cube.addNormals();
+		cube.addUVs();
+		cube.translate( -r * 0.5, -r * 0.5, -r * 0.5);
+		var prims : Array<h3d.prim.Primitive> = [sp,
