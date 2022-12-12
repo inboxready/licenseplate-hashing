@@ -138,4 +138,15 @@ class Pbr extends SampleApp {
 		cube.addNormals();
 		cube.addUVs();
 		cube.translate( -r * 0.5, -r * 0.5, -r * 0.5);
-		var prims : Array<h3d.prim.Primitive> = [sp,
+		var prims : Array<h3d.prim.Primitive> = [sp, cube];
+		addChoice("Prim", ["Sphere","Cube"], function(i) sphere.primitive = prims[i], prims.indexOf(sphere.primitive));
+
+		addChoice("EnvMap", ["Default", "IDiff", "ISpec"], function(i) {
+			cubeShader.texture = [env.env, env.diffuse, env.specular][i];
+		});
+		addSlider("EnvLod", function() return cubeShader.lod, function(v) cubeShader.lod = v, 0, env.specLevels);
+
+	}
+
+	function addSeparator() {
+		fui.getProperties(fui.getChildAt(fui
