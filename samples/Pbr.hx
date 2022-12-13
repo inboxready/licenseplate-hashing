@@ -149,4 +149,22 @@ class Pbr extends SampleApp {
 	}
 
 	function addSeparator() {
-		fui.getProperties(fui.getChildAt(fui
+		fui.getProperties(fui.getChildAt(fui.numChildren - 1)).paddingBottom += 20;
+	}
+
+	override function update(dt:Float) {
+
+		if( grid == null ) return;
+
+		var color = new h3d.Vector(1, 0, 0);
+		var m = new h3d.Matrix();
+		m.identity();
+		m.colorSaturate(saturation - 1);
+		m.colorHue(hue);
+		m.colorLightness(brightness);
+		color.transform3x4(m);
+		color.setColor(color.toColor()); // saturate
+
+		this.color.color.load(color);
+		this.sphere.material.color.load(color);
+		for
