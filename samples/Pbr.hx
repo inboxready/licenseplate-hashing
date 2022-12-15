@@ -167,4 +167,21 @@ class Pbr extends SampleApp {
 
 		this.color.color.load(color);
 		this.sphere.material.color.load(color);
-		for
+		for( s in grid )
+			s.toMesh().material.color.load(color);
+
+	}
+
+	// ---------------------
+
+
+	static function main() {
+		#if hl
+		hxd.Res.initLocal();
+		#else
+		hxd.Res.initEmbed();
+		#end
+		new Pbr();
+	}
+
+}
