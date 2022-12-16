@@ -55,4 +55,18 @@ class Polygons extends hxd.App {
 
 		// Cube
 		var cube = Cube.defaultUnitCube();
-		var cubeMesh = new Mesh(cube, s
+		var cubeMesh = new Mesh(cube, s3d);
+		cubeMesh.setPosition(16, 32, 0.5);
+		cubeMesh.material.color.setColor(0xFFAA15);
+
+		// Cylinder
+		var cylinder = new Cylinder(16, 0.5);
+		cylinder.addNormals();
+		cylinder.addUVs();
+		var cylinderMesh = new Mesh(cylinder, s3d);
+		cylinderMesh.setPosition(24, 32, 0);
+		cylinderMesh.material.color.setColor(0x6FFFB0);
+
+		// Disc on top of cylinder
+		var discTopCylinder = new Disc(0.5, 16);
+		discTopCylinder.addNormals()
