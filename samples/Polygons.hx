@@ -22,4 +22,16 @@ class ThirdPersonCameraController extends CameraController {
 			pan(Math.sin(radian), Math.cos(radian));
 		}
 		if (e.keyCode == Key.LEFT) {
-			var radian = Math.atan2((curPos.y - target.y), (curPos.x - tar
+			var radian = Math.atan2((curPos.y - target.y), (curPos.x - target.x));
+			radian = radian - Math.PI / 2.0;
+			pan(Math.sin(radian), Math.cos(radian));
+		}
+		if (e.keyCode == Key.DOWN) {
+			var radian = Math.atan2((curPos.y - target.y), (curPos.x - target.x));
+			radian = radian + Math.PI;
+			pan(Math.sin(radian), Math.cos(radian));
+		}
+		if (e.keyCode == Key.RIGHT) {
+			var radian = Math.atan2((curPos.y - target.y), (curPos.x - target.x));
+			radian = radian + Math.PI / 2.0;
+			
