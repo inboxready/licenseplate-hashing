@@ -34,4 +34,25 @@ class ThirdPersonCameraController extends CameraController {
 		if (e.keyCode == Key.RIGHT) {
 			var radian = Math.atan2((curPos.y - target.y), (curPos.x - target.x));
 			radian = radian + Math.PI / 2.0;
-			
+			pan(Math.sin(radian), Math.cos(radian));
+		}
+	}
+}
+
+class Polygons extends hxd.App {
+
+	var shadow : h3d.pass.DefaultShadowMap;
+	var cameraCtrl : h3d.scene.CameraController;
+
+	override function init() {
+
+		// Grid
+		var grid = new Grid(64, 64);
+		grid.addNormals();
+		grid.addUVs();
+		var gridMesh = new Mesh(grid, s3d);
+		gridMesh.material.color.setColor(0x999999);
+
+		// Cube
+		var cube = Cube.defaultUnitCube();
+		var cubeMesh = new Mesh(cube, s
