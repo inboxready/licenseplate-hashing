@@ -23,4 +23,17 @@ class Video extends hxd.App {
 	}
 
 	override function update(dt:Float) {
-	
+		if( video.videoWidth != 0 && video.videoHeight != 0 ) {
+			tf.text = (Std.int(video.time*10)/10)+"s";
+			var scale = hxd.Math.min(s2d.width / video.videoWidth, s2d.height / video.videoHeight);
+			video.setScale(scale);
+			video.x = Std.int((s2d.width - video.videoWidth * scale) * 0.5);
+			video.y = Std.int((s2d.height - video.videoHeight * scale) * 0.5);
+		}
+	}
+
+	static function main() {
+		new Video();
+	}
+
+}
