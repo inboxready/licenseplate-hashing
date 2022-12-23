@@ -111,4 +111,13 @@ class Polygons extends hxd.App {
 		shadow.color.set(0.7, 0.7, 0.7);
 
 		s3d.camera.target.set(32, 32, 0);
-		s3d.camera.pos.set(80, 80, 48)
+		s3d.camera.pos.set(80, 80, 48);
+		cameraCtrl = new ThirdPersonCameraController(s3d);
+		cameraCtrl.loadFromCamera();
+	}
+
+	static function main() {
+		new Polygons();
+	}
+
+}
