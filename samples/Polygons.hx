@@ -69,4 +69,18 @@ class Polygons extends hxd.App {
 
 		// Disc on top of cylinder
 		var discTopCylinder = new Disc(0.5, 16);
-		discTopCylinder.addNormals()
+		discTopCylinder.addNormals();
+		discTopCylinder.addUVs();
+		var discTopCylinderMesh = new Mesh(discTopCylinder, s3d);
+		discTopCylinderMesh.setPosition(24, 32, 1);
+		discTopCylinderMesh.material.color.setColor(0x6FFFB0);
+
+		// Disc
+		var disc = new Disc(0.5, 16);
+		disc.addNormals();
+		disc.addUVs();
+		var discMesh = new Mesh(disc, s3d);
+		discMesh.setPosition(32, 32, 0.1);
+		discMesh.material.color.setColor(0x3D138D);
+
+	
