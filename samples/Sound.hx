@@ -106,3 +106,24 @@ class Sound extends SampleApp {
 			pitchSlider.value = pitchFilter.value;
 			pitchSlider.onChange();
 		}
+
+		if( music != null ) {
+			slider.value = music.position / music.duration;
+			musicPosition.text = hxd.Math.fmt(music.position) + "/" + hxd.Math.fmt(music.duration);
+			if( hxd.Key.isPressed(hxd.Key.M) ) {
+				music.mute = !music.mute;
+			}
+		}
+
+		if( hxd.Key.isPressed(hxd.Key.SPACE) ) {
+			var c = new NoiseChannel();
+			haxe.Timer.delay(c.stop, 1000);
+		}
+	}
+
+	static function main() {
+		hxd.Res.initEmbed();
+		new Sound();
+	}
+
+}
