@@ -97,4 +97,18 @@ class Polygons extends hxd.App {
 		sphere.addUVs();
 		var sphereMesh = new Mesh(sphere, s3d);
 		sphereMesh.setPosition(48, 32, 0.5);
-		sphereM
+		sphereMesh.material.color.setColor(0xFF4040);
+
+		// Lights
+		var light = new h3d.scene.fwd.DirLight(new h3d.Vector( 0.3, -0.4, -0.9), s3d);
+		cast(s3d.lightSystem,h3d.scene.fwd.LightSystem).ambientLight.setColor(0x909090);
+
+		shadow = s3d.renderer.getPass(h3d.pass.DefaultShadowMap);
+		shadow.size = 2048;
+		shadow.power = 200;
+		shadow.blur.radius= 0;
+		shadow.bias *= 0.1;
+		shadow.color.set(0.7, 0.7, 0.7);
+
+		s3d.camera.target.set(32, 32, 0);
+		s3d.camera.pos.set(80, 80, 48)
