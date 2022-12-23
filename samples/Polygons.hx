@@ -83,4 +83,18 @@ class Polygons extends hxd.App {
 		discMesh.setPosition(32, 32, 0.1);
 		discMesh.material.color.setColor(0x3D138D);
 
-	
+		// Geosphere
+		var geosphere = new GeoSphere();
+		geosphere.addNormals();
+		geosphere.addUVs();
+		var geosphereMesh = new Mesh(geosphere, s3d);
+		geosphereMesh.setPosition(40, 32, 0.6);
+		geosphereMesh.material.color.setColor(0x00739D);
+
+		// Sphere
+		var sphere = new Sphere(0.5, 16, 16);
+		sphere.addNormals();
+		sphere.addUVs();
+		var sphereMesh = new Mesh(sphere, s3d);
+		sphereMesh.setPosition(48, 32, 0.5);
+		sphereM
