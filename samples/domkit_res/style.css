@@ -42,4 +42,5 @@ button:hover text {
 }
 
 button:active {
-	backgr
+	background: #666;
+}
