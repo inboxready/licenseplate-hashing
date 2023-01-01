@@ -7,4 +7,11 @@
  <Char width="11" offset="-1 2" rect="30 0 13 20" code="$"/>
  <Char width="15" offset="0 4" rect="43 2 15 16" code="%"/>
  <Char width="13" offset="0 4" rect="58 2 14 16" code="&amp;"/>
- <Char width="5" off
+ <Char width="5" offset="1 4" rect="72 2 5 7" code="'"/>
+ <Char width="8" offset="1 4" rect="77 2 7 20" code="("/>
+ <Char width="8" offset="0 4" rect="84 2 7 20" code=")"/>
+ <Char width="8" offset="0 4" rect="91 2 8 8" code="*"/>
+ <Char width="13" offset="1 9" rect="99 7 11 11" code="+"/>
+ <Char width="6" offset="1 16" rect="110 14 4 7" code=","/>
+ <Char width="11" offset="1 11" rect="114 9 9 5" code="-"/>
+ <Char width="5" offset="1 16" rec
