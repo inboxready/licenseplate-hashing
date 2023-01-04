@@ -14,4 +14,12 @@
  <Char width="13" offset="1 9" rect="99 7 11 11" code="+"/>
  <Char width="6" offset="1 16" rect="110 14 4 7" code=","/>
  <Char width="11" offset="1 11" rect="114 9 9 5" code="-"/>
- <Char width="5" offset="1 16" rec
+ <Char width="5" offset="1 16" rect="123 14 4 4" code="."/>
+ <Char width="8" offset="-1 4" rect="127 2 9 16" code="/"/>
+ <Char width="11" offset="0 4" rect="136 2 12 16" code="0"/>
+ <Char width="10" offset="0 4" rect="148 2 9 16" code="1"/>
+ <Char width="12" offset="1 4" rect="157 2 11 16" code="2"/>
+ <Char width="11" offset="-1 4" rect="168 2 12 16" code="3"/>
+ <Char width="12" offset="0 4" rect="180 2 12 16" code="4"/>
+ <Char width="11" offset="0 4" rect="192 2 12 16" code="5"/>
+ <Char wi
