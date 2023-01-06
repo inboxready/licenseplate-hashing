@@ -29,4 +29,11 @@
  <Char width="5" offset="1 8" rect="251 6 4 12" code=":"/>
  <Char width="6" offset="1 8" rect="0 26 4 15" code=";"/>
  <Char width="13" offset="1 8" rect="4 26 11 12" code="&lt;"/>
- <Char width="13" offset="1 
+ <Char width="13" offset="1 10" rect="15 28 11 9" code="="/>
+ <Char width="13" offset="1 8" rect="26 26 11 12" code=">"/>
+ <Char width="11" offset="0 4" rect="37 22 11 16" code="?"/>
+ <Char width="16" offset="0 6" rect="48 24 16 17" code="@"/>
+ <Char width="12" offset="-1 4" rect="64 22 15 16" code="A"/>
+ <Char width="12" offset="0 4" rect="79 22 12 16" code="B"/>
+ <Char width="14" offset="0 4" rect="91 22 15 16" code="C"/>
+ <Char width="13" offset="0 4" rect="106
