@@ -44,4 +44,10 @@
  <Char width="6" offset="1 4" rect="168 22 4 16" code="I"/>
  <Char width="9" offset="0 4" rect="172 22 8 16" code="J"/>
  <Char width="13" offset="0 4" rect="180 22 14 16" code="K"/>
- <Ch
+ <Char width="10" offset="0 4" rect="194 22 11 16" code="L"/>
+ <Char width="17" offset="1 4" rect="205 22 15 16" code="M"/>
+ <Char width="13" offset="0 4" rect="220 22 13 16" code="N"/>
+ <Char width="14" offset="0 4" rect="233 22 15 16" code="O"/>
+ <Char width="12" offset="0 4" rect="0 41 12 16" code="P"/>
+ <Char width="14" offset="0 4" rect="12 41 15 17" code="Q"/>
+ <Char width="12" offset="0 4" rect="27 41 1
