@@ -50,4 +50,12 @@
  <Char width="14" offset="0 4" rect="233 22 15 16" code="O"/>
  <Char width="12" offset="0 4" rect="0 41 12 16" code="P"/>
  <Char width="14" offset="0 4" rect="12 41 15 17" code="Q"/>
- <Char width="12" offset="0 4" rect="27 41 1
+ <Char width="12" offset="0 4" rect="27 41 13 16" code="R"/>
+ <Char width="12" offset="-1 4" rect="40 41 13 16" code="S"/>
+ <Char width="12" offset="0 4" rect="53 41 12 16" code="T"/>
+ <Char width="13" offset="0 4" rect="65 41 13 16" code="U"/>
+ <Char width="12" offset="-1 4" rect="78 41 14 16" code="V"/>
+ <Char width="18" offset="-1 4" rect="92 41 21 16" code="W"/>
+ <Char width="13" offset="-1 4" rect="113 41 15 16" code="X"/>
+ <Char width="11" offset="-1 4" rect="128 41 14 16" code="Y"/>
+ <Char width="12" offset="0 4" rect="142 41 12 16" code="Z"/>
