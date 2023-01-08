@@ -66,4 +66,11 @@
  <Char width="12" offset="0 18" rect="186 55 12 5" code="_"/>
  <Char width="7" offset="1 4" rect="198 41 6 5" code="`"/>
  <Char width="10" offset="0 8" rect="204 45 10 12" code="a"/>
+ <Char width="11" offset="0 4" rect="214 41 11 16" code="b"/>
+ <Char width="10" offset="0 8" rect="225 45 11 12" code="c"/>
+ <Char width="11" offset="0 4" rect="236 41 11 16" code="d"/>
+ <Char width="11" offset="0 8" rect="0 65 11 12" code="e"/>
+ <Char width="8" offset="0 4" rect="11 61 9 16" code="f"/>
+ <Char width="11" offset="0 8" rect="20 65 11 16" code="g"/>
+ <Char width="10" offset="0 4" rect="31 61 10 16" code="h"/>
  <Char w
