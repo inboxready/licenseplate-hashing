@@ -59,3 +59,11 @@
  <Char width="13" offset="-1 4" rect="113 41 15 16" code="X"/>
  <Char width="11" offset="-1 4" rect="128 41 14 16" code="Y"/>
  <Char width="12" offset="0 4" rect="142 41 12 16" code="Z"/>
+ <Char width="8" offset="1 4" rect="154 41 7 20" code="["/>
+ <Char width="8" offset="-1 4" rect="161 41 9 16" code="\"/>
+ <Char width="7" offset="-1 4" rect="170 41 8 20" code="]"/>
+ <Char width="14" offset="3 5" rect="178 42 8 11" code="^"/>
+ <Char width="12" offset="0 18" rect="186 55 12 5" code="_"/>
+ <Char width="7" offset="1 4" rect="198 41 6 5" code="`"/>
+ <Char width="10" offset="0 8" rect="204 45 10 12" code="a"/>
+ <Char w
