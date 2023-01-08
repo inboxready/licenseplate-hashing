@@ -73,4 +73,11 @@
  <Char width="8" offset="0 4" rect="11 61 9 16" code="f"/>
  <Char width="11" offset="0 8" rect="20 65 11 16" code="g"/>
  <Char width="10" offset="0 4" rect="31 61 10 16" code="h"/>
- <Char w
+ <Char width="5" offset="1 4" rect="41 61 4 16" code="i"/>
+ <Char width="6" offset="-2 4" rect="45 61 7 20" code="j"/>
+ <Char width="10" offset="0 4" rect="52 61 11 16" code="k"/>
+ <Char width="5" offset="1 4" rect="63 61 4 16" code="l"/>
+ <Char width="16" offset="0 8" rect="67 65 16 12" code="m"/>
+ <Char width="10" offset="0 8" rect="83 65 10 12" code="n"/>
+ <Char width="11" offset="0 8" rect="93 65 12 12" code="o"/>
+ <Char width="11" of
