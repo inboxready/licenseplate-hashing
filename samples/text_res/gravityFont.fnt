@@ -87,4 +87,11 @@
  <Char width="8" offset="0 4" rect="145 61 8 16" code="t"/>
  <Char width="10" offset="0 8" rect="153 65 10 12" code="u"/>
  <Char width="10" offset="-1 8" rect="163 65 12 12" code="v"/>
- <Char width="14" offset=
+ <Char width="14" offset="-1 8" rect="175 65 16 12" code="w"/>
+ <Char width="10" offset="-1 8" rect="191 65 12 12" code="x"/>
+ <Char width="10" offset="-1 8" rect="203 65 12 16" code="y"/>
+ <Char width="9" offset="0 8" rect="215 65 9 12" code="z"/>
+ <Char width="8" offset="0 4" rect="224 61 8 20" code="{"/>
+ <Char width="7" offset="2 4" rect="232 61 4 21" code="|"/>
+ <Char width="9" offset="0 4" rect="236 61 8 20" code="}"/>
+ <Char width="11" offset="1 11
