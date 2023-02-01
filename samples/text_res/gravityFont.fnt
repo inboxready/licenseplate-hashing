@@ -101,4 +101,12 @@
  <Char width="10" offset="0 4" rect="39 86 10 16" code="ă"/>
  <Char width="13" offset="-1 4" rect="49 86 15 20" code="Ą"/>
  <Char width="10" offset="0 8" rect="64 90 11 16" code="ą"/>
- <Char width="14" offset="0 0" rect=
+ <Char width="14" offset="0 0" rect="75 82 15 20" code="Ć"/>
+ <Char width="10" offset="0 4" rect="90 86 11 16" code="ć"/>
+ <Char width="14" offset="0 0" rect="101 82 15 20" code="Ċ"/>
+ <Char width="10" offset="0 4" rect="116 86 11 16" code="ċ"/>
+ <Char width="14" offset="0 0" rect="127 82 15 20" code="Č"/>
+ <Char width="10" offset="0 4" rect="142 86 11 16" code="č"/>
+ <Char width="13" offset="0 0" rect="153 82 13 20" code="Ď"/>
+ <Char width="12" offset="0 4" rect="166 86 14 16" code="ď"/>
+ <Char width="14
