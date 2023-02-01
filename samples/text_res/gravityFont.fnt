@@ -94,4 +94,11 @@
  <Char width="8" offset="0 4" rect="224 61 8 20" code="{"/>
  <Char width="7" offset="2 4" rect="232 61 4 21" code="|"/>
  <Char width="9" offset="0 4" rect="236 61 8 20" code="}"/>
- <Char width="11" offset="1 11
+ <Char width="11" offset="1 11" rect="244 68 10 6" code="~"/>
+ <Char width="12" offset="-1 0" rect="0 82 14 20" code="Ā"/>
+ <Char width="10" offset="0 4" rect="14 86 10 16" code="ā"/>
+ <Char width="13" offset="-1 1" rect="24 83 15 19" code="Ă"/>
+ <Char width="10" offset="0 4" rect="39 86 10 16" code="ă"/>
+ <Char width="13" offset="-1 4" rect="49 86 15 20" code="Ą"/>
+ <Char width="10" offset="0 8" rect="64 90 11 16" code="ą"/>
+ <Char width="14" offset="0 0" rect=
