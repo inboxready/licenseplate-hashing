@@ -109,4 +109,11 @@
  <Char width="10" offset="0 4" rect="142 86 11 16" code="č"/>
  <Char width="13" offset="0 0" rect="153 82 13 20" code="Ď"/>
  <Char width="12" offset="0 4" rect="166 86 14 16" code="ď"/>
- <Char width="14
+ <Char width="14" offset="0 4" rect="180 86 15 16" code="Đ"/>
+ <Char width="12" offset="0 4" rect="195 86 13 16" code="đ"/>
+ <Char width="10" offset="0 0" rect="208 82 11 20" code="Ē"/>
+ <Char width="11" offset="0 4" rect="219 86 11 16" code="ē"/>
+ <Char width="11" offset="0 0" rect="230 82 11 20" code="Ė"/>
+ <Char width="11" offset="0 4" rect="241 86 11 16" code="ė"/>
+ <Char width="10" offset="0 4" rect="0 110 11 20" code="Ę"/>
+ <Char width="11" offse
