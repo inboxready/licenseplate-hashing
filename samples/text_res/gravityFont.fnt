@@ -116,4 +116,11 @@
  <Char width="11" offset="0 0" rect="230 82 11 20" code="Ė"/>
  <Char width="11" offset="0 4" rect="241 86 11 16" code="ė"/>
  <Char width="10" offset="0 4" rect="0 110 11 20" code="Ę"/>
- <Char width="11" offse
+ <Char width="11" offset="0 8" rect="11 114 11 16" code="ę"/>
+ <Char width="11" offset="0 0" rect="22 106 11 20" code="Ě"/>
+ <Char width="11" offset="0 4" rect="33 110 11 16" code="ě"/>
+ <Char width="14" offset="0 0" rect="44 106 14 20" code="Ğ"/>
+ <Char width="11" offset="0 4" rect="58 110 11 20" code="ğ"/>
+ <Char width="14" offset="0 0" rect="69 106 14 20" code="Ġ"/>
+ <Char width="11" offset="0 4" rect="83 110 11 20" code="ġ"/>
+ <Char width="14" offset="0 4" rect="94 110
