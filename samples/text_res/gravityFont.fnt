@@ -123,4 +123,12 @@
  <Char width="11" offset="0 4" rect="58 110 11 20" code="ğ"/>
  <Char width="14" offset="0 0" rect="69 106 14 20" code="Ġ"/>
  <Char width="11" offset="0 4" rect="83 110 11 20" code="ġ"/>
- <Char width="14" offset="0 4" rect="94 110
+ <Char width="14" offset="0 4" rect="94 110 14 20" code="Ģ"/>
+ <Char width="11" offset="0 3" rect="108 109 11 21" code="ģ"/>
+ <Char width="14" offset="-1 4" rect="119 110 16 16" code="Ħ"/>
+ <Char width="10" offset="-2 4" rect="135 110 12 16" code="ħ"/>
+ <Char width="7" offset="-1 0" rect="147 106 9 20" code="Ĩ"/>
+ <Char width="5" offset="-2 4" rect="156 110 9 16" code="ĩ"/>
+ <Char width="6" offset="0 0" rect="165 106 6 20" code="Ī"/>
+ <Char width="6" offset="0 4" rect="171 110 6 16" code="ī"/>
+ <
