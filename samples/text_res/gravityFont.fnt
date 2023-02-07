@@ -152,4 +152,11 @@
  <Char width="13" offset="0 0" rect="79 131 13 20" code="Ń"/>
  <Char width="10" offset="0 4" rect="92 135 10 16" code="ń"/>
  <Char width="13" offset="0 4" rect="102 135 13 21" code="Ņ"/>
- <Char width="10" offset="0 8" rect="115 139 10
+ <Char width="10" offset="0 8" rect="115 139 10 17" code="ņ"/>
+ <Char width="13" offset="0 0" rect="125 131 13 20" code="Ň"/>
+ <Char width="10" offset="0 4" rect="138 135 10 16" code="ň"/>
+ <Char width="13" offset="0 4" rect="148 135 13 20" code="Ŋ"/>
+ <Char width="10" offset="0 8" rect="161 139 10 16" code="ŋ"/>
+ <Char width="14" offset="0 0" rect="171 131 15 20" code="Ō"/>
+ <Char width="11" offset="0 4" rect="186 135 12 16" code="ō"/>
+ <Char width="14" offset="0 0" rect="198 131 15 
