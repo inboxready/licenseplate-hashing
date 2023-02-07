@@ -131,4 +131,11 @@
  <Char width="5" offset="-2 4" rect="156 110 9 16" code="ĩ"/>
  <Char width="6" offset="0 0" rect="165 106 6 20" code="Ī"/>
  <Char width="6" offset="0 4" rect="171 110 6 16" code="ī"/>
- <
+ <Char width="7" offset="0 4" rect="177 110 6 20" code="Į"/>
+ <Char width="5" offset="-1 4" rect="183 110 6 20" code="į"/>
+ <Char width="7" offset="2 0" rect="189 106 4 20" code="İ"/>
+ <Char width="5" offset="1 8" rect="193 114 4 12" code="ı"/>
+ <Char width="13" offset="1 4" rect="197 110 11 20" code="Ĳ"/>
+ <Char width="11" offset="1 4" rect="208 110 9 20" code="ĳ"/>
+ <Char width="13" offset="0 4" rect="217 110 14 21" code="Ķ"/>
+ <Char w
