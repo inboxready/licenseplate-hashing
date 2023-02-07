@@ -145,4 +145,11 @@
  <Char width="5" offset="0 4" rect="17 135 5 21" code="ļ"/>
  <Char width="10" offset="0 4" rect="22 135 11 16" code="Ľ"/>
  <Char width="6" offset="1 4" rect="33 135 7 16" code="ľ"/>
- <Char width="1
+ <Char width="10" offset="0 4" rect="40 135 11 16" code="Ŀ"/>
+ <Char width="6" offset="1 4" rect="51 135 7 16" code="ŀ"/>
+ <Char width="10" offset="-2 4" rect="58 135 13 16" code="Ł"/>
+ <Char width="6" offset="-1 4" rect="71 135 8 16" code="ł"/>
+ <Char width="13" offset="0 0" rect="79 131 13 20" code="Ń"/>
+ <Char width="10" offset="0 4" rect="92 135 10 16" code="ń"/>
+ <Char width="13" offset="0 4" rect="102 135 13 21" code="Ņ"/>
+ <Char width="10" offset="0 8" rect="115 139 10
