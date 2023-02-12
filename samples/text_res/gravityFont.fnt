@@ -166,4 +166,12 @@
  <Char width="12" offset="0 0" rect="19 157 13 20" code="Ŕ"/>
  <Char width="7" offset="0 4" rect="32 161 7 16" code="ŕ"/>
  <Char width="12" offset="0 4" rect="39 161 13 21" code="Ŗ"/>
- <Char width="7" offset="-1 7" rect="52 164 8 18" code
+ <Char width="7" offset="-1 7" rect="52 164 8 18" code="ŗ"/>
+ <Char width="12" offset="0 0" rect="60 157 13 20" code="Ř"/>
+ <Char width="7" offset="-1 4" rect="73 161 8 16" code="ř"/>
+ <Char width="12" offset="-1 0" rect="81 157 13 20" code="Ś"/>
+ <Char width="9" offset="-1 4" rect="94 161 11 16" code="ś"/>
+ <Char width="12" offset="-1 4" rect="105 161 13 20" code="Ş"/>
+ <Char width="9" offset="-1 8" rect="118 165 11 16" code="ş"/>
+ <Char width="12" offset="-1 0" rect="129 157 13 20" code="Š"/>
+ <Char width="9
