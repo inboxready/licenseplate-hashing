@@ -181,4 +181,11 @@
  <Char width="8" offset="0 4" rect="185 161 10 16" code="ť"/>
  <Char width="12" offset="0 0" rect="195 157 12 20" code="Ŧ"/>
  <Char width="8" offset="0 4" rect="207 161 8 16" code="ŧ"/>
- <Char width="13"
+ <Char width="13" offset="0 -1" rect="215 156 13 21" code="Ũ"/>
+ <Char width="10" offset="0 4" rect="228 161 10 16" code="ũ"/>
+ <Char width="13" offset="0 0" rect="238 157 13 20" code="Ū"/>
+ <Char width="10" offset="0 4" rect="0 187 10 16" code="ū"/>
+ <Char width="13" offset="0 -1" rect="10 182 13 21" code="Ů"/>
+ <Char width="10" offset="0 4" rect="23 187 10 16" code="ů"/>
+ <Char width="13" offset="0 0" rect="33 183 13 20" code="Ű"/>
+ <Char width="10" offset="0 4" rect="46 187 
