@@ -188,4 +188,12 @@
  <Char width="13" offset="0 -1" rect="10 182 13 21" code="Ů"/>
  <Char width="10" offset="0 4" rect="23 187 10 16" code="ů"/>
  <Char width="13" offset="0 0" rect="33 183 13 20" code="Ű"/>
- <Char width="10" offset="0 4" rect="46 187 
+ <Char width="10" offset="0 4" rect="46 187 11 16" code="ű"/>
+ <Char width="14" offset="0 4" rect="57 187 14 20" code="Ų"/>
+ <Char width="10" offset="0 8" rect="71 191 11 16" code="ų"/>
+ <Char width="18" offset="-1 -1" rect="82 182 21 21" code="Ŵ"/>
+ <Char width="14" offset="-1 4" rect="103 187 16 16" code="ŵ"/>
+ <Char width="11" offset="-1 -1" rect="119 182 14 21" code="Ŷ"/>
+ <Char width="10" offset="-1 4" rect="133 187 12 20" code="ŷ"/>
+ <Char width="11" offset="0 0" rect="145 183 13 20" code="Ÿ"/>
+ <Ch
