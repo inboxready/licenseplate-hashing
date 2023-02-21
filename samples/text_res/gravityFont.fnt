@@ -196,4 +196,10 @@
  <Char width="11" offset="-1 -1" rect="119 182 14 21" code="Ŷ"/>
  <Char width="10" offset="-1 4" rect="133 187 12 20" code="ŷ"/>
  <Char width="11" offset="0 0" rect="145 183 13 20" code="Ÿ"/>
- <Ch
+ <Char width="12" offset="0 0" rect="158 183 12 20" code="Ź"/>
+ <Char width="9" offset="0 4" rect="170 187 9 16" code="ź"/>
+ <Char width="12" offset="0 0" rect="179 183 12 20" code="Ż"/>
+ <Char width="9" offset="0 4" rect="191 187 9 16" code="ż"/>
+ <Char width="12" offset="0 0" rect="200 183 12 20" code="Ž"/>
+ <Char width="9" offset="0 4" rect="212 187 9 16" code="ž"/>
+</Font>
