@@ -48,4 +48,27 @@ a.active {
 <tr>
 <td style="width:50%; min-width:50%">
 
-<tex
+<textarea id="hxsl" style="width:100%;height:400px">
+@input var input : {
+	var position : Vec3;
+};
+
+@const var white : Bool;
+@param var modelView : Mat4;
+
+var output : {
+	var color : Vec4;
+	var position : Vec4;
+};
+
+function vertex() {
+	output.position = vec4(input.position,1.) * modelView;
+}
+
+function fragment() {
+	output.color = vec4(white ? 1. : 0.);
+}
+</textarea>
+
+<textarea id="vars" style="width:100%; height: 40px">
+{ white
